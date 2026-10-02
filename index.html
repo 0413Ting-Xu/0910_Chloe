@@ -114,7 +114,7 @@ main{container:main / inline-size;min-width:0}
 .avatar img{position:absolute;left:-26%;top:-22%;width:152%;height:152%;object-fit:cover}
 .slot-title{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;text-align:left;cursor:default}
 .slot.is-complete .slot-title{cursor:pointer}
-.slot-name{display:flex;align-items:center;gap:6px;font-size:20px;line-height:1.3}
+.slot-name{display:flex;align-items:center;gap:6px;font-size:20px;line-height:1.3;white-space:nowrap}
 .slot-name .ic{color:var(--c4);width:19px;height:19px}
 .fold-ic{width:16px;height:16px;color:var(--ink-3);transition:transform .35s}
 .slot:not(.is-folded) .fold-ic{transform:rotate(180deg)}
@@ -367,6 +367,15 @@ main{container:main / inline-size;min-width:0}
 .pick:hover{background:var(--soft)}
 .pick span:nth-child(2){flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pick-empty{padding:26px 0;text-align:center;color:var(--ink-3)}
+@media (max-width:359px){
+  .slot-head{gap:10px}
+  .avatar,.slot.is-folded .avatar{width:42px;height:42px}
+  .slot-name .ic{display:none}
+  .slot-actions{gap:6px}
+  .slot-actions .icon-btn{width:36px;height:36px}
+  .all-btn{height:34px;padding:0 10px;font-size:13px}
+  .all-btn .ic{display:none}
+}
 @media (max-width:640px){
   .dlg{margin:auto 0 0;width:100%}
   .dlg[open]{animation:sheetUp .34s cubic-bezier(.2,.9,.3,1)}
@@ -662,7 +671,13 @@ function load() {
   try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
   return s;
 }
-function save() { doneIdx = null; try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+function save() {
+  doneIdx = null;
+  // Today's record keeps tracking the live schedule, so the snapshot it leaves behind at midnight is what the day really was.
+  const t = state.days[today()];
+  if (t) for (const s of ['am', 'pm']) if (t[s]) t[s].plan = livePlan(today(), s);
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+}
 let saveTimer = null;
 const saveSoon = () => { clearTimeout(saveTimer); saveTimer = setTimeout(() => { saveTimer = null; save(); }, 300); };
 const flush = () => { if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; save(); } };
@@ -673,7 +688,7 @@ const ui = { tab: 'today', date: today(), week: weekStart(today()), month: today
 /* ---------- schedule logic ---------- */
 const byId = id => state.products.find(p => p.id === id);
 const stepIdx = p => { const i = state.steps.indexOf(p.step); return i < 0 ? state.steps.length : i; };
-const byStep = (a, b) => stepIdx(a) - stepIdx(b) || a.order - b.order || a.created - b.created;
+const byStep = (a, b) => stepIdx(a) - stepIdx(b) || (stepIdx(a) === state.steps.length ? a.step.localeCompare(b.step) : 0) || a.order - b.order || a.created - b.created;
 const freqFor = (p, slot) => (slot === 'pm' && p.freqPm) || p.freq;
 
 function isScheduled(p, date, slot) {
@@ -715,7 +730,12 @@ function dayRec(date, create) {
   let d = state.days[date];
   if (!d && create) d = state.days[date] = {};
   if (d) {
-    for (const s of ['am', 'pm']) { d[s] = d[s] || {}; d[s].done = d[s].done || []; d[s].extra = d[s].extra || []; d[s].skip = d[s].skip || []; }
+    for (const s of ['am', 'pm']) {
+      d[s] = d[s] || {}; d[s].done = d[s].done || []; d[s].extra = d[s].extra || []; d[s].skip = d[s].skip || [];
+      // Freeze both routines the moment a day gets a record, even one that was never ticked,
+      // so later product edits can't rewrite that day's history.
+      if (create && !d[s].plan) d[s].plan = livePlan(date, s);
+    }
     d.skin = d.skin || []; d.note = d.note || '';
   }
   return d;
@@ -793,7 +813,7 @@ const welcome = () => `<section class="card welcome">
 function renderToday() {
   const d = ui.date, isToday = d === today();
   let html = dateBar('day', longDate(d), `星期${WD[dow(d)]}${isToday ? ' · 今天' : ''}`, isToday ? '' : '回今天');
-  if (!state.products.length) { $('#view-today').innerHTML = html + welcome(); return; }
+  if (!state.products.some(p => !p.deleted)) { $('#view-today').innerHTML = html + welcome(); return; }
   if (needsBackup()) html += `<div class="backup-tip">
     <img src="${IMG.faceRest}" alt=""><span>好久沒備份了</span>
     <button class="btn primary sm" data-act="export">備份</button>
@@ -865,7 +885,7 @@ function renderWeek() {
   const t = today(), days = Array.from({ length: 7 }, (_, i) => addDays(ui.week, i));
   const isCur = ui.week === weekStart(t);
   let html = dateBar('week', `${md(days[0])} – ${md(days[6])}`, isCur ? '本週' : '', isCur ? '' : '回本週');
-  html += state.products.length ? weekTable('am', days, t) + weekTable('pm', days, t) : welcome();
+  html += state.products.some(p => !p.deleted) ? weekTable('am', days, t) + weekTable('pm', days, t) : welcome();
   $('#view-week').innerHTML = html;
 }
 
@@ -1397,7 +1417,7 @@ function saveForm() {
   }
   // Made from "加一項": put it on that day straight away.
   const to = ui.addTo;
-  if (to && !draft.id && p.times.includes(to.slot) && !isScheduled(p, to.date, to.slot)) {
+  if (to && !draft.id && p.times.includes(to.slot) && !slotItems(to.date, to.slot).some(x => x.id === p.id)) {
     const r = touch(to.date, to.slot);
     if (!r.extra.includes(p.id)) r.extra.push(p.id);
     ui.pop = to.slot + p.id;
@@ -1528,8 +1548,7 @@ document.addEventListener('keydown', e => {
 });
 
 let lastToday = today();
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) { flush(); return; }
+function refresh() {
   if ($('dialog[open]')) return;
   let changed = false;
   try { changed = (localStorage.getItem(KEY) || '') !== JSON.stringify(state); } catch (e) {}
@@ -1540,7 +1559,10 @@ document.addEventListener('visibilitychange', () => {
     changed = true;
   }
   if (changed) render();
-});
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden) flush(); else refresh(); });
+// The page can stay open across midnight; check the date once a minute.
+setInterval(() => { if (!document.hidden && today() !== lastToday) refresh(); }, 60000);
 window.addEventListener('pagehide', flush);
 
 /* ---------- init ---------- */
