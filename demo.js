@@ -20,7 +20,7 @@ window.skincareDemo = ({ today, addDays, isScheduled, normalize }) => {
     { id: 'd' + i, name, step, times, freq: { start, ...freq }, color, note, paused, created: i + 1 }
   )) }).products;
   const plan = (d, slot) => products.filter(p => isScheduled(p, d, slot)).map(p => p.id);
-  const skin = { 1: ['水潤', '穩定'], 3: ['穩定'], 5: ['乾燥'], 7: ['冒痘'], 8: ['冒痘', '泛紅'], 12: ['出油'], 14: ['穩定'], 18: ['乾燥'], 20: ['水潤'] };
+  const skin = { 1: ['穩定'], 3: ['穩定'], 5: ['乾燥'], 7: ['敏感'], 8: ['敏感', '出油'], 12: ['出油'], 14: ['穩定'], 18: ['乾燥'], 20: ['穩定'] };
   const notes = { 1: '今天皮膚摸起來很滑', 5: '冷氣吹太久，多擦一層乳液', 8: '下巴冒了兩顆，先停 A 醇一天', 12: '流汗流很多' };
   const days = {};
   for (let n = 24; n >= 0; n--) {

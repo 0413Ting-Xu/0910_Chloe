@@ -147,7 +147,10 @@ main{container:main / inline-size;min-width:0}
 .slot-empty{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding:22px 0;border-radius:18px;background:var(--tint);color:var(--ink-3);font-size:15px}
 .slot-empty .ic{color:var(--c3)}
 
-.skin h2{display:flex;align-items:center;gap:8px;font-size:18px;margin-bottom:14px}
+.skin-head{display:flex;align-items:center;justify-content:space-between;margin:-4px -4px 14px 0}
+.skin h2{display:flex;align-items:center;gap:8px;font-size:18px}
+.icon-btn.sm{width:34px;height:34px}
+.icon-btn.sm .ic{width:17px;height:17px}
 .skin h2 .ic{color:var(--pink-300)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{padding:8px 15px;border-radius:999px;background:var(--soft);font-size:14.5px;color:var(--ink-2);transition:background .2s, color .2s, transform .12s}
@@ -234,7 +237,6 @@ main{container:main / inline-size;min-width:0}
 .ring circle{fill:none;stroke-width:3}
 .ring-track{stroke:var(--line)}
 .ring-fill{stroke:url(#ringGrad);stroke-linecap:round}
-.cal-num .heart{position:absolute;top:-4px;right:-7px;width:11px;height:11px;color:var(--pink-300)}
 
 .notes{margin-top:16px;padding:18px 14px 12px}
 .notes h2{display:flex;align-items:center;gap:8px;font-size:18px;margin:0 6px 8px}
@@ -288,6 +290,13 @@ main{container:main / inline-size;min-width:0}
 .stepper button{width:32px;height:32px;border-radius:50%;background:var(--soft);font-size:18px;line-height:1;color:var(--ink-2)}
 .stepper b{font-weight:400;min-width:28px;text-align:center;font-size:18px;color:var(--ink)}
 .colors{display:flex;gap:12px;flex-wrap:wrap}
+.tag-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.tag-row{display:flex;align-items:center;gap:8px}
+.tag-del{width:40px;height:40px;flex:none;border-radius:50%;display:grid;place-items:center;color:var(--ink-3)}
+.tag-del:hover{background:var(--soft);color:var(--pink-600)}
+.tag-del .ic{width:18px;height:18px}
+.tag-add{display:flex;align-items:center;gap:8px;margin-bottom:22px}
+.tag-add .input{border-style:dashed}
 .colors button{width:34px;height:34px;border-radius:50%;box-shadow:inset 0 0 0 3px #fff, 0 0 0 1.5px var(--line);transition:box-shadow .2s, transform .15s}
 .colors button.on{box-shadow:inset 0 0 0 3px #fff, 0 0 0 2px var(--ink-3);transform:scale(1.06)}
 .switch-row{width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:16px;background:#FAFBFD;font-size:15.5px;color:var(--ink-2);margin-bottom:20px}
@@ -474,6 +483,21 @@ main{container:main / inline-size;min-width:0}
   </form>
 </dialog>
 
+<dialog class="dlg" id="skinDlg">
+  <form class="sheet" id="skinForm" novalidate>
+    <div class="sheet-head">
+      <h2>肌膚狀態</h2>
+      <button type="button" class="icon-btn" data-act="close" aria-label="關閉"></button>
+    </div>
+    <div class="tag-list" id="tagList"></div>
+    <div class="tag-add">
+      <input id="tagNew" class="input" maxlength="10" autocomplete="off" placeholder="新增狀態">
+      <button type="button" class="icon-btn soft" data-act="tag-add" aria-label="新增"></button>
+    </div>
+    <div class="sheet-foot"><button type="submit" class="btn primary">儲存</button></div>
+  </form>
+</dialog>
+
 <dialog class="dlg" id="extraDlg">
   <div class="sheet">
     <div class="sheet-head">
@@ -499,7 +523,7 @@ const STEPS = ['卸妝', '洗臉', '化妝水', '精華', '眼霜', '乳液', '�
 const COLORS = { pink: '#F7B9CA', blue: '#9FC9EE', butter: '#F4D88F', mint: '#A9DCC5', lilac: '#C9BAF0', peach: '#F9C6A6' };
 const WD = ['日', '一', '二', '三', '四', '五', '六'];
 const WEEK = [1, 2, 3, 4, 5, 6, 0];
-const SKIN = ['穩定', '水潤', '乾燥', '出油', '冒痘', '泛紅', '敏感'];
+const DEFAULT_SKIN = ['穩定', '乾燥', '出油', '敏感'];
 const PRESETS = [['一三五', [1, 3, 5]], ['二四六', [2, 4, 6]], ['平日', [1, 2, 3, 4, 5]], ['週末', [6, 0]]];
 const IMG = {
   am: 'images/hachiware.webp', pm: 'images/chiikawa.webp', duo: 'images/chiikawa-usagi.jpg',
@@ -523,6 +547,7 @@ const I = {
   bottle: '<path d="M9.5 3h5v3.2l2 2.3V19a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2V8.5l2-2.3z"/><path d="M7.5 12.5h9"/>',
   book: '<rect x="3.5" y="5" width="17" height="15.5" rx="3.5"/><path d="M3.5 10h17M8.5 3v4M15.5 3v4M9 15l2 2 4-4"/>',
   drop: '<path d="M12 3.5s6 6.4 6 10.8a6 6 0 0 1-12 0C6 9.9 12 3.5 12 3.5z"/>',
+  pen: '<path d="M4.5 19.5h4l10-10-4-4-10 10z"/><path d="M13 7l4 4"/>',
   down: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
   up: '<path d="M12 15V4M7 9l5-5 5 5M5 20h14"/>',
 };
@@ -546,7 +571,7 @@ const md = s => { const d = parse(s); return `${d.getMonth() + 1}/${d.getDate()}
 const longDate = s => { const d = parse(s); return `${d.getMonth() + 1}月${d.getDate()}日`; };
 
 /* ---------- state ---------- */
-const blank = () => ({ v: 1, products: [], days: {} });
+const blank = () => ({ v: 1, products: [], days: {}, skinTags: [...DEFAULT_SKIN] });
 function normalize(s) {
   const out = blank();
   out.products = (Array.isArray(s.products) ? s.products : []).filter(p => p && p.id && p.name).map((p, i) => {
@@ -569,6 +594,7 @@ function normalize(s) {
     };
   });
   out.days = s.days && typeof s.days === 'object' ? s.days : {};
+  if (Array.isArray(s.skinTags)) out.skinTags = [...new Set(s.skinTags.map(t => String(t).trim()).filter(Boolean))];
   return out;
 }
 function load() {
@@ -732,9 +758,14 @@ function itemRow(x, slot) {
 function skinCard(d) {
   const r = state.days[d] || {};
   const skin = r.skin || [];
+  // Tags removed from the list still show on days that used them.
+  const tags = [...state.skinTags, ...skin.filter(s => !state.skinTags.includes(s))];
   return `<section class="card skin">
-    <h2>${icon('drop')}肌膚狀態</h2>
-    <div class="chips">${SKIN.map(s => `<button class="chip${skin.includes(s) ? ' on' : ''}" data-act="skin" data-v="${s}" aria-pressed="${skin.includes(s)}">${s}</button>`).join('')}</div>
+    <div class="skin-head">
+      <h2>${icon('drop')}肌膚狀態</h2>
+      <button class="icon-btn soft sm" data-act="edit-skin" aria-label="編輯肌膚狀態">${icon('pen')}</button>
+    </div>
+    ${tags.length ? `<div class="chips">${tags.map(s => `<button class="chip${skin.includes(s) ? ' on' : ''}" data-act="skin" data-v="${esc(s)}" aria-pressed="${skin.includes(s)}">${esc(s)}</button>`).join('')}</div>` : ''}
     <textarea class="note" id="dayNote" rows="2" placeholder="寫點什麼…">${esc(r.note || '')}</textarea>
   </section>`;
 }
@@ -817,7 +848,7 @@ function renderHistory() {
     const ring = showRing ? `<svg class="ring" viewBox="0 0 36 36"><circle class="ring-track" cx="18" cy="18" r="16"/>${n ? `<circle class="ring-fill" cx="18" cy="18" r="16" stroke-dasharray="${(n / all.length * C).toFixed(2)} ${C.toFixed(2)}"/>` : ''}</svg>` : '';
     const full = all.length > 0 && n === all.length;
     return `<button class="cal-cell${d === t ? ' today' : ''}${future ? ' future' : ''}${full ? ' full' : ''}" data-act="goto-day" data-date="${d}">
-      <span class="cal-num">${ring}${parse(d).getDate()}${noted(d) ? icon('heart', 'fill heart') : ''}</span>
+      <span class="cal-num">${ring}${parse(d).getDate()}</span>
     </button>`;
   }).join('');
   const notes = dates.filter(noted).reverse().map(d => {
@@ -1051,6 +1082,44 @@ function renderForm() {
   $('#fDelete').hidden = !draft.id;
 }
 
+const tagRow = name => `<div class="tag-row">
+  <input class="input" maxlength="10" autocomplete="off" value="${esc(name)}" data-orig="${esc(name)}">
+  <button type="button" class="tag-del" data-act="tag-del" aria-label="刪除">${icon('x')}</button>
+</div>`;
+function openSkinEditor() {
+  $('#tagList').innerHTML = state.skinTags.map(tagRow).join('');
+  $('#tagNew').value = '';
+  $('[data-act="tag-add"]').innerHTML = icon('plus');
+  $('#skinDlg').showModal();
+}
+function addTag() {
+  const input = $('#tagNew'), name = input.value.trim();
+  if (!name) { input.focus(); return; }
+  if ($$('#tagList input').some(i => i.value.trim() === name)) { shake(input); return; }
+  $('#tagList').insertAdjacentHTML('beforeend', tagRow(name).replace(/ data-orig="[^"]*"/, ''));
+  input.value = '';
+  input.focus();
+}
+function saveSkinTags() {
+  const tags = [], renamed = {};
+  $$('#tagList input').forEach(i => {
+    const name = i.value.trim();
+    if (!name || tags.includes(name)) return;
+    tags.push(name);
+    if (i.dataset.orig && i.dataset.orig !== name) renamed[i.dataset.orig] = name;
+  });
+  const pending = $('#tagNew').value.trim();
+  if (pending && !tags.includes(pending)) tags.push(pending);
+  // Renaming a tag also renames it in past records.
+  if (Object.keys(renamed).length) {
+    Object.values(state.days).forEach(r => { if (r && r.skin) r.skin = [...new Set(r.skin.map(s => renamed[s] || s))]; });
+  }
+  state.skinTags = tags;
+  save();
+  $('#skinDlg').close();
+  render();
+}
+
 function shake(el) {
   el.classList.remove('shake');
   void el.offsetWidth;
@@ -1076,6 +1145,8 @@ function saveForm() {
 }
 
 $('#pForm').addEventListener('submit', e => { e.preventDefault(); saveForm(); });
+$('#skinForm').addEventListener('submit', e => { e.preventDefault(); saveSkinTags(); });
+$('#tagNew').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addTag(); } });
 
 /* ---------- events ---------- */
 document.addEventListener('click', e => {
@@ -1107,6 +1178,9 @@ document.addEventListener('click', e => {
     case 'add-extra': addExtra(slot, id); break;
     case 'unextra': removeExtra(slot, id); break;
     case 'skin': toggleSkin(t, v); break;
+    case 'edit-skin': openSkinEditor(); break;
+    case 'tag-add': addTag(); break;
+    case 'tag-del': t.closest('.tag-row').remove(); break;
     case 'new': openForm(); break;
     case 'new-from-extra': $('#extraDlg').close(); openForm(); break;
     case 'edit': openForm(id); break;
@@ -1137,6 +1211,8 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('keydown', e => {
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[role=button]')) { e.preventDefault(); e.target.click(); }
+  // Enter that picks a Chinese IME candidate must not submit the form.
+  if (e.key === 'Enter' && (e.isComposing || e.keyCode === 229) && e.target.closest('form')) e.preventDefault();
 });
 
 let lastToday = today();
