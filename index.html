@@ -144,6 +144,22 @@ main{container:main / inline-size;min-width:0}
 .item-x{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:var(--ink-3)}
 .item-x:hover{background:#fff;color:var(--ink-2)}
 .item-x .ic{width:16px;height:16px}
+.item-main,.slot-title{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.item-main.holding{transform:scale(.96);transition:transform .5s ease}
+.slot-title.holding{opacity:.6;transition:opacity .5s ease}
+.check .ic-dash{display:none}
+.is-skip .check{background:#fff;border-style:dashed;border-color:var(--ink-3);color:var(--ink-2)}
+.is-skip .check .ic-check{display:none}
+.is-skip .check .ic-dash{display:block;opacity:1;transform:none}
+.is-skip .item-name{color:var(--ink-3)}
+.tag-skip{display:none}
+.is-skip .tag-step{display:none}
+.is-skip .tag-skip{display:inline-flex}
+.today-grid.is-future .item-main,.today-grid.is-future .skin .chip,.today-grid.is-future .note{pointer-events:none;opacity:.55}
+.backup-tip{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 12px;margin:-4px 0 16px;border-radius:20px;background:#fff;box-shadow:var(--shadow);font-size:15px}
+.backup-tip img{width:30px;height:28px;object-fit:contain;flex:none}
+.backup-tip span{flex:1;min-width:0}
+.backup-tip .icon-btn{box-shadow:none;background:var(--soft)}
 .slot-empty{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding:22px 0;border-radius:18px;background:var(--tint);color:var(--ink-3);font-size:15px}
 .slot-empty .ic{color:var(--c3)}
 
@@ -189,6 +205,8 @@ main{container:main / inline-size;min-width:0}
 .mk.done{background:var(--c4);color:#fff}
 .mk.done .ic{width:13px;height:13px;stroke-width:3}
 .mk.off{width:4px;height:4px;background:var(--line)}
+.mk.skip{background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink-3);color:var(--ink-3)}
+.mk.skip .ic{width:12px;height:12px;stroke-width:3}
 .wk-empty{padding:16px 0 10px;text-align:center;color:var(--ink-3)}
 @container main (min-width:560px){ .wk{--col:52px;padding:18px 20px 12px} .wk-name{font-size:15px} }
 @container main (min-width:760px){ .wk{--col:64px} .mk{width:26px;height:26px} }
@@ -198,6 +216,16 @@ main{container:main / inline-size;min-width:0}
 .view-head h1{font-size:24px;display:flex;align-items:baseline;gap:10px}
 .view-head h1 small{font-size:15px;color:var(--ink-3)}
 .prod-grid{display:grid;gap:12px}
+.view-actions{display:flex;gap:8px}
+.group-title{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-2);margin:22px 6px 10px}
+.group-title:first-of-type{margin-top:4px}
+.group-title small{font-size:13px;color:var(--ink-3)}
+.prod.sorting{cursor:default}
+.prod.sorting:hover{transform:none}
+.sort-btns{display:flex;gap:6px}
+.sort-btns button{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--ink-2)}
+.sort-btns button:disabled{opacity:.3;cursor:default}
+.sort-btns .ic{width:17px;height:17px}
 @container main (min-width:640px){ .prod-grid{grid-template-columns:1fr 1fr;gap:16px} }
 .prod{display:flex;flex-direction:column;gap:12px;padding:18px;cursor:pointer;transition:transform .15s, box-shadow .2s;outline:none}
 .prod:hover{transform:translateY(-2px);box-shadow:0 1px 2px rgba(74,78,91,.04), 0 16px 36px rgba(130,150,185,.16)}
@@ -286,15 +314,36 @@ main{container:main / inline-size;min-width:0}
 .interval-row{display:flex;align-items:center;gap:12px;font-size:15.5px;color:var(--ink-2)}
 .interval-row + .interval-row{margin-top:12px}
 .interval-row .input{width:auto;flex:1;padding:9px 12px}
+.seg.sm{margin-top:12px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--line)}
+.seg.sm button{font-size:13.5px;padding:7px 0}
+.seg.sm button.on{background:var(--pink-100);color:var(--pink-600);box-shadow:none}
+.lbl-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.lbl-row .lbl{margin:0}
+.mini-toggle{font-size:13px;padding:5px 12px;border-radius:999px;background:var(--soft);color:var(--ink-2);transition:background .2s, color .2s}
+.mini-toggle.on{background:var(--pink-100);color:var(--pink-600)}
+.freq-sub{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--c6);margin:16px 0 8px}
+.freq-sub:first-of-type{margin-top:4px}
+.freq-sub .ic{width:16px;height:16px;color:var(--c4)}
+.more-btn{width:100%;display:flex;align-items:center;gap:8px;padding:13px 14px;border-radius:16px;background:#FAFBFD;color:var(--ink-2);font-size:15px;margin-bottom:20px;text-align:left}
+.more-btn .sum{flex:1;min-width:0;text-align:right;font-size:13px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.more-btn .ic{width:18px;height:18px;transition:transform .3s}
+.more-btn.open .ic{transform:rotate(180deg)}
+.more-btn.open .sum{visibility:hidden}
+.more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(.3,.9,.3,1)}
+.more.open{grid-template-rows:1fr}
+.more > div{min-height:0;overflow:hidden;margin:0 -4px;padding:0 4px}
 .stepper{display:inline-flex;align-items:center;gap:6px;background:#fff;border-radius:999px;padding:4px;box-shadow:inset 0 0 0 1.5px var(--line)}
 .stepper button{width:32px;height:32px;border-radius:50%;background:var(--soft);font-size:18px;line-height:1;color:var(--ink-2)}
 .stepper b{font-weight:400;min-width:28px;text-align:center;font-size:18px;color:var(--ink)}
 .colors{display:flex;gap:12px;flex-wrap:wrap}
 .tag-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
-.tag-row{display:flex;align-items:center;gap:8px}
-.tag-del{width:40px;height:40px;flex:none;border-radius:50%;display:grid;place-items:center;color:var(--ink-3)}
-.tag-del:hover{background:var(--soft);color:var(--pink-600)}
-.tag-del .ic{width:18px;height:18px}
+.tag-row{display:flex;align-items:center;gap:2px}
+.tag-row .input{margin-right:6px}
+.tag-btn{width:38px;height:38px;flex:none;border-radius:50%;display:grid;place-items:center;color:var(--ink-3)}
+.tag-btn:hover{background:var(--soft);color:var(--ink-2)}
+.tag-btn.del:hover{color:var(--pink-600)}
+.tag-btn .ic{width:18px;height:18px}
+.tag-row:first-child [data-act="tag-up"]{visibility:hidden}
 .tag-add{display:flex;align-items:center;gap:8px;margin-bottom:22px}
 .tag-add .input{border-style:dashed}
 .colors button{width:34px;height:34px;border-radius:50%;box-shadow:inset 0 0 0 3px #fff, 0 0 0 1.5px var(--line);transition:box-shadow .2s, transform .15s}
@@ -430,52 +479,33 @@ main{container:main / inline-size;min-width:0}
       <input id="fName" class="input" autocomplete="off" maxlength="40" placeholder="例如：保濕精華">
     </div>
     <div class="field">
-      <div class="lbl">步驟</div>
-      <div class="chips" id="fSteps"></div>
-    </div>
-    <div class="field">
       <div class="lbl">時段</div>
       <div class="times" id="fTimes"></div>
     </div>
-    <div class="field">
-      <div class="lbl">頻率</div>
-      <div class="seg" id="fFreq">
-        <button type="button" data-act="f-freq" data-v="daily">每天</button>
-        <button type="button" data-act="f-freq" data-v="weekly">指定星期</button>
-        <button type="button" data-act="f-freq" data-v="interval">每隔幾天</button>
-      </div>
-      <div class="freq-panel" id="fWeekly">
-        <div class="days" id="fDays"></div>
-        <div class="chips sm" id="fPresets"></div>
-      </div>
-      <div class="freq-panel" id="fInterval">
-        <div class="interval-row">
-          <span>每</span>
-          <span class="stepper">
-            <button type="button" data-act="f-every" data-v="-1" aria-label="減少">−</button>
-            <b id="fEvery">2</b>
-            <button type="button" data-act="f-every" data-v="1" aria-label="增加">+</button>
-          </span>
-          <span>天一次</span>
-        </div>
-        <div class="interval-row">
-          <span>從</span>
-          <input type="date" id="fStart" class="input">
-          <span>開始</span>
-        </div>
-      </div>
-    </div>
-    <div class="field">
-      <div class="lbl">顏色</div>
-      <div class="colors" id="fColors"></div>
-    </div>
-    <div class="field">
-      <label class="lbl" for="fNote">備註</label>
-      <input id="fNote" class="input" autocomplete="off" maxlength="60" placeholder="用量、手法…">
-    </div>
-    <button type="button" class="switch-row" id="fPause" data-act="f-pause" role="switch" aria-checked="false">
-      <span>暫停使用</span><span class="switch"><i></i></span>
+    <button type="button" class="more-btn" id="fMoreBtn" data-act="f-more" aria-expanded="false">
+      <span>更多設定</span><span class="sum" id="fSum"></span>
     </button>
+    <div class="more" id="fMore"><div>
+      <div class="field">
+        <div class="lbl-row">
+          <span class="lbl">步驟</span>
+          <button type="button" class="icon-btn soft sm" data-act="edit-steps" aria-label="編輯步驟"></button>
+        </div>
+        <div class="chips" id="fSteps"></div>
+      </div>
+      <div class="field" id="fFreqWrap"></div>
+      <div class="field">
+        <div class="lbl">顏色</div>
+        <div class="colors" id="fColors"></div>
+      </div>
+      <div class="field">
+        <label class="lbl" for="fNote">備註</label>
+        <input id="fNote" class="input" autocomplete="off" maxlength="60" placeholder="用量、手法…">
+      </div>
+      <button type="button" class="switch-row" id="fPause" data-act="f-pause" role="switch" aria-checked="false">
+        <span>停用</span><span class="switch"><i></i></span>
+      </button>
+    </div></div>
     <div class="sheet-foot">
       <button type="button" class="btn danger" id="fDelete" data-act="f-delete">刪除</button>
       <button type="submit" class="btn primary">儲存</button>
@@ -483,15 +513,15 @@ main{container:main / inline-size;min-width:0}
   </form>
 </dialog>
 
-<dialog class="dlg" id="skinDlg">
-  <form class="sheet" id="skinForm" novalidate>
+<dialog class="dlg" id="listDlg">
+  <form class="sheet" id="listForm" novalidate>
     <div class="sheet-head">
-      <h2>肌膚狀態</h2>
+      <h2 id="listTitle"></h2>
       <button type="button" class="icon-btn" data-act="close" aria-label="關閉"></button>
     </div>
     <div class="tag-list" id="tagList"></div>
     <div class="tag-add">
-      <input id="tagNew" class="input" maxlength="10" autocomplete="off" placeholder="新增狀態">
+      <input id="tagNew" class="input" autocomplete="off">
       <button type="button" class="icon-btn soft" data-act="tag-add" aria-label="新增"></button>
     </div>
     <div class="sheet-foot"><button type="submit" class="btn primary">儲存</button></div>
@@ -519,7 +549,10 @@ main{container:main / inline-size;min-width:0}
 /* ---------- constants ---------- */
 const DEMO = new URLSearchParams(location.search).has('demo');
 const KEY = DEMO ? 'skincare-diary-demo' : 'skincare-diary-v2';
-const STEPS = ['卸妝', '洗臉', '化妝水', '精華', '眼霜', '乳液', '面霜', '防曬', '面膜', '其他'];
+const DEFAULT_STEPS = ['卸妝', '洗臉', '化妝水', '精華', '眼霜', '乳液', '面霜', '防曬', '面膜', '其他'];
+// Name keywords used to pre-pick a step for a new product (first match wins).
+const STEP_HINTS = [['卸妝', /卸/], ['洗臉', /洗|潔顏|潔面|泡沫/], ['化妝水', /化妝水|化粧水|爽膚水|精華水|toner/i], ['眼霜', /眼/],
+  ['防曬', /防曬|spf|隔離/i], ['面膜', /面膜|凍膜|mask/i], ['精華', /精華|安瓶|原液|serum/i], ['乳液', /乳液|lotion|emulsion/i], ['面霜', /霜|cream/i]];
 const COLORS = { pink: '#F7B9CA', blue: '#9FC9EE', butter: '#F4D88F', mint: '#A9DCC5', lilac: '#C9BAF0', peach: '#F9C6A6' };
 const WD = ['日', '一', '二', '三', '四', '五', '六'];
 const WEEK = [1, 2, 3, 4, 5, 6, 0];
@@ -550,6 +583,10 @@ const I = {
   pen: '<path d="M4.5 19.5h4l10-10-4-4-10 10z"/><path d="M13 7l4 4"/>',
   down: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
   up: '<path d="M12 15V4M7 9l5-5 5 5M5 20h14"/>',
+  aup: '<path d="M12 19V5M6 11l6-6 6 6"/>',
+  adown: '<path d="M12 5v14M6 13l6 6 6-6"/>',
+  dash: '<path d="M7 12h10"/>',
+  sort: '<path d="M8 5v14M4.5 8.5 8 5l3.5 3.5M16 19V5M12.5 15.5 16 19l3.5-3.5"/>',
 };
 const icon = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
 
@@ -571,58 +608,97 @@ const md = s => { const d = parse(s); return `${d.getMonth() + 1}/${d.getDate()}
 const longDate = s => { const d = parse(s); return `${d.getMonth() + 1}月${d.getDate()}日`; };
 
 /* ---------- state ---------- */
-const blank = () => ({ v: 1, products: [], days: {}, skinTags: [...DEFAULT_SKIN] });
+const blank = () => ({ v: 1, products: [], days: {}, skinTags: [...DEFAULT_SKIN], steps: [...DEFAULT_STEPS], lastBackup: 0, backupSnooze: 0 });
+const cleanList = a => [...new Set(a.map(t => String(t).trim()).filter(Boolean))];
+function normFreq(f = {}) {
+  return {
+    type: ['daily', 'weekly', 'interval'].includes(f.type) ? f.type : 'daily',
+    days: Array.isArray(f.days) ? f.days.map(Number).filter(n => n >= 0 && n <= 6) : [1, 3, 5],
+    every: Math.min(30, Math.max(2, Number(f.every) || 2)),
+    start: /^\d{4}-\d{2}-\d{2}$/.test(f.start) ? f.start : today(),
+    from: f.from === 'last' ? 'last' : 'fixed',
+  };
+}
 function normalize(s) {
   const out = blank();
   out.products = (Array.isArray(s.products) ? s.products : []).filter(p => p && p.id && p.name).map((p, i) => {
-    const f = p.freq || {};
+    const times = Array.isArray(p.times) && p.times.some(t => t === 'am' || t === 'pm') ? p.times.filter(t => t === 'am' || t === 'pm') : ['am', 'pm'];
     return {
       id: String(p.id),
       name: String(p.name),
-      step: STEPS.includes(p.step) ? p.step : '其他',
-      times: Array.isArray(p.times) && p.times.some(t => t === 'am' || t === 'pm') ? p.times.filter(t => t === 'am' || t === 'pm') : ['am', 'pm'],
-      freq: {
-        type: ['daily', 'weekly', 'interval'].includes(f.type) ? f.type : 'daily',
-        days: Array.isArray(f.days) ? f.days.map(Number).filter(n => n >= 0 && n <= 6) : [1, 3, 5],
-        every: Math.min(30, Math.max(2, Number(f.every) || 2)),
-        start: /^\d{4}-\d{2}-\d{2}$/.test(f.start) ? f.start : today(),
-      },
+      step: String(p.step || '').trim() || '其他',
+      times,
+      freq: normFreq(p.freq),
+      freqPm: p.freqPm && times.length === 2 ? normFreq(p.freqPm) : null,
       color: COLORS[p.color] ? p.color : 'pink',
       note: String(p.note || ''),
       paused: !!p.paused,
+      deleted: !!p.deleted,
+      order: Number.isFinite(p.order) ? p.order : i,
       created: Number(p.created) || Date.now() + i,
     };
   });
   out.days = s.days && typeof s.days === 'object' ? s.days : {};
-  if (Array.isArray(s.skinTags)) out.skinTags = [...new Set(s.skinTags.map(t => String(t).trim()).filter(Boolean))];
+  if (Array.isArray(s.skinTags)) out.skinTags = cleanList(s.skinTags);
+  if (Array.isArray(s.steps)) out.steps = cleanList(s.steps);
+  out.lastBackup = Number(s.lastBackup) || 0;
+  out.backupSnooze = Number(s.backupSnooze) || 0;
   return out;
 }
 function load() {
+  doneIdx = null;
   try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.products)) return normalize(s); } catch (e) {}
   if (!DEMO || !window.skincareDemo) return blank();
   const s = normalize(window.skincareDemo({ today, addDays, isScheduled, normalize }));
   try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
   return s;
 }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+function save() { doneIdx = null; try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
 let saveTimer = null;
 const saveSoon = () => { clearTimeout(saveTimer); saveTimer = setTimeout(() => { saveTimer = null; save(); }, 300); };
 const flush = () => { if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; save(); } };
 
 let state = blank();
-const ui = { tab: 'today', date: today(), week: weekStart(today()), month: today().slice(0, 7), pop: '', open: new Set() };
+const ui = { tab: 'today', date: today(), week: weekStart(today()), month: today().slice(0, 7), pop: '', open: new Set(), sorting: false, addTo: null };
 
 /* ---------- schedule logic ---------- */
 const byId = id => state.products.find(p => p.id === id);
-const stepIdx = p => { const i = STEPS.indexOf(p.step); return i < 0 ? STEPS.length : i; };
-const byStep = (a, b) => stepIdx(a) - stepIdx(b) || a.created - b.created;
+const stepIdx = p => { const i = state.steps.indexOf(p.step); return i < 0 ? state.steps.length : i; };
+const byStep = (a, b) => stepIdx(a) - stepIdx(b) || a.order - b.order || a.created - b.created;
+const freqFor = (p, slot) => (slot === 'pm' && p.freqPm) || p.freq;
 
 function isScheduled(p, date, slot) {
-  if (p.paused || !p.times.includes(slot)) return false;
-  const f = p.freq;
+  if (p.paused || p.deleted || !p.times.includes(slot)) return false;
+  const f = freqFor(p, slot);
   if (f.type === 'weekly') return f.days.includes(dow(date));
-  if (f.type === 'interval') { const n = diffDays(f.start, date); return n >= 0 && n % f.every === 0; }
+  if (f.type === 'interval') {
+    if (f.from === 'last') return dueSinceLast(p, f, date, slot);
+    const n = diffDays(f.start, date);
+    return n >= 0 && n % f.every === 0;
+  }
   return true;
+}
+// "Every N days, counted from the last time it was used": a missed day rolls forward.
+// Future days assume anything due today gets done today.
+function dueSinceLast(p, f, date, slot) {
+  const t = today(), last = lastDone(p.id, slot, date);
+  const due = last ? addDays(last, f.every) : f.start;
+  if (date <= t) return date >= due;
+  const next = due > t ? due : t;
+  return date >= next && diffDays(next, date) % f.every === 0;
+}
+let doneIdx = null;
+function lastDone(id, slot, before) {
+  if (!doneIdx) {
+    doneIdx = {};
+    for (const [d, r] of Object.entries(state.days)) {
+      for (const s of ['am', 'pm']) for (const x of (r && r[s] && r[s].done) || []) (doneIdx[x + s] = doneIdx[x + s] || []).push(d);
+    }
+    Object.values(doneIdx).forEach(a => a.sort());
+  }
+  const a = doneIdx[id + slot] || [];
+  for (let i = a.length - 1; i >= 0; i--) if (a[i] < before) return a[i];
+  return null;
 }
 const livePlan = (date, slot) => state.products.filter(p => isScheduled(p, date, slot)).sort(byStep).map(p => p.id);
 
@@ -630,7 +706,7 @@ function dayRec(date, create) {
   let d = state.days[date];
   if (!d && create) d = state.days[date] = {};
   if (d) {
-    for (const s of ['am', 'pm']) { d[s] = d[s] || {}; d[s].done = d[s].done || []; d[s].extra = d[s].extra || []; }
+    for (const s of ['am', 'pm']) { d[s] = d[s] || {}; d[s].done = d[s].done || []; d[s].extra = d[s].extra || []; d[s].skip = d[s].skip || []; }
     d.skin = d.skin || []; d.note = d.note || '';
   }
   return d;
@@ -643,17 +719,21 @@ function touch(date, slot) {
 }
 function slotItems(date, slot) {
   const r = state.days[date]?.[slot];
-  const done = r?.done || [];
+  const done = r?.done || [], skip = r?.skip || [];
   const planned = (r?.plan && date < today() ? r.plan : livePlan(date, slot)).filter(byId);
-  const extra = [...(r?.extra || []), ...done].filter((id, i, a) => byId(id) && !planned.includes(id) && a.indexOf(id) === i);
+  const extra = [...(r?.extra || []), ...done, ...skip].filter((id, i, a) => byId(id) && !planned.includes(id) && a.indexOf(id) === i);
   return [...planned.map(id => ({ id, extra: false })), ...extra.map(id => ({ id, extra: true }))]
-    .map(x => ({ ...x, p: byId(x.id), done: done.includes(x.id) }))
+    .map(x => {
+      const isSkip = skip.includes(x.id), isDone = !isSkip && done.includes(x.id);
+      // A skipped item counts as handled, so choosing to skip never breaks the streak.
+      return { ...x, p: byId(x.id), done: isDone, skip: isSkip, ok: isDone || isSkip };
+    })
     .sort((a, b) => byStep(a.p, b.p));
 }
 function dayState(date) {
   const all = [...slotItems(date, 'am'), ...slotItems(date, 'pm')];
   if (!all.length) return 'rest';
-  return all.every(x => x.done) ? 'complete' : 'incomplete';
+  return all.every(x => x.ok) ? 'complete' : 'incomplete';
 }
 function streak() {
   let d = today(), n = 0;
@@ -665,17 +745,11 @@ function streak() {
   }
   return n;
 }
-const slotComplete = (date, slot) => { const it = slotItems(date, slot); return it.length > 0 && it.every(x => x.done); };
+const slotComplete = (date, slot) => { const it = slotItems(date, slot); return it.length > 0 && it.every(x => x.ok); };
 
-function scheduleLabel(p) {
-  const f = p.freq;
-  if (f.type === 'weekly') {
-    if (f.days.length === 7) return '每天';
-    return '週' + WEEK.filter(d => f.days.includes(d)).map(d => WD[d]).join('');
-  }
-  if (f.type === 'interval') return `每 ${f.every} 天`;
-  return '每天';
-}
+const freqLabel = f => f.type === 'weekly' ? (f.days.length === 7 ? '每天' : '週' + WEEK.filter(d => f.days.includes(d)).map(d => WD[d]).join(''))
+  : f.type === 'interval' ? `每 ${f.every} 天${f.from === 'last' ? '・順延' : ''}` : '每天';
+const scheduleLabel = p => p.freqPm ? `早 ${freqLabel(p.freq)}・晚 ${freqLabel(p.freqPm)}` : freqLabel(p.freq);
 
 /* ---------- render ---------- */
 function render() {
@@ -711,9 +785,14 @@ function renderToday() {
   const d = ui.date, isToday = d === today();
   let html = dateBar('day', longDate(d), `星期${WD[dow(d)]}${isToday ? ' · 今天' : ''}`, isToday ? '' : '回今天');
   if (!state.products.length) { $('#view-today').innerHTML = html + welcome(); return; }
+  if (needsBackup()) html += `<div class="backup-tip">
+    <img src="${IMG.faceRest}" alt=""><span>好久沒備份了</span>
+    <button class="btn primary sm" data-act="export">備份</button>
+    <button class="icon-btn sm" data-act="snooze-backup" aria-label="晚點再說">${icon('x')}</button>
+  </div>`;
   // After 6pm the evening routine comes first.
   const slots = isToday && new Date().getHours() >= 18 ? ['pm', 'am'] : ['am', 'pm'];
-  html += `<div class="today-grid">${slots.map(s => slotCard(d, s)).join('')}${skinCard(d)}</div>`;
+  html += `<div class="today-grid${d > today() ? ' is-future' : ''}">${slots.map(s => slotCard(d, s)).join('')}${skinCard(d)}</div>`;
   $('#view-today').innerHTML = html;
 }
 
@@ -721,12 +800,12 @@ const slotCount = (n, total) => !total ? '' : n === total ? `<span class="done-b
 
 function slotCard(d, slot) {
   const items = slotItems(d, slot);
-  const n = items.filter(x => x.done).length, total = items.length;
+  const n = items.filter(x => x.ok).length, total = items.length;
   const complete = total > 0 && n === total, folded = complete && !ui.open.has(d + slot);
   return `<section class="card slot slot-${slot}${complete ? ' is-complete' : ''}${folded ? ' is-folded' : ''}">
     <header class="slot-head">
       <span class="avatar"><img src="${IMG[slot]}" alt=""></span>
-      <button class="slot-title" data-act="fold" data-slot="${slot}" aria-expanded="${!folded}">
+      <button class="slot-title" data-act="fold" data-hold="all" data-slot="${slot}" aria-expanded="${!folded}">
         <span class="slot-name">${icon(SLOT[slot].icon)}${SLOT[slot].name}</span>
         <span class="slot-count">${slotCount(n, total)}</span>
       </button>
@@ -742,14 +821,14 @@ function slotCard(d, slot) {
 
 function itemRow(x, slot) {
   const p = x.p;
-  return `<li class="item${x.done ? ' is-done' : ''}${x.extra ? ' is-extra' : ''}${ui.pop === slot + x.id ? ' pop' : ''}">
-    <button class="item-main" data-act="toggle" data-slot="${slot}" data-id="${p.id}" aria-pressed="${x.done}">
-      <span class="check">${icon('check')}</span>
+  return `<li class="item${x.done ? ' is-done' : ''}${x.skip ? ' is-skip' : ''}${x.extra ? ' is-extra' : ''}${ui.pop === slot + x.id ? ' pop' : ''}">
+    <button class="item-main" data-act="toggle" data-hold="skip" data-slot="${slot}" data-id="${p.id}" aria-pressed="${x.done}">
+      <span class="check">${icon('check', 'ic-check')}${icon('dash', 'ic-dash')}</span>
       <span class="item-text">
         <span class="item-name"><i class="dot" style="background:${COLORS[p.color]}"></i><span>${esc(p.name)}</span></span>
         ${p.note ? `<span class="item-note">${esc(p.note)}</span>` : ''}
       </span>
-      ${x.extra ? '' : `<span class="tag">${esc(p.step)}</span>`}
+      ${x.extra ? '' : `<span class="tag tag-step">${esc(p.step)}</span>`}<span class="tag tag-skip">略過</span>
     </button>
     ${x.extra ? `<button class="item-x" data-act="unextra" data-slot="${slot}" data-id="${p.id}" aria-label="移除">${icon('x')}</button>` : ''}
   </li>`;
@@ -791,7 +870,8 @@ function weekTable(slot, days, t) {
       <div class="wk-name"><i class="dot" style="background:${COLORS[p.color]}"></i><span>${esc(p.name)}</span></div>
       ${days.map((d, i) => {
         const x = grid[i].find(y => y.id === id);
-        const mk = !x ? '<span class="mk off"></span>' : x.done ? `<span class="mk done">${icon('check')}</span>` : '<span class="mk plan"></span>';
+        const mk = !x ? '<span class="mk off"></span>' : x.done ? `<span class="mk done">${icon('check')}</span>`
+          : x.skip ? `<span class="mk skip">${icon('dash')}</span>` : '<span class="mk plan"></span>';
         return `<div class="wk-cell${d === t ? ' today' : ''}">${mk}</div>`;
       }).join('')}
     </div>`;
@@ -800,31 +880,56 @@ function weekTable(slot, days, t) {
 }
 
 function renderProducts() {
-  const list = [...state.products].sort(byStep);
+  const live = state.products.filter(p => !p.deleted);
+  const active = live.filter(p => !p.paused).sort(byStep), paused = live.filter(p => p.paused).sort(byStep);
+  if (!active.length) ui.sorting = false;
   let html = `<div class="view-head">
-    <h1>保養品${list.length ? `<small>${list.length}</small>` : ''}</h1>
-    <button class="btn primary sm" data-act="new">${icon('plus')}新增</button>
+    <h1>保養品${active.length ? `<small>${active.length}</small>` : ''}</h1>
+    <div class="view-actions">
+      ${active.length > 1 ? `<button class="btn ghost sm" data-act="sort">${ui.sorting ? `${icon('check')}完成` : `${icon('sort')}排序`}</button>` : ''}
+      ${ui.sorting ? '' : `<button class="btn primary sm" data-act="new">${icon('plus')}新增</button>`}
+    </div>
   </div>`;
-  if (!list.length) html += welcome();
-  else html += `<div class="prod-grid">${list.map(p => `
-    <article class="card prod${p.paused ? ' is-paused' : ''}" data-act="edit" data-id="${p.id}" role="button" tabindex="0">
-      <div class="prod-top">
-        <i class="dot" style="background:${COLORS[p.color]}"></i>
-        <div class="prod-name">${esc(p.name)}</div>
-        <div class="prod-times">${p.times.includes('am') ? `<span class="slot-am">${icon('sun')}</span>` : ''}${p.times.includes('pm') ? `<span class="slot-pm">${icon('moon')}</span>` : ''}</div>
-      </div>
-      ${p.note ? `<div class="prod-note">${esc(p.note)}</div>` : ''}
-      <div class="prod-meta">
-        <span class="tag">${esc(p.step)}</span>
-        <span class="tag">${scheduleLabel(p)}</span>
-        ${p.paused ? '<span class="tag">暫停中</span>' : ''}
-      </div>
-    </article>`).join('')}</div>`;
-  html += `<div class="backup">
+  if (!live.length) html += welcome();
+  // Group by step, in the order of the step list.
+  const groups = [];
+  active.forEach(p => { const g = groups[groups.length - 1]; g && g.step === p.step ? g.items.push(p) : groups.push({ step: p.step, items: [p] }); });
+  html += groups.map(g => `<h3 class="group-title">${esc(g.step)}</h3>
+    <div class="prod-grid">${g.items.map((p, i) => prodCard(p, ui.sorting && { first: i === 0, last: i === g.items.length - 1 })).join('')}</div>`).join('');
+  if (paused.length && !ui.sorting) html += `<h3 class="group-title">已停用<small>${paused.length}</small></h3>
+    <div class="prod-grid">${paused.map(p => prodCard(p)).join('')}</div>`;
+  if (!ui.sorting) html += `<div class="backup">
     <button class="btn ghost sm" data-act="export">${icon('down')}匯出備份</button>
     <button class="btn ghost sm" data-act="import">${icon('up')}匯入備份</button>
   </div>`;
   $('#view-products').innerHTML = html;
+}
+
+function prodCard(p, sort) {
+  const times = `${p.times.includes('am') ? `<span class="slot-am">${icon('sun')}</span>` : ''}${p.times.includes('pm') ? `<span class="slot-pm">${icon('moon')}</span>` : ''}`;
+  return `<article class="card prod${p.paused ? ' is-paused' : ''}${sort ? ' sorting' : ''}"${sort ? '' : ` data-act="edit" data-id="${p.id}" role="button" tabindex="0"`}>
+    <div class="prod-top">
+      <i class="dot" style="background:${COLORS[p.color]}"></i>
+      <div class="prod-name">${esc(p.name)}</div>
+      ${sort ? `<div class="sort-btns">
+        <button data-act="move" data-id="${p.id}" data-v="-1" aria-label="往前"${sort.first ? ' disabled' : ''}>${icon('aup')}</button>
+        <button data-act="move" data-id="${p.id}" data-v="1" aria-label="往後"${sort.last ? ' disabled' : ''}>${icon('adown')}</button>
+      </div>` : `<div class="prod-times">${times}</div>`}
+    </div>
+    ${p.note && !sort ? `<div class="prod-note">${esc(p.note)}</div>` : ''}
+    ${sort ? '' : `<div class="prod-meta"><span class="tag">${scheduleLabel(p)}</span></div>`}
+  </article>`;
+}
+
+function moveProduct(id, dir) {
+  const p = byId(id);
+  const group = state.products.filter(x => !x.deleted && !x.paused && x.step === p.step).sort(byStep);
+  const i = group.indexOf(p), j = i + dir;
+  if (j < 0 || j >= group.length) return;
+  [group[i], group[j]] = [group[j], group[i]];
+  group.forEach((x, k) => { x.order = k; });
+  save();
+  render();
 }
 
 function renderHistory() {
@@ -840,10 +945,10 @@ function renderHistory() {
   const cells = dates.map(d => {
     const future = d > t;
     const ia = future ? [] : slotItems(d, 'am'), ip = future ? [] : slotItems(d, 'pm');
-    if (ia.length && ia.every(x => x.done)) am++;
-    if (ip.length && ip.every(x => x.done)) pm++;
+    if (ia.length && ia.every(x => x.ok)) am++;
+    if (ip.length && ip.every(x => x.ok)) pm++;
     // One ring per day: how much of that day's routine was ticked off.
-    const all = [...ia, ...ip], n = all.filter(x => x.done).length;
+    const all = [...ia, ...ip], n = all.filter(x => x.ok).length;
     const showRing = all.length > 0 && (state.days[d] || d === t);
     const ring = showRing ? `<svg class="ring" viewBox="0 0 36 36"><circle class="ring-track" cx="18" cy="18" r="16"/>${n ? `<circle class="ring-fill" cx="18" cy="18" r="16" stroke-dasharray="${(n / all.length * C).toFixed(2)} ${C.toFixed(2)}"/>` : ''}</svg>` : '';
     const full = all.length > 0 && n === all.length;
@@ -890,7 +995,7 @@ function renderSide() {
   $('#artDate').textContent = longDate(t);
   $('#artWd').textContent = '星期' + WD[dow(t)];
   $('#artProg').innerHTML = ['am', 'pm'].map(s => {
-    const it = slotItems(t, s), n = it.filter(x => x.done).length;
+    const it = slotItems(t, s), n = it.filter(x => x.ok).length;
     return `<div class="ap slot-${s}">
       <span class="ap-ic">${icon(SLOT[s].icon)}</span><span>${SLOT[s].name}</span>
       <span class="ap-bar"><i style="width:${it.length ? n / it.length * 100 : 0}%"></i></span>
@@ -916,24 +1021,47 @@ function setTab(v) {
   window.scrollTo({ top: 0 });
 }
 
-function toggle(slot, id) {
-  const d = ui.date, before = slotComplete(d, slot);
+// Tap: done <-> not done (a skipped item goes back to not done). Long-press: skip <-> not done.
+function mark(slot, id, mode) {
+  const d = ui.date;
+  if (d > today()) return;
+  const before = slotComplete(d, slot);
   const r = touch(d, slot);
-  const i = r.done.indexOf(id);
-  i >= 0 ? r.done.splice(i, 1) : r.done.push(id);
+  const wasSkip = r.skip.includes(id), wasDone = r.done.includes(id);
+  r.done = r.done.filter(x => x !== id);
+  r.skip = r.skip.filter(x => x !== id);
+  if (mode === 'skip') { if (!wasSkip) r.skip.push(id); }
+  else if (!wasSkip && !wasDone) r.done.push(id);
   save();
   patchSlot(slot, id);
+  afterMark(d, slot, before);
+}
+
+// Long-press on a routine's title ticks off everything left in it.
+function completeAll(slot) {
+  const d = ui.date;
+  if (d > today()) return;
+  const before = slotComplete(d, slot);
+  const r = touch(d, slot);
+  const todo = slotItems(d, slot).filter(x => !x.ok).map(x => x.id);
+  if (!todo.length) return;
+  r.done.push(...todo);
+  save();
+  todo.forEach(id => patchSlot(slot, id));
+  afterMark(d, slot, before);
+}
+
+function afterMark(d, slot, before) {
   renderSide();
-  if (!before && slotComplete(d, slot)) {
-    ui.open.delete(d + slot);
-    setTimeout(() => {
-      const card = $(`#view-today .slot-${slot}`);
-      if (card && ui.date === d && slotComplete(d, slot) && !ui.open.has(d + slot)) setFolded(card, true);
-    }, 700);
-    const other = slotItems(d, slot === 'am' ? 'pm' : 'am');
-    if (!other.length || other.every(x => x.done)) toast('duo', '全部完成！');
-    else toast(slot, `${SLOT[slot].name}完成！`);
-  }
+  if (before || !slotComplete(d, slot)) return;
+  ui.open.delete(d + slot);
+  setTimeout(() => {
+    const card = $(`#view-today .slot-${slot}`);
+    if (card && ui.date === d && slotComplete(d, slot) && !ui.open.has(d + slot)) setFolded(card, true);
+  }, 700);
+  const other = slotItems(d, slot === 'am' ? 'pm' : 'am');
+  if (!other.length || other.every(x => x.ok)) toast('duo', '全部完成！');
+  else toast(slot, `${SLOT[slot].name}完成！`);
 }
 
 // Update the tapped row in place: rebuilding the whole view made iPhone Safari jump back to the top.
@@ -942,14 +1070,15 @@ function patchSlot(slot, id) {
   const btn = card && card.querySelector(`[data-act="toggle"][data-id="${id}"]`);
   if (!btn) { render(); return; }
   const items = slotItems(ui.date, slot);
-  const n = items.filter(x => x.done).length;
-  const done = items.some(x => x.id === id && x.done);
+  const n = items.filter(x => x.ok).length;
+  const x = items.find(y => y.id === id) || {};
   const li = btn.closest('.item');
-  li.classList.toggle('is-done', done);
+  li.classList.toggle('is-done', !!x.done);
+  li.classList.toggle('is-skip', !!x.skip);
   li.classList.remove('pop');
   void li.offsetWidth;
   li.classList.add('pop');
-  btn.setAttribute('aria-pressed', done);
+  btn.setAttribute('aria-pressed', !!x.done);
   card.classList.toggle('is-complete', n === items.length);
   $('.slot-count', card).innerHTML = slotCount(n, items.length);
   $('.bar i', card).style.width = `${n / items.length * 100}%`;
@@ -969,283 +1098,4 @@ function setFolded(card, folded) {
 }
 
 function openExtra(slot) {
-  const cur = slotItems(ui.date, slot).map(x => x.id);
-  const list = [...state.products].sort(byStep).filter(p => !cur.includes(p.id));
-  $('#xTitle').textContent = `${SLOT[slot].name}加一項`;
-  $('#xList').innerHTML = list.length
-    ? list.map(p => `<button class="pick" data-act="add-extra" data-slot="${slot}" data-id="${p.id}"><i class="dot" style="background:${COLORS[p.color]}"></i><span>${esc(p.name)}</span><span class="tag">${esc(p.step)}</span></button>`).join('')
-    : '<div class="pick-empty">都在清單裡了</div>';
-  $('[data-act="new-from-extra"]').innerHTML = `${icon('plus')}新的保養品`;
-  $('#extraDlg').showModal();
-}
-
-function addExtra(slot, id) {
-  const r = touch(ui.date, slot);
-  if (!r.extra.includes(id)) r.extra.push(id);
-  save();
-  $('#extraDlg').close();
-  ui.pop = slot + id;
-  render();
-}
-
-function removeExtra(slot, id) {
-  const r = touch(ui.date, slot);
-  r.extra = r.extra.filter(x => x !== id);
-  r.done = r.done.filter(x => x !== id);
-  save();
-  render();
-}
-
-function toggleSkin(btn, v) {
-  const r = dayRec(ui.date, true);
-  r.skin = r.skin.includes(v) ? r.skin.filter(s => s !== v) : [...r.skin, v];
-  save();
-  btn.classList.toggle('on', r.skin.includes(v));
-  btn.setAttribute('aria-pressed', r.skin.includes(v));
-}
-
-let toastTimer;
-function toast(img, text) {
-  const t = $('#toast');
-  $('.toast-av', t).classList.toggle('duo', img === 'duo');
-  $('img', t).src = IMG[img];
-  $('.toast-text', t).textContent = text;
-  t.classList.remove('show');
-  void t.offsetWidth;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-function exportData() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `保養日記備份-${today()}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-}
-
-$('#importFile').addEventListener('change', async e => {
-  const f = e.target.files[0];
-  e.target.value = '';
-  if (!f) return;
-  try {
-    const data = JSON.parse(await f.text());
-    if (!Array.isArray(data.products)) throw new Error('bad file');
-    if (!confirm('用這份備份取代目前的資料？')) return;
-    state = normalize(data);
-    save();
-    render();
-    toast('duo', '匯入完成');
-  } catch (err) {
-    alert('這個檔案無法讀取');
-  }
-});
-
-/* ---------- product form ---------- */
-let draft = null;
-function openForm(id) {
-  const p = id && byId(id);
-  draft = p ? JSON.parse(JSON.stringify(p)) : {
-    id: null, name: '', step: '精華', times: ['am', 'pm'],
-    freq: { type: 'daily', days: [1, 3, 5], every: 2, start: today() },
-    color: 'pink', note: '', paused: false,
-  };
-  $('#fTitle').textContent = p ? '編輯保養品' : '新增保養品';
-  $('#fName').value = draft.name;
-  $('#fNote').value = draft.note;
-  $('#fStart').value = draft.freq.start;
-  renderForm();
-  $('#formDlg').showModal();
-  $('#formDlg .sheet').scrollTop = 0;
-  if (!p && matchMedia('(hover:hover)').matches) $('#fName').focus();
-}
-
-function renderForm() {
-  const f = draft.freq;
-  $('#fSteps').innerHTML = STEPS.map(s => `<button type="button" class="chip${draft.step === s ? ' on' : ''}" data-act="f-step" data-v="${s}">${s}</button>`).join('');
-  $('#fTimes').innerHTML = ['am', 'pm'].map(s => `<button type="button" class="time-btn slot-${s}${draft.times.includes(s) ? ' on' : ''}" data-act="f-time" data-v="${s}" aria-pressed="${draft.times.includes(s)}">${icon(SLOT[s].icon)}${SLOT[s].name}</button>`).join('');
-  $$('#fFreq button').forEach(b => b.classList.toggle('on', b.dataset.v === f.type));
-  $('#fWeekly').hidden = f.type !== 'weekly';
-  $('#fInterval').hidden = f.type !== 'interval';
-  $('#fDays').innerHTML = WEEK.map(d => `<button type="button" class="${f.days.includes(d) ? 'on' : ''}" data-act="f-day" data-v="${d}" aria-pressed="${f.days.includes(d)}">${WD[d]}</button>`).join('');
-  const same = (a, b) => a.length === b.length && a.every(x => b.includes(x));
-  $('#fPresets').innerHTML = PRESETS.map(([n, ds], i) => `<button type="button" class="chip${same(ds, f.days) ? ' on' : ''}" data-act="f-preset" data-v="${i}">${n}</button>`).join('');
-  $('#fEvery').textContent = f.every;
-  $('#fColors').innerHTML = Object.entries(COLORS).map(([k, c]) => `<button type="button" class="${draft.color === k ? 'on' : ''}" style="background:${c}" data-act="f-color" data-v="${k}" aria-label="${k}"></button>`).join('');
-  $('#fPause').hidden = !draft.id;
-  $('#fPause').classList.toggle('on', draft.paused);
-  $('#fPause').setAttribute('aria-checked', draft.paused);
-  $('#fDelete').hidden = !draft.id;
-}
-
-const tagRow = name => `<div class="tag-row">
-  <input class="input" maxlength="10" autocomplete="off" value="${esc(name)}" data-orig="${esc(name)}">
-  <button type="button" class="tag-del" data-act="tag-del" aria-label="刪除">${icon('x')}</button>
-</div>`;
-function openSkinEditor() {
-  $('#tagList').innerHTML = state.skinTags.map(tagRow).join('');
-  $('#tagNew').value = '';
-  $('[data-act="tag-add"]').innerHTML = icon('plus');
-  $('#skinDlg').showModal();
-}
-function addTag() {
-  const input = $('#tagNew'), name = input.value.trim();
-  if (!name) { input.focus(); return; }
-  if ($$('#tagList input').some(i => i.value.trim() === name)) { shake(input); return; }
-  $('#tagList').insertAdjacentHTML('beforeend', tagRow(name).replace(/ data-orig="[^"]*"/, ''));
-  input.value = '';
-  input.focus();
-}
-function saveSkinTags() {
-  const tags = [], renamed = {};
-  $$('#tagList input').forEach(i => {
-    const name = i.value.trim();
-    if (!name || tags.includes(name)) return;
-    tags.push(name);
-    if (i.dataset.orig && i.dataset.orig !== name) renamed[i.dataset.orig] = name;
-  });
-  const pending = $('#tagNew').value.trim();
-  if (pending && !tags.includes(pending)) tags.push(pending);
-  // Renaming a tag also renames it in past records.
-  if (Object.keys(renamed).length) {
-    Object.values(state.days).forEach(r => { if (r && r.skin) r.skin = [...new Set(r.skin.map(s => renamed[s] || s))]; });
-  }
-  state.skinTags = tags;
-  save();
-  $('#skinDlg').close();
-  render();
-}
-
-function shake(el) {
-  el.classList.remove('shake');
-  void el.offsetWidth;
-  el.classList.add('shake');
-}
-
-function saveForm() {
-  draft.name = $('#fName').value.trim();
-  draft.note = $('#fNote').value.trim();
-  draft.freq.start = $('#fStart').value || today();
-  if (!draft.name) { shake($('#fName')); $('#fName').focus(); return; }
-  if (!draft.times.length) { shake($('#fTimes')); return; }
-  if (draft.freq.type === 'weekly' && !draft.freq.days.length) { shake($('#fDays')); return; }
-  if (draft.id) {
-    const i = state.products.findIndex(p => p.id === draft.id);
-    state.products[i] = draft;
-  } else {
-    state.products.push({ ...draft, id: uid(), created: Date.now() });
-  }
-  save();
-  $('#formDlg').close();
-  render();
-}
-
-$('#pForm').addEventListener('submit', e => { e.preventDefault(); saveForm(); });
-$('#skinForm').addEventListener('submit', e => { e.preventDefault(); saveSkinTags(); });
-$('#tagNew').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addTag(); } });
-
-/* ---------- events ---------- */
-document.addEventListener('click', e => {
-  const dlg = e.target.closest('dialog');
-  if (e.target.tagName === 'DIALOG') { e.target.close(); return; }
-  const t = e.target.closest('[data-act]');
-  if (!t) return;
-  const { act, v, id, slot, date } = t.dataset;
-  switch (act) {
-    case 'tab': setTab(v); break;
-    case 'day-prev': ui.date = addDays(ui.date, -1); render(); break;
-    case 'day-next': ui.date = addDays(ui.date, 1); render(); break;
-    case 'day-now': ui.date = today(); render(); break;
-    case 'week-prev': ui.week = addDays(ui.week, -7); render(); break;
-    case 'week-next': ui.week = addDays(ui.week, 7); render(); break;
-    case 'week-now': ui.week = weekStart(today()); render(); break;
-    case 'month-prev':
-    case 'month-next': {
-      const [y, m] = ui.month.split('-').map(Number);
-      const d = new Date(y, m - 1 + (act === 'month-next' ? 1 : -1), 1);
-      ui.month = `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
-      render(); break;
-    }
-    case 'month-now': ui.month = today().slice(0, 7); render(); break;
-    case 'goto-day': ui.date = date; setTab('today'); break;
-    case 'toggle': toggle(slot, id); break;
-    case 'extra': openExtra(slot); break;
-    case 'fold': fold(slot); break;
-    case 'add-extra': addExtra(slot, id); break;
-    case 'unextra': removeExtra(slot, id); break;
-    case 'skin': toggleSkin(t, v); break;
-    case 'edit-skin': openSkinEditor(); break;
-    case 'tag-add': addTag(); break;
-    case 'tag-del': t.closest('.tag-row').remove(); break;
-    case 'new': openForm(); break;
-    case 'new-from-extra': $('#extraDlg').close(); openForm(); break;
-    case 'edit': openForm(id); break;
-    case 'export': exportData(); break;
-    case 'import': $('#importFile').click(); break;
-    case 'close': dlg && dlg.close(); break;
-    case 'f-step': draft.step = v; renderForm(); break;
-    case 'f-time': draft.times = draft.times.includes(v) ? draft.times.filter(x => x !== v) : [...draft.times, v].sort(); renderForm(); break;
-    case 'f-freq': draft.freq.type = v; renderForm(); break;
-    case 'f-day': { const n = Number(v); draft.freq.days = draft.freq.days.includes(n) ? draft.freq.days.filter(x => x !== n) : [...draft.freq.days, n]; renderForm(); break; }
-    case 'f-preset': draft.freq.days = [...PRESETS[v][1]]; renderForm(); break;
-    case 'f-every': draft.freq.every = Math.min(30, Math.max(2, draft.freq.every + Number(v))); renderForm(); break;
-    case 'f-color': draft.color = v; renderForm(); break;
-    case 'f-pause': draft.paused = !draft.paused; renderForm(); break;
-    case 'f-delete':
-      if (confirm(`要刪除「${draft.name || $('#fName').value}」嗎？`)) {
-        state.products = state.products.filter(p => p.id !== draft.id);
-        save();
-        $('#formDlg').close();
-        render();
-      }
-      break;
-  }
-});
-
-document.addEventListener('input', e => {
-  if (e.target.id === 'dayNote') { dayRec(ui.date, true).note = e.target.value; saveSoon(); }
-});
-document.addEventListener('keydown', e => {
-  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[role=button]')) { e.preventDefault(); e.target.click(); }
-  // Enter that picks a Chinese IME candidate must not submit the form.
-  if (e.key === 'Enter' && (e.isComposing || e.keyCode === 229) && e.target.closest('form')) e.preventDefault();
-});
-
-let lastToday = today();
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) { flush(); return; }
-  if ($('dialog[open]')) return;
-  let changed = false;
-  try { changed = (localStorage.getItem(KEY) || '') !== JSON.stringify(state); } catch (e) {}
-  if (changed) state = load();
-  if (today() !== lastToday) {
-    if (ui.date === lastToday) ui.date = today();
-    lastToday = today();
-    changed = true;
-  }
-  if (changed) render();
-});
-window.addEventListener('pagehide', flush);
-
-/* ---------- init ---------- */
-$('#nav').innerHTML = TABS.map(([v, n, ic]) => `<button data-act="tab" data-v="${v}">${icon(ic)}<span>${n}</span></button>`).join('');
-$$('[data-act="close"]').forEach(b => { b.innerHTML = icon('x'); });
-// Records saved before launch under the old key were test data; start the real tool clean.
-if (!DEMO) { try { localStorage.removeItem('skincare-diary-v1'); } catch (e) {} }
-[IMG.faceDone, IMG.faceRest].forEach(src => { new Image().src = src; });
-const start = () => { state = load(); render(); };
-if (DEMO) {
-  $$('.m-brand, .art-brand').forEach(el => el.insertAdjacentHTML('beforeend', '<span class="demo-pill">示範</span>'));
-  const s = document.createElement('script');
-  s.src = 'demo.js';
-  s.onload = s.onerror = start;
-  document.head.appendChild(s);
-} else start();
-})();
-</script>
-</body>
-</html>
+  const cur = slotItems(ui.date, slot).map(x => x.i
