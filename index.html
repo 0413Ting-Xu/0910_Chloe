@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>保養日記</title>
-<meta name="theme-color" content="#FFF5F8">
+<title>Chloe每日小清單</title>
+<meta name="theme-color" content="#F7FAFE">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="保養日記">
+<meta name="apple-mobile-web-app-title" content="Chloe每日小清單">
 <link rel="icon" type="image/png" href="images/icon-180.png">
 <link rel="apple-touch-icon" href="images/icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,16 +31,19 @@ html{-webkit-text-size-adjust:100%}
 html:has(dialog[open]){overflow:hidden}
 body{margin:0;font-family:var(--font);color:var(--ink);background:#FBFCFE;min-height:100vh;min-height:100dvh;line-height:1.5;-webkit-font-smoothing:antialiased;font-synthesis:none}
 body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:
-  radial-gradient(70vmax 55vmax at -10% -10%, #FFE6EE 0%, rgba(255,230,238,0) 62%),
-  radial-gradient(70vmax 55vmax at 110% 110%, #DFEEFB 0%, rgba(223,238,251,0) 62%)}
+  radial-gradient(60vmax 45vmax at -10% -10%, #FFF0F4 0%, rgba(255,240,244,0) 62%),
+  radial-gradient(80vmax 65vmax at 110% 110%, #DCECFA 0%, rgba(220,236,250,0) 65%)}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 h1,h2,h3{font-weight:400;margin:0}
 img{display:block}
 .ic{width:20px;height:20px;flex:none}
 .ic.fill{fill:currentColor;stroke:none}
 
-.slot-am{--c1:var(--blue-100);--c2:var(--blue-200);--c3:var(--blue-300);--c4:var(--blue-400);--c6:var(--blue-600);--tint:var(--blue-50)}
-.slot-pm{--c1:var(--pink-100);--c2:var(--pink-200);--c3:var(--pink-300);--c4:var(--pink-400);--c6:var(--pink-600);--tint:var(--pink-50)}
+.tone-blue{--c1:var(--blue-100);--c2:var(--blue-200);--c3:var(--blue-300);--c4:var(--blue-400);--c6:var(--blue-600);--tint:var(--blue-50)}
+.tone-pink{--c1:var(--pink-100);--c2:var(--pink-200);--c3:var(--pink-300);--c4:var(--pink-400);--c6:var(--pink-600);--tint:var(--pink-50)}
+.tone-butter{--c1:#FCF1D2;--c2:#F8E4AE;--c3:#F4D88F;--c4:#E5BC5C;--c6:#A97F1F;--tint:#FEF9EC}
+.tone-mint{--c1:#DFF3EA;--c2:#C6E9D9;--c3:#A9DCC5;--c4:#78C2A2;--c6:#3E8C6A;--tint:#F2FAF6}
+.tone-lilac{--c1:#EEE9FB;--c2:#DDD3F6;--c3:#C9BAF0;--c4:#A994E3;--c6:#6E57B5;--tint:#F7F4FD}
 
 /* ---------- layout ---------- */
 .app{max-width:1220px;margin:0 auto;padding:max(14px, env(safe-area-inset-top)) 16px calc(104px + env(safe-area-inset-bottom))}
@@ -49,22 +52,26 @@ main{container:main / inline-size;min-width:0}
 
 /* ---------- mobile header ---------- */
 .m-head{display:flex;align-items:center;justify-content:space-between;padding:2px 2px 14px}
-.m-brand{display:flex;align-items:center;gap:12px;font-size:21px;letter-spacing:.04em}
+.m-brand{display:flex;align-items:center;gap:9px;min-width:0;font-size:18px;letter-spacing:.02em;white-space:nowrap}
+@media (max-width:380px){ .m-brand{font-size:17px;gap:8px} .m-av span{width:34px;height:34px} }
+.demo-pill{white-space:nowrap}
 .m-av{display:flex}
 .m-av span{position:relative;width:40px;height:40px;border-radius:50%;overflow:hidden;background:#fff;box-shadow:0 0 0 2.5px #fff, 0 4px 12px rgba(130,150,185,.18)}
 .m-av span + span{margin-left:-12px}
 .m-av img{position:absolute;left:-25%;top:-22%;width:150%;height:150%;object-fit:cover}
-.streak{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;background:#fff;color:var(--pink-600);font-size:14px;box-shadow:var(--shadow)}
+.streak{flex:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;background:#fff;color:var(--blue-600);font-size:14px;box-shadow:var(--shadow)}
 .streak .face{width:24px;height:22px;object-fit:contain;margin:-3px 0 -3px -4px}
 .face.pop{animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
 
 /* ---------- nav ---------- */
-.nav{position:fixed;z-index:30;left:14px;right:14px;bottom:calc(12px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:6px;border-radius:26px;background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 10px 34px rgba(110,130,170,.18), inset 0 0 0 1px rgba(255,255,255,.7)}
-.nav button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0 7px;border-radius:20px;font-size:12px;color:var(--ink-3);transition:color .2s, background .25s}
-.nav button .ic{width:22px;height:22px}
-.nav button.on{color:var(--ink);background:linear-gradient(135deg,var(--pink-100),var(--blue-100))}
-.nav button.on .ic{color:var(--pink-400)}
-.nav button.on:nth-child(even) .ic{color:var(--blue-400)}
+.nav{position:fixed;z-index:30;left:14px;right:14px;bottom:calc(12px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:8px 6px 6px;border-radius:26px;background:rgba(255,255,255,.95);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 10px 34px rgba(110,130,170,.18), inset 0 0 0 1px rgba(255,255,255,.7)}
+/* The current tab's icon rises a little into a blue bubble. */
+.nav button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0 5px;border-radius:20px;font-size:12.5px;color:var(--ink-2);transition:color .2s}
+.nav .bub{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;transition:transform .3s cubic-bezier(.34,1.56,.64,1), background .25s, box-shadow .25s, color .2s}
+.nav button .ic{width:21px;height:21px}
+.nav button.on{color:var(--blue-600)}
+.nav button.on .bub{background:linear-gradient(135deg,var(--blue-300),var(--blue-400));color:#fff;transform:translateY(-6px);box-shadow:0 0 0 3px #fff, 0 6px 12px rgba(110,169,223,.4)}
+.nav button.on span:last-child{margin-top:-6px}
 
 /* ---------- shared ---------- */
 .card{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:20px}
@@ -74,7 +81,7 @@ main{container:main / inline-size;min-width:0}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 20px;border-radius:16px;font-size:16px;transition:transform .15s, filter .2s}
 .btn:active{transform:scale(.97)}
 .btn .ic{width:18px;height:18px}
-.btn.primary{background:linear-gradient(135deg,var(--pink-200),var(--blue-200));color:var(--ink)}
+.btn.primary{background:linear-gradient(135deg,var(--blue-100),var(--blue-200));color:var(--blue-600)}
 .btn.primary:hover{filter:saturate(1.2)}
 .btn.ghost{background:var(--soft);color:var(--ink-2)}
 .btn.danger{background:var(--pink-50);color:var(--pink-600)}
@@ -89,7 +96,7 @@ main{container:main / inline-size;min-width:0}
 .datebar-mid{text-align:center;min-width:0}
 .datebar-main{font-size:24px;letter-spacing:.02em;line-height:1.3}
 .datebar-sub{display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;color:var(--ink-2);min-height:26px}
-.back-pill{font-size:13px;padding:3px 10px;border-radius:999px;background:var(--pink-100);color:var(--pink-600)}
+.back-pill{font-size:13px;padding:3px 10px;border-radius:999px;background:var(--blue-100);color:var(--blue-600)}
 @container main (min-width:700px){
   .datebar{justify-content:flex-start;margin-bottom:20px}
   .datebar-mid{order:-1;text-align:left;margin-right:auto}
@@ -112,6 +119,7 @@ main{container:main / inline-size;min-width:0}
 .avatar{position:relative;width:54px;height:54px;border-radius:50%;overflow:hidden;flex:none;background:#fff;box-shadow:0 0 0 3px var(--c1);transition:width .35s, height .35s}
 .slot.is-folded .avatar{width:44px;height:44px}
 .avatar img{position:absolute;left:-26%;top:-22%;width:152%;height:152%;object-fit:cover}
+.avatar img.fit,.toast-av img.fit{left:0;top:0;width:100%;height:100%}
 .slot-title{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;text-align:left;cursor:default}
 .slot.is-complete .slot-title{cursor:pointer}
 .slot-name{display:flex;align-items:center;gap:6px;font-size:20px;line-height:1.3;white-space:nowrap}
@@ -149,7 +157,10 @@ main{container:main / inline-size;min-width:0}
 .item-x{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:var(--ink-3)}
 .item-x:hover{background:#fff;color:var(--ink-2)}
 .item-x .ic{width:16px;height:16px}
-.item-main,.slot-title{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.item-main,.slot-title,[data-hold="title"]{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+[data-hold="title"]{cursor:default;transition:opacity .2s}
+[data-hold="title"].holding{opacity:.55;transition:opacity .5s ease}
+.brand-name{flex:none;max-width:min(12em,50vw);overflow:hidden;text-overflow:ellipsis}
 .item-main.holding{transform:scale(.96);transition:transform .5s ease}
 .slot-title.holding{opacity:.6;transition:opacity .5s ease}
 .check .ic-dash{display:none}
@@ -173,14 +184,14 @@ main{container:main / inline-size;min-width:0}
 .skin h2{display:flex;align-items:center;gap:8px;font-size:18px}
 .icon-btn.sm{width:34px;height:34px}
 .icon-btn.sm .ic{width:17px;height:17px}
-.skin h2 .ic{color:var(--pink-300)}
+.skin h2 .ic{color:var(--blue-300)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{padding:8px 15px;border-radius:999px;background:var(--soft);font-size:14.5px;color:var(--ink-2);transition:background .2s, color .2s, transform .12s}
 .chip:active{transform:scale(.95)}
-.chip.on{background:var(--pink-100);color:var(--pink-600)}
+.chip.on{background:var(--blue-100);color:var(--blue-600)}
 .chips.sm .chip{padding:6px 12px;font-size:13.5px}
 .note{display:block;width:100%;margin-top:14px;font:inherit;font-size:15.5px;color:var(--ink);padding:12px 14px;border-radius:16px;border:1.5px solid var(--line);background:#FCFDFE;resize:none;outline:none;transition:border-color .2s, box-shadow .2s}
-.note:focus{border-color:var(--pink-300);box-shadow:0 0 0 4px var(--pink-50);background:#fff}
+.note:focus{border-color:var(--blue-300);box-shadow:0 0 0 4px var(--blue-50);background:#fff}
 .note::placeholder,.input::placeholder{color:var(--ink-3)}
 
 .welcome{text-align:center;padding:32px 24px 28px}
@@ -227,6 +238,15 @@ main{container:main / inline-size;min-width:0}
 .view-head h1 small{font-size:15px;color:var(--ink-3)}
 .prod-grid{display:grid;gap:12px}
 .view-actions{display:flex;gap:8px}
+.cat-title{display:flex;align-items:center;gap:9px;font-size:18px;margin:30px 6px 4px}
+.cat-title::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--cc)}
+.cat-group:first-of-type .cat-title{margin-top:6px}
+.cat-sep{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-2);margin:6px 4px 0}
+.cat-sep::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cc)}
+.items .cat-sep:first-child{margin-top:0}
+.pick-list .cat-sep{margin:12px 6px 4px}
+.pick-list .cat-sep:first-child{margin-top:0}
+.cat-chip.on{background:color-mix(in srgb, var(--cc) 30%, #fff);color:var(--ink)}
 .group-title{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-2);margin:22px 6px 10px}
 .group-title:first-of-type{margin-top:4px}
 .group-title small{font-size:13px;color:var(--ink-3)}
@@ -239,7 +259,7 @@ main{container:main / inline-size;min-width:0}
 @container main (min-width:640px){ .prod-grid{grid-template-columns:1fr 1fr;gap:16px} }
 .prod{display:flex;flex-direction:column;gap:12px;padding:18px;cursor:pointer;transition:transform .15s, box-shadow .2s;outline:none}
 .prod:hover{transform:translateY(-2px);box-shadow:0 1px 2px rgba(74,78,91,.04), 0 16px 36px rgba(130,150,185,.16)}
-.prod:focus-visible{box-shadow:0 0 0 3px var(--pink-200)}
+.prod:focus-visible{box-shadow:0 0 0 3px var(--blue-200)}
 .prod.is-paused{opacity:.55}
 .prod-top{display:flex;align-items:center;gap:10px}
 .prod-top .dot{width:12px;height:12px}
@@ -252,15 +272,15 @@ main{container:main / inline-size;min-width:0}
 .tag.warn{background:var(--pink-50);color:var(--pink-600)}
 .restock{padding:16px 18px;margin-bottom:6px}
 .restock h2{display:flex;align-items:center;gap:8px;font-size:16px;margin-bottom:12px}
-.restock h2 .ic{color:var(--pink-400)}
+.restock h2 .ic{color:var(--blue-400)}
 .backup{display:flex;justify-content:center;gap:10px;margin-top:28px}
 
 /* ---------- history ---------- */
 .hist-head{display:flex;align-items:center;gap:16px;padding:16px 20px;margin-bottom:16px;overflow:hidden}
 .hist-head img{width:92px;height:88px;object-fit:cover;object-position:50% 30%;mix-blend-mode:multiply;flex:none}
-.stats{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.stat{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border-radius:18px;background:var(--tint, var(--pink-50))}
-.stat .ic{width:18px;height:18px;color:var(--c4, var(--pink-400))}
+.stats{flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:8px}
+.stat{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border-radius:18px;background:var(--tint, var(--blue-50))}
+.stat .ic{width:18px;height:18px;color:var(--c4, var(--blue-400))}
 .stat .face{width:24px;height:22px;object-fit:contain;margin-bottom:-2px}
 .stat b{font-weight:400;font-size:22px;line-height:1.2}
 .stat span{font-size:12.5px;color:var(--ink-2)}
@@ -271,10 +291,10 @@ main{container:main / inline-size;min-width:0}
 .cal-cell:hover{background:var(--soft)}
 .cal-num{position:relative;width:36px;height:36px;display:grid;place-items:center;border-radius:50%;font-size:15px;transition:background .2s}
 .cal-cell.future .cal-num{color:var(--ink-3)}
-.cal-cell.full .cal-num{background:linear-gradient(135deg,var(--blue-50),var(--pink-50))}
-.cal-cell.today .cal-num{color:var(--pink-600)}
+.cal-cell.full .cal-num{background:var(--blue-50)}
+.cal-cell.today .cal-num{color:var(--blue-600)}
 .cal-cell::after{content:"";width:4px;height:4px;border-radius:50%}
-.cal-cell.today::after{background:var(--pink-400)}
+.cal-cell.today::after{background:var(--blue-400)}
 .ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);overflow:visible;pointer-events:none}
 .ring circle{fill:none;stroke-width:3}
 .ring-track{stroke:var(--line)}
@@ -282,28 +302,28 @@ main{container:main / inline-size;min-width:0}
 
 .notes{margin-top:16px;padding:18px 14px 12px}
 .notes h2{display:flex;align-items:center;gap:8px;font-size:18px;margin:0 6px 8px}
-.notes h2 .ic{color:var(--pink-300)}
+.notes h2 .ic{color:var(--blue-300)}
 .notes h2 small{font-size:14px;color:var(--ink-3)}
 .note-row{width:100%;display:flex;align-items:flex-start;gap:14px;text-align:left;padding:12px 8px;border-radius:18px;transition:background .2s}
 .note-row:hover{background:var(--soft)}
 .note-row + .note-row{margin-top:2px}
-.note-date{flex:none;width:46px;display:flex;flex-direction:column;align-items:center;padding:6px 0 5px;border-radius:14px;background:var(--pink-50)}
+.note-date{flex:none;width:46px;display:flex;flex-direction:column;align-items:center;padding:6px 0 5px;border-radius:14px;background:var(--blue-50)}
 .note-date b{font-weight:400;font-size:20px;line-height:1.15}
 .note-date span{font-size:12px;color:var(--ink-2)}
 .note-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;padding-top:3px}
 .note-tags{display:flex;flex-wrap:wrap;gap:6px}
-.note-tags .tag{background:var(--pink-50);color:var(--pink-600)}
+.note-tags .tag{background:var(--blue-50);color:var(--blue-600)}
 .note-text{font-size:15px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
 .note-skip{font-size:14px;color:var(--ink-2)}
 .note-ev{display:flex;flex-wrap:wrap;gap:6px}
 .note-ev .tag{background:var(--blue-50);color:var(--blue-600)}
 .trend{margin-top:16px;padding:18px 18px 14px}
 .trend h2{display:flex;align-items:center;gap:8px;font-size:18px;margin-bottom:10px}
-.trend h2 .ic{color:var(--pink-300)}
+.trend h2 .ic{color:var(--blue-300)}
 .trend-row{display:grid;grid-template-columns:minmax(0,72px) 1fr 44px;align-items:center;gap:10px;padding:6px 0;font-size:15px}
 .trend-row > span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.trend-bar{height:10px;border-radius:9px;background:var(--pink-50);overflow:hidden}
-.trend-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--pink-200),var(--pink-400))}
+.trend-bar{height:10px;border-radius:9px;background:var(--blue-50);overflow:hidden}
+.trend-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--blue-200),var(--blue-400))}
 .trend-row b{font-weight:400;font-size:14px;color:var(--ink-2);text-align:right}
 /* product detail */
 .detail-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
@@ -312,14 +332,14 @@ main{container:main / inline-size;min-width:0}
 .detail-head .icon-btn{box-shadow:none;background:var(--soft)}
 .detail-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
 .dstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
-.dstat{display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 4px;border-radius:18px;background:var(--pink-50)}
+.dstat{display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 4px;border-radius:18px;background:var(--blue-50)}
 .dstat b{font-weight:400;font-size:22px;line-height:1.2}
 .dstat span{font-size:12.5px;color:var(--ink-2)}
 .strip{display:grid;grid-template-columns:repeat(30,1fr);gap:3px}
-.strip i{aspect-ratio:1;border-radius:3px;background:var(--soft)}
-.strip i.done{background:var(--pink-300)}
+.strip i{aspect-ratio:1;border-radius:3px;background:var(--blue-50)}
+.strip i.done{background:var(--blue-300)}
 .strip i.skip{background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink-3)}
-.strip i.miss{background:#fff;box-shadow:inset 0 0 0 1.5px var(--pink-200)}
+.strip i.miss{background:#fff;box-shadow:inset 0 0 0 1.5px var(--blue-200)}
 .strip-ends{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-3);margin:6px 0 18px}
 .dsec{margin-bottom:18px}
 .dsec h3{font-size:14px;font-weight:400;color:var(--ink-2);margin:0 0 8px}
@@ -357,8 +377,8 @@ main{container:main / inline-size;min-width:0}
 .field{margin-bottom:20px}
 .lbl{display:block;font-size:14px;color:var(--ink-2);margin-bottom:9px}
 .input{width:100%;font:inherit;font-size:16px;color:var(--ink);padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);background:#FCFDFE;outline:none;transition:border-color .2s, box-shadow .2s}
-.input:focus{border-color:var(--pink-300);background:#fff;box-shadow:0 0 0 4px var(--pink-50)}
-.times{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.input:focus{border-color:var(--blue-300);background:#fff;box-shadow:0 0 0 4px var(--blue-50)}
+.times{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px}
 .time-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 0;border-radius:16px;background:var(--soft);color:var(--ink-3);font-size:16px;transition:background .2s, color .2s}
 .time-btn.on{background:var(--c1);color:var(--c6)}
 .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--soft);border-radius:15px;padding:4px}
@@ -367,17 +387,17 @@ main{container:main / inline-size;min-width:0}
 .freq-panel{margin-top:14px;padding:16px;border-radius:18px;background:#FAFBFD}
 .days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:12px}
 .days button{width:100%;max-width:42px;aspect-ratio:1;justify-self:center;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 1.5px var(--line);font-size:15px;color:var(--ink-2);transition:background .2s, color .2s}
-.days button.on{background:linear-gradient(135deg,var(--pink-200),var(--blue-200));box-shadow:none;color:var(--ink)}
+.days button.on{background:var(--blue-200);box-shadow:none;color:var(--blue-600)}
 .interval-row{display:flex;align-items:center;gap:12px;font-size:15.5px;color:var(--ink-2)}
 .interval-row + .interval-row{margin-top:12px}
 .interval-row .input{width:auto;flex:1;padding:9px 12px}
 .seg.sm{margin-top:12px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--line)}
 .seg.sm button{font-size:13.5px;padding:7px 0}
-.seg.sm button.on{background:var(--pink-100);color:var(--pink-600);box-shadow:none}
+.seg.sm button.on{background:var(--blue-100);color:var(--blue-600);box-shadow:none}
 .lbl-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
 .lbl-row .lbl{margin:0}
 .mini-toggle{font-size:13px;padding:5px 12px;border-radius:999px;background:var(--soft);color:var(--ink-2);transition:background .2s, color .2s}
-.mini-toggle.on{background:var(--pink-100);color:var(--pink-600)}
+.mini-toggle.on{background:var(--blue-100);color:var(--blue-600)}
 .freq-sub{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--c6);margin:16px 0 8px}
 .freq-sub:first-of-type{margin-top:4px}
 .freq-sub .ic{width:16px;height:16px;color:var(--c4)}
@@ -396,6 +416,36 @@ main{container:main / inline-size;min-width:0}
 .tag-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
 .tag-row{display:flex;align-items:center;gap:2px}
 .tag-row .input{margin-right:6px}
+/* ---------- settings ---------- */
+.set-card{padding:18px 16px 16px;margin-bottom:14px}
+.set-card h2{display:flex;align-items:center;gap:8px;font-size:17px;margin:0 2px 12px}
+.set-card h2 .ic{color:var(--blue-400);width:19px;height:19px}
+.set-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.set-list:last-child{margin-bottom:0}
+.set-row-wrap{display:flex;align-items:center;gap:4px}
+.set-row-wrap .set-row{flex:1;min-width:0}
+.set-row-wrap .tag-btn:disabled{visibility:hidden}
+.set-row{width:100%;display:flex;align-items:center;gap:12px;padding:10px 14px;min-height:58px;border-radius:18px;background:var(--tint, #FAFBFD);text-align:left;cursor:pointer}
+.set-row .avatar{width:42px;height:42px}
+.set-main{flex:1;min-width:0;display:flex;flex-direction:column}
+.set-main b{font-weight:400;font-size:16.5px}
+.set-main span{font-size:13px;color:var(--ink-3)}
+.set-time{font-size:17px;color:var(--c6, var(--ink-2));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:50%}
+.set-chev{width:17px;height:17px;color:var(--ink-3)}
+.set-select{font:inherit;font-size:15px;color:var(--ink-2);border:0;background:#fff;border-radius:12px;padding:8px 10px;box-shadow:0 0 0 1.5px var(--line)}
+.dot.lg{width:14px;height:14px;margin:0 4px}
+.btn.full{width:100%;justify-content:center}
+.looks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.look{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 0 10px;border-radius:18px;background:var(--soft);color:var(--ink-2);font-size:14px;transition:background .2s}
+.look .avatar{width:52px;height:52px;box-shadow:0 0 0 3px #fff}
+.look.on{background:var(--c1);color:var(--c6)}
+.look.on .avatar{box-shadow:0 0 0 3px var(--c4)}
+.time-input{font-size:20px;text-align:center}
+.swap-chip{display:inline-flex;align-items:center;gap:8px;padding:5px 15px 5px 5px}
+.swap-chip img{width:28px;height:28px;border-radius:50%;object-fit:cover;background:#fff}
+.swap-chip.on{background:var(--c1);color:var(--c6);box-shadow:inset 0 0 0 1.5px var(--c3)}
+#slotForm.swap > *{animation:swapIn .35s ease}
+@keyframes swapIn{from{opacity:.2;transform:translateX(14px)}to{opacity:1;transform:none}}
 .tag-btn{width:38px;height:38px;flex:none;border-radius:50%;display:grid;place-items:center;color:var(--ink-3)}
 .tag-btn:hover{background:var(--soft);color:var(--ink-2)}
 .tag-btn.del:hover{color:var(--pink-600)}
@@ -408,7 +458,7 @@ main{container:main / inline-size;min-width:0}
 .switch-row{width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:16px;background:#FAFBFD;font-size:15.5px;color:var(--ink-2);margin-bottom:20px}
 .switch{width:46px;height:28px;border-radius:999px;background:var(--line);position:relative;transition:background .2s}
 .switch i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12);transition:transform .25s cubic-bezier(.3,.9,.3,1.2)}
-.switch-row.on .switch{background:var(--pink-300)}
+.switch-row.on .switch{background:var(--blue-300)}
 .switch-row.on .switch i{transform:translateX(18px)}
 .sheet-foot{display:flex;gap:10px}
 .sheet-foot .primary{flex:1}
@@ -441,7 +491,7 @@ main{container:main / inline-size;min-width:0}
 .toast{width:max-content;max-width:calc(100vw - 32px)}
 .toast-text{white-space:nowrap}
 .toast.show.has-act{pointer-events:auto}
-.toast-act{margin:0 -8px 0 4px;padding:7px 14px;border-radius:999px;background:var(--pink-100);color:var(--pink-600);font-size:14.5px;white-space:nowrap}
+.toast-act{margin:0 -8px 0 4px;padding:7px 14px;border-radius:999px;background:var(--blue-100);color:var(--blue-600);font-size:14.5px;white-space:nowrap}
 .toast-av{position:relative;width:44px;height:44px;border-radius:50%;overflow:hidden;background:#fff}
 .toast-av img{position:absolute;left:-26%;top:-22%;width:152%;height:152%;object-fit:cover}
 .toast-av.duo img{left:-10%;top:-6%;width:120%;height:120%}
@@ -454,14 +504,17 @@ main{container:main / inline-size;min-width:0}
   .nav{position:static;display:inline-flex;gap:4px;padding:6px;margin:0 0 22px;border-radius:22px;background:#fff;box-shadow:var(--shadow);-webkit-backdrop-filter:none;backdrop-filter:none}
   .nav button{flex-direction:row;gap:8px;padding:10px 20px;font-size:15.5px;border-radius:17px;color:var(--ink-2)}
   .nav button .ic{width:19px;height:19px}
+  .nav .bub{width:auto;height:auto}
+  .nav button.on{background:var(--blue-100)}
+  .nav button.on .bub{background:none;color:var(--blue-400);transform:none;box-shadow:none}
+  .nav button.on span:last-child{margin-top:0}
   .nav button:hover:not(.on){background:var(--soft)}
   .toast{bottom:36px}
 }
 
 /* ---------- art panel ---------- */
 .art-card{position:relative;height:100%;display:flex;flex-direction:column;background:#fff;border-radius:34px;box-shadow:var(--shadow);padding:28px 28px 0;overflow:hidden}
-.art-brand{display:flex;align-items:center;gap:6px;font-size:14px;letter-spacing:.18em;color:var(--pink-400)}
-.art-brand .ic{width:14px;height:14px}
+.art-brand{display:flex;align-items:center;gap:6px;font-size:14px;letter-spacing:.18em;color:var(--blue-400)}
 .demo-pill{font-size:12px;letter-spacing:.06em;line-height:1;padding:4px 9px;border-radius:999px;background:var(--blue-100);color:var(--blue-600)}
 .art-greet{margin-top:18px;font-size:15px;color:var(--ink-2)}
 .art-date{font-size:36px;line-height:1.25;letter-spacing:.02em}
@@ -491,7 +544,7 @@ main{container:main / inline-size;min-width:0}
 .ap-bar{height:8px;border-radius:9px;background:var(--c1);overflow:hidden}
 .ap-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--c3),var(--c4));transition:width .5s cubic-bezier(.3,.9,.3,1)}
 .ap-num{font-size:14px;color:var(--ink-2);min-width:34px;text-align:right}
-.art-streak{align-self:flex-start;margin-top:16px;box-shadow:none;background:var(--pink-50)}
+.art-streak{align-self:flex-start;margin-top:16px;box-shadow:none;background:var(--blue-50)}
 .art-peek{margin:auto -28px 0;width:calc(100% + 56px);height:200px;object-fit:cover;object-position:50% 18%;mix-blend-mode:multiply;flex:none;transform:translateY(14px)}
 @media (max-height:820px){ .art-peek{display:none} }
 
@@ -502,7 +555,7 @@ main{container:main / inline-size;min-width:0}
 <div class="app">
   <aside class="art" aria-hidden="true">
     <div class="art-card">
-      <div class="art-brand"><svg class="ic fill" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.2 4.2 0 0 1 12 7.3a4.2 4.2 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20z"/></svg>保養日記</div>
+      <div class="art-brand" data-hold="title"><span class="brand-name">Chloe每日小清單</span></div>
       <div class="art-greet" id="artGreet"></div>
       <div class="art-date" id="artDate"></div>
       <div class="art-wd" id="artWd"></div>
@@ -524,9 +577,9 @@ main{container:main / inline-size;min-width:0}
 
   <main>
     <header class="m-head">
-      <div class="m-brand">
+      <div class="m-brand" data-hold="title">
         <span class="m-av"><span><img src="images/chiikawa.webp" alt=""></span><span><img src="images/hachiware.webp" alt=""></span></span>
-        保養日記
+        <span class="brand-name">Chloe每日小清單</span>
       </div>
       <span class="streak" id="mStreak" hidden></span>
     </header>
@@ -535,18 +588,23 @@ main{container:main / inline-size;min-width:0}
     <section class="view" id="view-week" hidden></section>
     <section class="view" id="view-products" hidden></section>
     <section class="view" id="view-history" hidden></section>
+    <section class="view" id="view-settings" hidden></section>
   </main>
 </div>
 
 <dialog class="dlg" id="formDlg">
   <form class="sheet" id="pForm" novalidate>
     <div class="sheet-head">
-      <h2 id="fTitle">新增保養品</h2>
+      <h2 id="fTitle">新增一項</h2>
       <button type="button" class="icon-btn" data-act="close" aria-label="關閉"></button>
     </div>
     <div class="field">
       <label class="lbl" for="fName">名稱</label>
       <input id="fName" class="input" autocomplete="off" maxlength="40" placeholder="例如：保濕精華">
+    </div>
+    <div class="field">
+      <div class="lbl">分類</div>
+      <div class="chips" id="fCats"></div>
     </div>
     <div class="field">
       <div class="lbl">時段</div>
@@ -603,6 +661,74 @@ main{container:main / inline-size;min-width:0}
   <div class="sheet" id="detailBody"></div>
 </dialog>
 
+<dialog class="dlg" id="slotDlg">
+  <form class="sheet" id="slotForm" novalidate>
+    <div class="sheet-head">
+      <h2 id="sTitle">編輯時段</h2>
+      <button type="button" class="icon-btn" data-act="close" aria-label="關閉"></button>
+    </div>
+    <div class="field">
+      <label class="lbl" for="sName">名稱</label>
+      <input id="sName" class="input" autocomplete="off" maxlength="6" placeholder="例如：睡前">
+    </div>
+    <div class="field">
+      <label class="lbl" for="sTime">大約幾點</label>
+      <input id="sTime" class="input time-input" type="time" step="900">
+    </div>
+    <div class="field">
+      <div class="lbl">角色</div>
+      <div class="looks" id="sLooks"></div>
+    </div>
+    <div class="field" id="sSwapWrap">
+      <div class="lbl">交換角色</div>
+      <div class="chips" id="sSwap"></div>
+    </div>
+    <div class="sheet-foot">
+      <button type="button" class="btn danger" id="sDelete" data-act="s-delete">刪除</button>
+      <button type="submit" class="btn primary">儲存</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="dlg" id="catDlg">
+  <form class="sheet" id="catForm" novalidate>
+    <div class="sheet-head">
+      <h2 id="cTitle">編輯分類</h2>
+      <button type="button" class="icon-btn" data-act="close" aria-label="關閉"></button>
+    </div>
+    <div class="field">
+      <label class="lbl" for="cName">名稱</label>
+      <input id="cName" class="input" autocomplete="off" maxlength="8" placeholder="例如：保健食品">
+    </div>
+    <div class="field">
+      <div class="lbl">顏色</div>
+      <div class="colors" id="cColors"></div>
+    </div>
+    <div class="field" id="cStepsWrap">
+      <div class="lbl-row">
+        <span class="lbl">步驟</span>
+        <button type="button" class="icon-btn soft sm" data-act="cat-steps" aria-label="編輯步驟"></button>
+      </div>
+      <div class="chips sm" id="cSteps"></div>
+    </div>
+    <div class="sheet-foot">
+      <button type="button" class="btn danger" id="cDelete" data-act="c-delete">刪除</button>
+      <button type="submit" class="btn primary">儲存</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="dlg" id="titleDlg">
+  <form class="sheet" id="titleForm" novalidate>
+    <div class="sheet-head">
+      <h2>名稱</h2>
+      <button type="button" class="icon-btn" data-act="close" aria-label="關閉"></button>
+    </div>
+    <div class="field"><input id="titleInput" class="input" autocomplete="off" maxlength="16"></div>
+    <div class="sheet-foot"><button type="submit" class="btn primary">儲存</button></div>
+  </form>
+</dialog>
+
 <dialog class="dlg" id="whyDlg">
   <div class="sheet">
     <div class="sheet-head">
@@ -638,8 +764,15 @@ main{container:main / inline-size;min-width:0}
 const DEMO = new URLSearchParams(location.search).has('demo');
 const KEY = DEMO ? 'skincare-diary-demo' : 'skincare-diary-v2';
 const DEFAULT_STEPS = ['卸妝', '洗臉', '化妝水', '精華', '眼霜', '乳液', '面霜', '防曬', '面膜', '其他'];
-// Name keywords used to pre-pick a step for a new product (first match wins).
-const STEP_HINTS = [['卸妝', /卸/], ['洗臉', /洗|潔顏|潔面|泡沫/], ['化妝水', /化妝水|化粧水|爽膚水|精華水|toner/i], ['眼霜', /眼/],
+const DEFAULT_CATS = [
+  { id: 'care', name: '保養', color: 'pink', steps: DEFAULT_STEPS },
+  { id: 'supp', name: '保健食品', color: 'butter', steps: ['維他命', '益生菌', '魚油', '其他'] },
+  { id: 'eye', name: '眼睛', color: 'blue', steps: ['眼藥水', '熱敷', '其他'] },
+];
+const DEFAULT_SLOTS = [{ id: 'am', name: '早上', min: 7 * 60, look: 'usagi' }, { id: 'pm', name: '晚上', min: 23 * 60, look: 'chii' }];
+// Name keywords used to pre-pick a step (and with it the category) for a new item (first match wins).
+const STEP_HINTS = [['眼藥水', /眼藥|點眼|淚液/], ['熱敷', /熱敷|蒸氣眼罩/], ['維他命', /維他命|維生素|維c|維 c|vit/i],
+  ['益生菌', /益生菌|乳酸菌/], ['魚油', /魚油|omega/i], ['卸妝', /卸/], ['洗臉', /洗|潔顏|潔面|泡沫/], ['化妝水', /化妝水|化粧水|爽膚水|精華水|toner/i], ['眼霜', /眼/],
   ['防曬', /防曬|spf|隔離/i], ['面膜', /面膜|凍膜|mask/i], ['精華', /精華|安瓶|原液|serum/i], ['乳液', /乳液|lotion|emulsion/i], ['面霜', /霜|cream/i]];
 const COLORS = { pink: '#F7B9CA', blue: '#9FC9EE', butter: '#F4D88F', mint: '#A9DCC5', lilac: '#C9BAF0', peach: '#F9C6A6' };
 const WD = ['日', '一', '二', '三', '四', '五', '六'];
@@ -650,15 +783,19 @@ const LIFE_OPTS = [['', '不設定'], ['28d', '28 天'], ['3m', '3 個月'], ['6
 const EVENT_TEXT = { add: '開始使用', pause: '停用', resume: '恢復使用', delete: '刪除', open: '開封', low: '快用完', restock: '換新的' };
 const PRESETS = [['一三五', [1, 3, 5]], ['二四六', [2, 4, 6]], ['平日', [1, 2, 3, 4, 5]], ['週末', [6, 0]]];
 const IMG = {
-  am: 'images/hachiware.webp', pm: 'images/chiikawa.webp', duo: 'images/chiikawa-usagi.jpg',
+  hachi: 'images/hachiware.webp', chii: 'images/chiikawa.webp', usagi: 'images/usagi.jpg', duo: 'images/chiikawa-usagi.jpg',
   faceDone: 'images/face-hachiware.png', faceRest: 'images/face-chiikawa.png',
 };
-const SLOT = { am: { name: '早上', icon: 'sun' }, pm: { name: '晚上', icon: 'moon' } };
-const TABS = [['today', '今天', 'star'], ['week', '一週', 'week'], ['products', '保養品', 'bottle'], ['history', '紀錄', 'book']];
+// Each routine picks a character; its color and icon come with it.
+const LOOKS = { usagi: { name: '烏薩奇', tone: 'butter', icon: 'sun' }, chii: { name: '吉伊', tone: 'pink', icon: 'moon' }, hachi: { name: '小八', tone: 'blue', icon: 'bed' } };
+const DAY_STARTS = [0, 1, 2, 3, 4, 5, 6];
+const TABS = [['today', '今天', 'star'], ['week', '一週', 'week'], ['products', '清單', 'bottle'], ['history', '紀錄', 'book'], ['settings', '設定', 'gear']];
 
 const I = {
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>',
   moon: '<path d="M20 14.2A8 8 0 1 1 9.8 4a6.4 6.4 0 0 0 10.2 10.2z"/>',
+  noon: '<circle cx="9" cy="9" r="3.2"/><path d="M9 2.5v1.6M2.5 9h1.6M4.4 4.4l1.1 1.1M13.6 4.4l-1.1 1.1"/><path d="M8 19.5h9.5a3.5 3.5 0 0 0 .3-7 5 5 0 0 0-9.6 1.1A3 3 0 0 0 8 19.5z"/>',
+  bed: '<path d="M3.5 19V7M3.5 15h17v4M20.5 15v-2.5a3 3 0 0 0-3-3H11V15"/><circle cx="7.3" cy="11.8" r="1.8"/>',
   check: '<path d="M5 12.5l4.2 4.2L19 7"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   left: '<path d="M15 18l-6-6 6-6"/>',
@@ -677,6 +814,8 @@ const I = {
   aup: '<path d="M12 19V5M6 11l6-6 6 6"/>',
   adown: '<path d="M12 5v14M6 13l6 6 6-6"/>',
   dash: '<path d="M7 12h10"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/>',
+  clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
   sort: '<path d="M8 5v14M4.5 8.5 8 5l3.5 3.5M16 19V5M12.5 15.5 16 19l3.5-3.5"/>',
 };
 const icon = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
@@ -689,7 +828,9 @@ const uid = () => Math.random().toString(36).slice(2, 8) + Date.now().toString(3
 const pad = n => String(n).padStart(2, '0');
 const fmt = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
-const today = () => fmt(new Date());
+// The day turns over at dayStartH (4am by default), so a routine done after midnight still counts for the night before.
+let dayStartH = 4;
+const today = () => fmt(new Date(Date.now() - dayStartH * 36e5));
 const addDays = (s, n) => { const d = parse(s); d.setDate(d.getDate() + n); return fmt(d); };
 const utc = s => { const [y, m, d] = s.split('-').map(Number); return Date.UTC(y, m - 1, d); };
 const diffDays = (a, b) => Math.round((utc(b) - utc(a)) / 864e5);
@@ -708,7 +849,9 @@ function addMonths(s, n) {
 const longDate = s => { const d = parse(s); return `${d.getMonth() + 1}月${d.getDate()}日`; };
 
 /* ---------- state ---------- */
-const blank = () => ({ v: 1, products: [], days: {}, skinTags: [...DEFAULT_SKIN], steps: [...DEFAULT_STEPS], lastBackup: 0, backupSnooze: 0,
+const DEFAULT_TITLE = 'Chloe每日小清單';
+const blank = () => ({ v: 2, title: '', dayStart: 4, products: [], days: {}, skinTags: [...DEFAULT_SKIN], lastBackup: 0, backupSnooze: 0,
+  cats: DEFAULT_CATS.map(c => ({ ...c, steps: [...c.steps] })), slots: DEFAULT_SLOTS.map(x => ({ ...x })),
   events: [], skipReasons: [...DEFAULT_REASONS], missDismissed: '' });
 const cleanList = a => [...new Set(a.map(t => String(t).trim()).filter(Boolean))];
 function normFreq(f = {}) {
@@ -722,15 +865,38 @@ function normFreq(f = {}) {
 }
 function normalize(s) {
   const out = blank();
+  if (Array.isArray(s.slots) && s.slots.some(x => x && x.id && !x.deleted)) {
+    out.slots = s.slots.filter(x => x && x.id && String(x.name || '').trim()).map(x => {
+      const min = Number.isFinite(Number(x.min)) ? Math.round(Number(x.min)) : (Number(x.hour) || 0) * 60;
+      // Before routines had a character, the look came from the hour.
+      const h = Math.floor(min / 60), look = LOOKS[x.look] ? x.look : h >= 21 || h < 4 ? 'hachi' : h >= 16 ? 'chii' : 'usagi';
+      return { id: String(x.id), name: String(x.name).trim(), min: Math.min(1439, Math.max(0, min)), look,
+        ...(isDate(x.from) ? { from: x.from } : {}), ...(x.deleted ? { deleted: true } : {}) };
+    });
+  }
+  if (Array.isArray(s.cats) && s.cats.length) {
+    out.cats = s.cats.filter(c => c && c.id && String(c.name || '').trim()).map(c => ({
+      id: String(c.id), name: String(c.name).trim(), color: COLORS[c.color] ? c.color : 'pink', steps: cleanList(Array.isArray(c.steps) ? c.steps : []),
+    }));
+  }
+  // Before categories there was one step list; it becomes the first category's.
+  else if (Array.isArray(s.steps)) out.cats[0].steps = cleanList(s.steps);
+  const slotIds = out.slots.filter(x => !x.deleted).map(x => x.id), catIds = out.cats.map(c => c.id);
   out.products = (Array.isArray(s.products) ? s.products : []).filter(p => p && p.id && p.name).map((p, i) => {
-    const times = Array.isArray(p.times) && p.times.some(t => t === 'am' || t === 'pm') ? p.times.filter(t => t === 'am' || t === 'pm') : ['am', 'pm'];
+    let times = Array.isArray(p.times) ? slotIds.filter(t => p.times.includes(t)) : [];
+    if (!times.length && !(Array.isArray(p.times) && p.times.length)) times = slotIds.filter(t => t === 'am' || t === 'pm');
+    // Older records kept one evening override in freqPm; now any routine can have its own frequency.
+    const by = p.freqBy && typeof p.freqBy === 'object' ? p.freqBy : p.freqPm ? { am: p.freq, pm: p.freqPm } : {};
+    const freqBy = {};
+    if (times.length > 1 && times.every(t => by[t])) times.forEach(t => { freqBy[t] = normFreq(by[t]); });
     return {
       id: String(p.id),
       name: String(p.name),
+      cat: catIds.includes(p.cat) ? p.cat : catIds[0],
       step: String(p.step || '').trim() || '其他',
       times,
       freq: normFreq(p.freq),
-      freqPm: p.freqPm && times.length === 2 ? normFreq(p.freqPm) : null,
+      freqBy,
       color: COLORS[p.color] ? p.color : 'pink',
       note: String(p.note || ''),
       paused: !!p.paused,
@@ -745,12 +911,14 @@ function normalize(s) {
   });
   out.days = s.days && typeof s.days === 'object' ? s.days : {};
   if (Array.isArray(s.skinTags)) out.skinTags = cleanList(s.skinTags);
-  if (Array.isArray(s.steps)) out.steps = cleanList(s.steps);
   out.lastBackup = Number(s.lastBackup) || 0;
   out.backupSnooze = Number(s.backupSnooze) || 0;
   out.events = (Array.isArray(s.events) ? s.events : []).filter(e => e && isDate(e.d) && e.id && (EVENT_TEXT[e.k] || e.k === 'freq'));
   if (Array.isArray(s.skipReasons)) out.skipReasons = cleanList(s.skipReasons);
   out.missDismissed = isDate(s.missDismissed) ? s.missDismissed : '';
+  out.title = String(s.title || '').trim().slice(0, 16);
+  out.dayStart = DAY_STARTS.includes(Number(s.dayStart)) ? Number(s.dayStart) : 4;
+  dayStartH = out.dayStart;
   return out;
 }
 function load() {
@@ -765,7 +933,7 @@ function save() {
   doneIdx = null;
   // Today's record keeps tracking the live schedule, so the snapshot it leaves behind at midnight is what the day really was.
   const t = state.days[today()];
-  if (t) for (const s of ['am', 'pm']) if (t[s]) t[s].plan = livePlan(today(), s);
+  if (t) for (const x of activeSlots()) if (t[x.id]) t[x.id].plan = livePlan(today(), x.id);
   try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
 }
 let saveTimer = null;
@@ -777,12 +945,47 @@ const ui = { tab: 'today', date: today(), week: weekStart(today()), month: today
 
 /* ---------- schedule logic ---------- */
 const byId = id => state.products.find(p => p.id === id);
-const stepIdx = p => { const i = state.steps.indexOf(p.step); return i < 0 ? state.steps.length : i; };
-const byStep = (a, b) => stepIdx(a) - stepIdx(b) || (stepIdx(a) === state.steps.length ? a.step.localeCompare(b.step) : 0) || a.order - b.order || a.created - b.created;
-const freqFor = (p, slot) => (slot === 'pm' && p.freqPm) || p.freq;
+const catById = id => state.cats.find(c => c.id === id) || state.cats[0];
+const catIdx = p => { const i = state.cats.findIndex(c => c.id === p.cat); return i < 0 ? state.cats.length : i; };
+const stepIdx = p => { const st = catById(p.cat).steps, i = st.indexOf(p.step); return i < 0 ? st.length : i; };
+// Category first, then its step order; steps no longer in the list go last, by name.
+const byStep = (a, b) => catIdx(a) - catIdx(b) || stepIdx(a) - stepIdx(b)
+  || (stepIdx(a) === catById(a.cat).steps.length ? a.step.localeCompare(b.step) : 0) || a.order - b.order || a.created - b.created;
+const freqFor = (p, slot) => (p.freqBy && p.freqBy[slot]) || p.freq;
+
+/* ---------- routines (time slots) ---------- */
+// Routines run in day order, which starts at the day-start hour: a 1am routine comes after an 11pm one.
+const dayMin = m => (m - dayStartH * 60 + 1440) % 1440;
+const byHour = (a, b) => dayMin(a.min) - dayMin(b.min);
+const fmtTime = m => `${Math.floor(m / 60)}:${pad(m % 60)}`;
+const activeSlots = () => state.slots.filter(x => !x.deleted).sort(byHour);
+// A routine added today doesn't reach back into days already lived.
+const slotLive = (id, date) => { const x = slotOf(id); return !x.deleted && (!x.from || date >= x.from); };
+const slotOf = id => state.slots.find(x => x.id === id) || { id, name: '', min: 0, look: 'usagi' };
+const lookOf = id => LOOKS[slotOf(id).look] || LOOKS.usagi;
+const slotName = id => slotOf(id).name;
+const slotIcon = id => lookOf(id).icon;
+const slotImg = id => IMG[slotOf(id).look] || IMG.usagi;
+const fitCls = src => src === IMG.usagi ? ' class="fit"' : '';
+const tone = id => 'tone-' + lookOf(id).tone;
+// The keys of a day record that hold a routine (skin is a list, note a string).
+const recSlots = r => r ? Object.keys(r).filter(k => r[k] && typeof r[k] === 'object' && !Array.isArray(r[k])) : [];
+const hasMarks = x => !!x && ['done', 'skip', 'extra'].some(k => (x[k] || []).length > 0);
+// Routines shown on a day: the current ones, plus a removed one on past days it was used.
+function slotsOn(date) {
+  const r = state.days[date];
+  return state.slots.filter(x => (!x.from || date >= x.from) && (!x.deleted || (date < today() && r && hasMarks(r[x.id])))).sort(byHour);
+}
+// "早晚" for a product used in several routines when their first characters differ; otherwise full names.
+function timesLabel(times) {
+  const names = activeSlots().filter(x => times.includes(x.id)).map(x => x.name);
+  if (names.length === 1) return names[0];
+  const firsts = names.map(n => n[0]);
+  return new Set(firsts).size === firsts.length ? firsts.join('') : names.join('・');
+}
 
 function isScheduled(p, date, slot) {
-  if (p.paused || p.deleted || !p.times.includes(slot)) return false;
+  if (p.paused || p.deleted || !p.times.includes(slot) || !slotLive(slot, date)) return false;
   const f = freqFor(p, slot);
   if (f.type === 'weekly') return f.days.includes(dow(date));
   if (f.type === 'interval') {
@@ -806,7 +1009,7 @@ function lastDone(id, slot, before) {
   if (!doneIdx) {
     doneIdx = {};
     for (const [d, r] of Object.entries(state.days)) {
-      for (const s of ['am', 'pm']) for (const x of (r && r[s] && r[s].done) || []) (doneIdx[x + s] = doneIdx[x + s] || []).push(d);
+      for (const s of recSlots(r)) for (const x of r[s].done || []) (doneIdx[x + s] = doneIdx[x + s] || []).push(d);
     }
     Object.values(doneIdx).forEach(a => a.sort());
   }
@@ -820,11 +1023,13 @@ function dayRec(date, create) {
   let d = state.days[date];
   if (!d && create) d = state.days[date] = {};
   if (d) {
-    for (const s of ['am', 'pm']) {
+    const active = activeSlots().map(x => x.id);
+    for (const s of [...new Set([...active, ...recSlots(d)])]) {
+      if (!active.includes(s) && !d[s]) continue;
       d[s] = d[s] || {}; d[s].done = d[s].done || []; d[s].extra = d[s].extra || []; d[s].skip = d[s].skip || []; d[s].why = d[s].why || {};
       // Freeze both routines the moment a day gets a record, even one that was never ticked,
       // so later product edits can't rewrite that day's history.
-      if (create && !d[s].plan) d[s].plan = livePlan(date, s);
+      if (create && !d[s].plan && active.includes(s)) d[s].plan = livePlan(date, s);
     }
     d.skin = d.skin || []; d.note = d.note || '';
   }
@@ -850,7 +1055,7 @@ function slotItems(date, slot) {
     .sort((a, b) => byStep(a.p, b.p));
 }
 function dayState(date) {
-  const all = [...slotItems(date, 'am'), ...slotItems(date, 'pm')];
+  const all = slotsOn(date).flatMap(x => slotItems(date, x.id));
   if (!all.length) return 'rest';
   return all.every(x => x.ok) ? 'complete' : 'incomplete';
 }
@@ -868,14 +1073,17 @@ const slotComplete = (date, slot) => { const it = slotItems(date, slot); return 
 
 const freqLabel = f => f.type === 'weekly' ? (f.days.length === 7 ? '每天' : '週' + WEEK.filter(d => f.days.includes(d)).map(d => WD[d]).join(''))
   : f.type === 'interval' ? `每 ${f.every} 天${f.from === 'last' ? '・順延' : ''}` : '每天';
-const scheduleLabel = p => p.freqPm ? `早 ${freqLabel(p.freq)}・晚 ${freqLabel(p.freqPm)}` : freqLabel(p.freq);
+const isSplit = p => Object.keys(p.freqBy || {}).length > 0;
+const scheduleLabel = p => isSplit(p) ? p.times.map(t => `${timesLabel([t])} ${freqLabel(freqFor(p, t))}`).join('・') : freqLabel(p.freq);
+// What the product page and journal say about when it's used: "早晚 每天", "晚上 週二四六", "早上 每天・晚上 週一三五".
+const whenLabel = p => isSplit(p) ? scheduleLabel(p) : p.times.length ? `${timesLabel(p.times)} ${scheduleLabel(p)}` : scheduleLabel(p);
 
 /* ---------- render ---------- */
 function render() {
   const y = window.scrollY;
   $$('#nav button').forEach(b => b.classList.toggle('on', b.dataset.v === ui.tab));
   $$('.view').forEach(v => { v.hidden = v.id !== 'view-' + ui.tab; });
-  ({ today: renderToday, week: renderWeek, products: renderProducts, history: renderHistory })[ui.tab]();
+  ({ today: renderToday, week: renderWeek, products: renderProducts, history: renderHistory, settings: renderSettings })[ui.tab]();
   renderSide();
   ui.pop = '';
   window.scrollTo(0, y);
@@ -894,9 +1102,9 @@ function dateBar(kind, main, sub, back) {
 
 const welcome = () => `<section class="card welcome">
   <img src="${IMG.duo}" alt="">
-  <h2>還沒有保養品</h2>
+  <h2>清單還是空的</h2>
   <div class="welcome-actions">
-    <button class="btn primary" data-act="new">${icon('plus')}新增保養品</button>
+    <button class="btn primary" data-act="new">${icon('plus')}新增一項</button>
   </div>
 </section>`;
 
@@ -915,10 +1123,22 @@ function renderToday() {
     <button class="btn primary sm" data-act="export">備份</button>
     <button class="icon-btn sm" data-act="snooze-backup" aria-label="晚點再說">${icon('x')}</button>
   </div>`;
-  // After 6pm the evening routine comes first.
-  const slots = isToday && new Date().getHours() >= 18 ? ['pm', 'am'] : ['am', 'pm'];
-  html += `<div class="today-grid${d > today() ? ' is-future' : ''}">${slots.map(s => slotCard(d, s)).join('')}${skinCard(d)}</div>`;
+  html += `<div class="today-grid${d > today() ? ' is-future' : ''}">${todayOrder(d).map(s => slotCard(d, s)).join('')}${skinCard(d)}</div>`;
   $('#view-today').innerHTML = html;
+}
+
+// Today, the routine coming up (from two hours before its time) goes first, then the ones after it, then the earlier ones.
+// One whose time passed within the last three hours and isn't done yet stays ahead of the next, so 11pm skincare isn't
+// pushed down by a 12:30 bedtime routine.
+function todayOrder(d) {
+  const ids = slotsOn(d).map(x => x.id);
+  if (d !== today()) return ids;
+  const d0 = new Date(), now = dayMin(d0.getHours() * 60 + d0.getMinutes());
+  let cur = 0;
+  ids.forEach((id, i) => { if (dayMin(slotOf(id).min) - 120 <= now) cur = i; });
+  while (cur > 0 && dayMin(slotOf(ids[cur - 1]).min) >= now - 180 && !slotComplete(d, ids[cur - 1])
+    && slotItems(d, ids[cur - 1]).length) cur--;
+  return [...ids.slice(cur), ...ids.slice(0, cur)];
 }
 
 const slotCount = (n, total) => !total ? '' : n === total ? `<span class="done-badge">${icon('check')}完成</span>${icon('chev', 'fold-ic')}` : `${n} / ${total}`;
@@ -927,11 +1147,11 @@ function slotCard(d, slot) {
   const items = slotItems(d, slot);
   const n = items.filter(x => x.ok).length, total = items.length;
   const complete = total > 0 && n === total, folded = complete && !ui.open.has(d + slot);
-  return `<section class="card slot slot-${slot}${complete ? ' is-complete' : ''}${folded ? ' is-folded' : ''}">
+  return `<section class="card slot slot-${slot} ${tone(slot)}${complete ? ' is-complete' : ''}${folded ? ' is-folded' : ''}">
     <header class="slot-head">
-      <span class="avatar"><img src="${IMG[slot]}" alt=""></span>
+      <span class="avatar"><img src="${slotImg(slot)}"${fitCls(slotImg(slot))} alt=""></span>
       <button class="slot-title" data-act="fold" data-hold="all" data-slot="${slot}" aria-expanded="${!folded}">
-        <span class="slot-name">${icon(SLOT[slot].icon)}${SLOT[slot].name}</span>
+        <span class="slot-name">${icon(slotIcon(slot))}${esc(slotName(slot))}</span>
         <span class="slot-count">${slotCount(n, total)}</span>
       </button>
       <div class="slot-actions">
@@ -941,10 +1161,21 @@ function slotCard(d, slot) {
     </header>
     ${total ? `<div class="slot-body"><div class="slot-inner">
       <div class="bar"><i style="width:${n / total * 100}%"></i></div>
-      <ul class="items">${items.map(x => itemRow(x, slot)).join('')}</ul>
+      <ul class="items">${withCats(items, x => x.p, x => itemRow(x, slot), c => `<li class="cat-sep" style="--cc:${COLORS[c.color]}">${esc(c.name)}</li>`)}</ul>
     </div></div>`
-    : `<div class="slot-empty">${icon(SLOT[slot].icon)}休息</div>`}
+    : `<div class="slot-empty">${icon(slotIcon(slot))}休息</div>`}
   </section>`;
+}
+
+// Rows of a list sorted by category, with a small heading before each category when there is more than one.
+function withCats(list, prod, row, head) {
+  const many = new Set(list.map(x => prod(x).cat)).size > 1;
+  let last = null;
+  return list.map(x => {
+    const c = catById(prod(x).cat), sep = many && c !== last ? head(c) : '';
+    last = c;
+    return sep + row(x);
+  }).join('');
 }
 
 const skipLabel = why => why ? `略過・${esc(why)}` : '略過';
@@ -956,7 +1187,7 @@ function missedDay() {
   for (let i = 1; i <= 7; i++) {
     const d = addDays(today(), -i);
     if (d < keys[0] || d <= state.missDismissed) break;
-    if (!state.days[d] && livePlan(d, 'am').length + livePlan(d, 'pm').length > 0) return d;
+    if (!state.days[d] && activeSlots().some(x => livePlan(d, x.id).length > 0)) return d;
   }
   return null;
 }
@@ -983,8 +1214,8 @@ function skinCard(d) {
   const tags = [...state.skinTags, ...skin.filter(s => !state.skinTags.includes(s))];
   return `<section class="card skin">
     <div class="skin-head">
-      <h2>${icon('drop')}肌膚狀態</h2>
-      <button class="icon-btn soft sm" data-act="edit-skin" aria-label="編輯肌膚狀態">${icon('pen')}</button>
+      <h2>${icon('drop')}今天的狀態</h2>
+      <button class="icon-btn soft sm" data-act="edit-skin" aria-label="編輯狀態">${icon('pen')}</button>
     </div>
     ${tags.length ? `<div class="chips">${tags.map(s => `<button class="chip${skin.includes(s) ? ' on' : ''}" data-act="skin" data-v="${esc(s)}" aria-pressed="${skin.includes(s)}">${esc(s)}</button>`).join('')}</div>` : ''}
     <textarea class="note" id="dayNote" rows="2" placeholder="寫點什麼…">${esc(r.note || '')}</textarea>
@@ -995,7 +1226,9 @@ function renderWeek() {
   const t = today(), days = Array.from({ length: 7 }, (_, i) => addDays(ui.week, i));
   const isCur = ui.week === weekStart(t);
   let html = dateBar('week', `${md(days[0])} – ${md(days[6])}`, isCur ? '本週' : '', isCur ? '' : '回本週');
-  html += state.products.some(p => !p.deleted) ? weekTable('am', days, t) + weekTable('pm', days, t) : welcome();
+  // A routine removed partway through still shows in weeks where it was used.
+  const slots = state.slots.filter(x => days.some(d => slotsOn(d).includes(x))).sort(byHour);
+  html += state.products.some(p => !p.deleted) ? slots.map(x => weekTable(x.id, days, t)).join('') : welcome();
   $('#view-week').innerHTML = html;
 }
 
@@ -1009,10 +1242,10 @@ function patchWeekCell(date, slot, id) {
 }
 
 function weekTable(slot, days, t) {
-  const grid = days.map(d => slotItems(d, slot));
+  const grid = days.map(d => slotsOn(d).some(x => x.id === slot) ? slotItems(d, slot) : []);
   const ids = [...new Set(grid.flat().map(x => x.id))].sort((a, b) => byStep(byId(a), byId(b)));
   const head = `<div class="wk-row wk-head">
-    <div class="wk-title">${icon(SLOT[slot].icon)}${SLOT[slot].name}</div>
+    <div class="wk-title">${icon(slotIcon(slot))}${esc(slotName(slot))}</div>
     ${days.map(d => `<button class="wk-cell wk-day${d === t ? ' today' : ''}" data-act="goto-day" data-date="${d}"><span class="wd">${WD[dow(d)]}</span><span class="dn">${parse(d).getDate()}</span></button>`).join('')}
   </div>`;
   const rows = ids.map(id => {
@@ -1027,7 +1260,7 @@ function weekTable(slot, days, t) {
       }).join('')}
     </div>`;
   }).join('');
-  return `<section class="card wk slot-${slot}">${head}${rows || '<div class="wk-empty">—</div>'}</section>`;
+  return `<section class="card wk slot-${slot} ${tone(slot)}">${head}${rows || '<div class="wk-empty">—</div>'}</section>`;
 }
 
 function renderProducts() {
@@ -1035,7 +1268,7 @@ function renderProducts() {
   const active = live.filter(p => !p.paused).sort(byStep), paused = live.filter(p => p.paused).sort(byStep);
   if (!active.length) ui.sorting = false;
   let html = `<div class="view-head">
-    <h1>保養品${active.length ? `<small>${active.length}</small>` : ''}</h1>
+    <h1>清單${active.length ? `<small>${active.length}</small>` : ''}</h1>
     <div class="view-actions">
       ${active.length > 1 ? `<button class="btn ghost sm" data-act="sort">${ui.sorting ? `${icon('check')}完成` : `${icon('sort')}排序`}</button>` : ''}
       ${ui.sorting ? '' : `<button class="btn primary sm" data-act="new">${icon('plus')}新增</button>`}
@@ -1047,22 +1280,26 @@ function renderProducts() {
     <h2>${icon('bottle')}補貨清單</h2>
     <div class="chips">${need.map(p => `<button class="chip" data-act="detail" data-id="${p.id}">${esc(p.name)}${lifeInfo(p).expired ? '・已過期' : ''}</button>`).join('')}</div>
   </section>`;
-  // Group by step, in the order of the step list.
-  const groups = [];
-  active.forEach(p => { const g = groups[groups.length - 1]; g && g.step === p.step ? g.items.push(p) : groups.push({ step: p.step, items: [p] }); });
-  html += groups.map(g => `<h3 class="group-title">${esc(g.step)}</h3>
-    <div class="prod-grid">${g.items.map((p, i) => prodCard(p, ui.sorting && { first: i === 0, last: i === g.items.length - 1 })).join('')}</div>`).join('');
+  // Group by category, then by step in the order of that category's step list.
+  const cats = [];
+  active.forEach(p => {
+    let c = cats[cats.length - 1];
+    if (!c || c.id !== p.cat) cats.push(c = { id: p.cat, groups: [] });
+    const g = c.groups[c.groups.length - 1];
+    g && g.step === p.step ? g.items.push(p) : c.groups.push({ step: p.step, items: [p] });
+  });
+  html += cats.map(c => { const cat = catById(c.id); return `<section class="cat-group">
+    ${cats.length > 1 ? `<h2 class="cat-title" style="--cc:${COLORS[cat.color]}">${esc(cat.name)}</h2>` : ''}
+    ${c.groups.map(g => `<h3 class="group-title">${esc(g.step)}</h3>
+    <div class="prod-grid">${g.items.map((p, i) => prodCard(p, ui.sorting && { first: i === 0, last: i === g.items.length - 1 })).join('')}</div>`).join('')}
+  </section>`; }).join('');
   if (paused.length && !ui.sorting) html += `<h3 class="group-title">已停用<small>${paused.length}</small></h3>
     <div class="prod-grid">${paused.map(p => prodCard(p)).join('')}</div>`;
-  if (!ui.sorting) html += `<div class="backup">
-    <button class="btn ghost sm" data-act="export">${icon('down')}匯出備份</button>
-    <button class="btn ghost sm" data-act="import">${icon('up')}匯入備份</button>
-  </div>`;
   $('#view-products').innerHTML = html;
 }
 
 function prodCard(p, sort) {
-  const times = `${p.times.includes('am') ? `<span class="slot-am">${icon('sun')}</span>` : ''}${p.times.includes('pm') ? `<span class="slot-pm">${icon('moon')}</span>` : ''}`;
+  const times = activeSlots().filter(x => p.times.includes(x.id)).map(x => `<span class="${tone(x.id)}">${icon(slotIcon(x.id))}</span>`).join('');
   const life = lifeInfo(p);
   return `<article class="card prod${p.paused ? ' is-paused' : ''}${sort ? ' sorting' : ''}"${sort ? '' : ` data-act="detail" data-id="${p.id}" role="button" tabindex="0"`}>
     <div class="prod-top">
@@ -1074,7 +1311,7 @@ function prodCard(p, sort) {
       </div>` : `<div class="prod-times">${times}</div>`}
     </div>
     ${p.note && !sort ? `<div class="prod-note">${esc(p.note)}</div>` : ''}
-    ${sort ? '' : `<div class="prod-meta"><span class="tag">${scheduleLabel(p)}</span>${life.expired ? '<span class="tag warn">已過期</span>' : life.soon ? `<span class="tag warn">${life.left} 天後到期</span>` : ''}${p.low ? '<span class="tag warn">快用完</span>' : ''}</div>`}
+    ${sort ? '' : `<div class="prod-meta"><span class="tag">${scheduleLabel(p)}</span>${p.times.length ? '' : '<span class="tag warn">沒有時段</span>'}${life.expired ? '<span class="tag warn">已過期</span>' : life.soon ? `<span class="tag warn">${life.left} 天後到期</span>` : ''}${p.low ? '<span class="tag warn">快用完</span>' : ''}</div>`}
   </article>`;
 }
 
@@ -1095,7 +1332,7 @@ function productStats(id) {
     const d = addDays(t, -i);
     let st = 'none';
     // Only days she actually recorded count; today's unfinished items don't count against her.
-    if (state.days[d] || d === t) for (const s of ['am', 'pm']) {
+    if (state.days[d] || d === t) for (const s of slotsOn(d).map(x => x.id)) {
       const x = slotItems(d, s).find(y => y.id === id);
       if (!x || (d === t && !x.ok)) continue;
       if (!x.extra) planned++;
@@ -1106,7 +1343,8 @@ function productStats(id) {
     strip.push({ d, st });
   }
   for (const k of Object.keys(state.days).sort()) {
-    if (['am', 'pm'].some(s => (state.days[k][s]?.done || []).includes(id))) { if (!first) first = k; last = k; }
+    const r = state.days[k];
+    if (recSlots(r).some(s => (r[s].done || []).includes(id))) { if (!first) first = k; last = k; }
   }
   return { done, skipped, why, strip, first, last, rate: planned ? Math.min(100, Math.round((done + skipped) / planned * 100)) : null };
 }
@@ -1148,8 +1386,8 @@ function renderDetail() {
       <button type="button" class="icon-btn" data-act="close" aria-label="關閉">${icon('x')}</button>
     </div>
     <div class="detail-meta">
-      <span class="tag">${esc(p.step)}</span>
-      <span class="tag">${p.freqPm ? scheduleLabel(p) : `${p.times.length === 2 ? '早晚' : SLOT[p.times[0]].name}・${scheduleLabel(p)}`}</span>
+      <span class="tag">${state.cats.length > 1 ? `${esc(catById(p.cat).name)}・` : ''}${esc(p.step)}</span>
+      <span class="tag">${esc(whenLabel(p))}</span>
       ${p.paused ? '<span class="tag">已停用</span>' : ''}${p.low ? '<span class="tag warn">快用完</span>' : ''}
     </div>
     <div class="dstats">
@@ -1192,12 +1430,12 @@ function restock(id) {
   save();
   renderDetail();
   render();
-  toast('pm', '已換新的');
+  toast('duo', '已換新的');
 }
 
 function moveProduct(id, dir) {
   const p = byId(id);
-  const group = state.products.filter(x => !x.deleted && !x.paused && x.step === p.step).sort(byStep);
+  const group = state.products.filter(x => !x.deleted && !x.paused && x.cat === p.cat && x.step === p.step).sort(byStep);
   const i = group.indexOf(p), j = i + dir;
   if (j < 0 || j >= group.length) return;
   [group[i], group[j]] = [group[j], group[i]];
@@ -1215,14 +1453,13 @@ function renderHistory() {
   const dates = Array.from({ length: n }, (_, i) => `${ui.month}-${pad(i + 1)}`);
   const C = 2 * Math.PI * 16;
   const noted = d => { const r = state.days[d]; return !!r && ((r.skin && r.skin.length > 0) || !!(r.note && r.note.trim())); };
-  let am = 0, pm = 0;
+  const doneDays = {};
   const cells = dates.map(d => {
     const future = d > t;
-    const ia = future ? [] : slotItems(d, 'am'), ip = future ? [] : slotItems(d, 'pm');
-    if (ia.length && ia.every(x => x.ok)) am++;
-    if (ip.length && ip.every(x => x.ok)) pm++;
-    // One ring per day: how much of that day's routine was ticked off.
-    const all = [...ia, ...ip], n = all.filter(x => x.ok).length;
+    const per = future ? [] : slotsOn(d).map(x => [x.id, slotItems(d, x.id)]);
+    per.forEach(([id, it]) => { if (it.length && it.every(x => x.ok)) doneDays[id] = (doneDays[id] || 0) + 1; });
+    // One ring per day: how much of that day's routines was ticked off.
+    const all = per.flatMap(x => x[1]), n = all.filter(x => x.ok).length;
     const showRing = all.length > 0 && (state.days[d] || d === t);
     const ring = showRing ? `<svg class="ring" viewBox="0 0 36 36"><circle class="ring-track" cx="18" cy="18" r="16"/>${n ? `<circle class="ring-fill" cx="18" cy="18" r="16" stroke-dasharray="${(n / all.length * C).toFixed(2)} ${C.toFixed(2)}"/>` : ''}</svg>` : '';
     const full = all.length > 0 && n === all.length;
@@ -1235,7 +1472,7 @@ function renderHistory() {
   state.events.filter(e => e.d.startsWith(ui.month)).forEach(e => { (evByDay[e.d] = evByDay[e.d] || []).push(e); });
   const skipsOn = d => {
     const r = state.days[d], out = [];
-    if (r) for (const s of ['am', 'pm']) for (const id of (r[s] && r[s].skip) || []) {
+    if (r) for (const s of recSlots(r)) for (const id of r[s].skip || []) {
       const p = byId(id), w = r[s].why && r[s].why[id];
       if (p) out.push(`略過 ${esc(p.name)}${w ? `・${esc(w)}` : ''}`);
     }
@@ -1262,8 +1499,7 @@ function renderHistory() {
     <section class="card hist-head">
       <img src="${IMG.duo}" alt="">
       <div class="stats">
-        <div class="stat slot-am">${icon('sun')}<b>${am}</b><span>早上完成</span></div>
-        <div class="stat slot-pm">${icon('moon')}<b>${pm}</b><span>晚上完成</span></div>
+        ${state.slots.filter(x => !x.deleted || doneDays[x.id]).sort(byHour).map(x => `<div class="stat ${tone(x.id)}">${icon(slotIcon(x.id))}<b>${doneDays[x.id] || 0}</b><span>${esc(x.name)}完成</span></div>`).join('')}
         <div class="stat">${streakFace()}<b>${streak()}</b><span>連續天數</span></div>
       </div>
     </section>
@@ -1275,7 +1511,7 @@ function renderHistory() {
       </div>
     </section>
     ${tags.length ? `<section class="card trend">
-      <h2>${icon('drop')}肌膚狀態</h2>
+      <h2>${icon('drop')}今天的狀態</h2>
       ${tags.map(([x, n]) => `<div class="trend-row"><span>${esc(x)}</span><span class="trend-bar"><i style="width:${n / maxTag * 100}%"></i></span><b>${n} 天</b></div>`).join('')}
     </section>` : ''}
     ${notes.length ? `<section class="card notes">
@@ -1284,15 +1520,37 @@ function renderHistory() {
     </section>` : ''}`;
 }
 
+// The app's name can be changed by long-pressing it.
+const appTitle = () => state.title || DEFAULT_TITLE;
+function applyTitle() {
+  $$('.brand-name').forEach(el => { el.textContent = appTitle(); });
+  document.title = appTitle();
+  $('meta[name="apple-mobile-web-app-title"]').content = appTitle();
+}
+function openTitle() {
+  $('#titleInput').value = appTitle();
+  $('#titleDlg').showModal();
+  if (matchMedia('(hover:hover)').matches) $('#titleInput').select();
+}
+$('#titleForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = $('#titleInput').value.trim();
+  state.title = v === DEFAULT_TITLE ? '' : v;
+  save();
+  $('#titleDlg').close();
+  applyTitle();
+});
+
 function renderSide() {
+  applyTitle();
   const t = today(), h = new Date().getHours();
   $('#artGreet').textContent = h < 5 ? '晚安' : h < 11 ? '早安' : h < 18 ? '午安' : '晚安';
   $('#artDate').textContent = longDate(t);
   $('#artWd').textContent = '星期' + WD[dow(t)];
-  $('#artProg').innerHTML = ['am', 'pm'].map(s => {
+  $('#artProg').innerHTML = activeSlots().map(({ id: s }) => {
     const it = slotItems(t, s), n = it.filter(x => x.ok).length;
-    return `<div class="ap slot-${s}">
-      <span class="ap-ic">${icon(SLOT[s].icon)}</span><span>${SLOT[s].name}</span>
+    return `<div class="ap ${tone(s)}">
+      <span class="ap-ic">${icon(slotIcon(s))}</span><span>${esc(slotName(s))}</span>
       <span class="ap-bar"><i style="width:${it.length ? n / it.length * 100 : 0}%"></i></span>
       <span class="ap-num">${it.length ? `${n}/${it.length}` : '—'}</span>
     </div>`;
@@ -1388,10 +1646,9 @@ function afterMark(d, slot, before, undo) {
     const card = $(`#view-today .slot-${slot}`);
     if (card && ui.date === d && slotComplete(d, slot) && !ui.open.has(d + slot)) setFolded(card, true);
   }, 700);
-  const other = slotItems(d, slot === 'am' ? 'pm' : 'am');
   const action = undo && { label: '復原', fn: undo };
-  if (!other.length || other.every(x => x.ok)) toast('duo', '全部完成！', action);
-  else toast(slot, `${SLOT[slot].name}完成！`, action);
+  if (dayState(d) === 'complete') toast('duo', '全部完成！', action);
+  else toast(slotImg(slot), `${slotName(slot)}完成！`, action);
 }
 
 // Update the tapped row in place: rebuilding the whole view made iPhone Safari jump back to the top.
@@ -1432,11 +1689,12 @@ function openExtra(slot) {
   const cur = slotItems(ui.date, slot).map(x => x.id);
   const list = state.products.filter(p => !p.deleted && !cur.includes(p.id)).sort(byStep);
   $('#extraDlg').dataset.slot = slot;
-  $('#xTitle').textContent = `${SLOT[slot].name}加一項`;
+  $('#xTitle').textContent = `${slotName(slot)}加一項`;
   $('#xList').innerHTML = list.length
-    ? list.map(p => `<button class="pick" data-act="add-extra" data-slot="${slot}" data-id="${p.id}"><i class="dot" style="background:${COLORS[p.color]}"></i><span>${esc(p.name)}</span><span class="tag">${esc(p.step)}</span></button>`).join('')
+    ? withCats(list, p => p, p => `<button class="pick" data-act="add-extra" data-slot="${slot}" data-id="${p.id}"><i class="dot" style="background:${COLORS[p.color]}"></i><span>${esc(p.name)}</span><span class="tag">${esc(p.step)}</span></button>`,
+      c => `<div class="cat-sep" style="--cc:${COLORS[c.color]}">${esc(c.name)}</div>`)
     : '<div class="pick-empty">都在清單裡了</div>';
-  $('[data-act="new-from-extra"]').innerHTML = `${icon('plus')}新的保養品`;
+  $('[data-act="new-from-extra"]').innerHTML = `${icon('plus')}新增一項`;
   $('#extraDlg').showModal();
 }
 
@@ -1471,7 +1729,8 @@ let toastTimer, toastAction = null;
 function toast(img, text, action) {
   const t = $('#toast');
   $('.toast-av', t).classList.toggle('duo', img === 'duo');
-  $('img', t).src = IMG[img];
+  $('img', t).src = IMG[img] || img;
+  $('img', t).classList.toggle('fit', $('img', t).src.endsWith(IMG.usagi));
   $('.toast-text', t).textContent = text;
   toastAction = action ? action.fn : null;
   $('#toastAct').hidden = !action;
@@ -1507,7 +1766,7 @@ function exportData() {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `保養日記備份-${today()}.json`;
+  a.download = `${appTitle()}備份-${today()}.json`;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -1533,30 +1792,37 @@ $('#importFile').addEventListener('change', async e => {
 
 /* ---------- product form ---------- */
 let draft = null;
-const form = { stepTouched: false, more: false };
-const defaultStep = () => state.steps.includes('其他') ? '其他' : (state.steps[state.steps.length - 1] || '其他');
-// A step named in the product name wins (longest first); then keyword hints, matched to steps that contain the hinted name.
-function guessStep(name) {
-  const named = state.steps.filter(s => s !== '其他' && name.includes(s)).sort((a, b) => b.length - a.length)[0];
-  if (named) return named;
+const form = { stepTouched: false, catTouched: false, colorTouched: false, more: false };
+const defaultStep = catId => { const st = catById(catId).steps; return st.includes('其他') ? '其他' : (st[st.length - 1] || '其他'); };
+// A step named in the item's name wins: the one ending last, since the noun comes last ("維他命C精華" is a 精華),
+// then the longest; then keyword hints. The step found also picks the category,
+// unless she chose the category herself.
+function guessStep(name, only) {
+  const all = (only ? [catById(only)] : state.cats).flatMap(c => c.steps.filter(x => x !== '其他').map(x => [c.id, x]));
+  const end = x => name.lastIndexOf(x) + x.length;
+  const named = all.filter(([, x]) => name.includes(x)).sort((a, b) => end(b[1]) - end(a[1]) || b[1].length - a[1].length)[0];
+  if (named) return { cat: named[0], step: named[1] };
   for (const [hint, re] of STEP_HINTS) {
-    const step = re.test(name) && state.steps.find(s => s.includes(hint));
-    if (step) return step;
+    const hit = re.test(name) && all.find(([, x]) => x.includes(hint));
+    if (hit) return { cat: hit[0], step: hit[1] };
   }
-  return defaultStep();
+  const cat = only || draft.cat;
+  return { cat, step: defaultStep(cat) };
 }
 function openForm(id, addTo) {
   const p = id && byId(id);
   ui.addTo = addTo || null;
+  const live = activeSlots().map(x => x.id), cat = state.cats[0];
+  const dflt = live.filter(x => x === 'am' || x === 'pm');
   draft = p ? JSON.parse(JSON.stringify(p)) : {
-    id: null, name: '', step: defaultStep(),
-    times: addTo ? [addTo.slot] : ['am', 'pm'],
-    freq: normFreq(), freqPm: null, color: 'pink', note: '', paused: false,
+    id: null, name: '', cat: cat.id, step: defaultStep(cat.id),
+    times: addTo ? [addTo.slot] : dflt.length ? dflt : live.slice(0, 1),
+    freq: normFreq(), freqBy: {}, color: cat.color, note: '', paused: false,
     opened: '', life: '', expiry: '', low: false,
   };
-  form.stepTouched = !!p;
+  form.stepTouched = form.catTouched = form.colorTouched = !!p;
   form.more = !!p;
-  $('#fTitle').textContent = p ? '編輯保養品' : '新增保養品';
+  $('#fTitle').textContent = p ? '編輯' : '新增一項';
   $('#fName').value = draft.name;
   $('#fNote').value = draft.note;
   renderForm();
@@ -1566,8 +1832,10 @@ function openForm(id, addTo) {
 }
 
 const sameDays = (a, b) => a.length === b.length && a.every(x => b.includes(x));
+// A frequency block edits the shared frequency ('freq') or one routine's own (keyed by routine id).
+const fq = k => k === 'freq' ? draft.freq : draft.freqBy[k];
 function freqBlock(key) {
-  const f = draft[key];
+  const f = fq(key);
   return `<div class="seg">${[['daily', '每天'], ['weekly', '指定星期'], ['interval', '每隔幾天']].map(([v, n]) =>
       `<button type="button" class="${f.type === v ? 'on' : ''}" data-act="f-freq" data-k="${key}" data-v="${v}">${n}</button>`).join('')}</div>
     ${f.type === 'weekly' ? `<div class="freq-panel">
@@ -1597,15 +1865,18 @@ function freqBlock(key) {
 }
 
 function renderForm() {
-  const both = draft.times.length === 2, split = both && !!draft.freqPm;
-  const steps = [...state.steps, ...(state.steps.includes(draft.step) ? [] : [draft.step])];
+  const many = draft.times.length > 1, split = many && isSplit(draft);
+  const cats = [...state.cats, ...(state.cats.some(c => c.id === draft.cat) ? [] : [catById(draft.cat)])];
+  $('#fCats').innerHTML = cats.map(c => `<button type="button" class="chip cat-chip${draft.cat === c.id ? ' on' : ''}" style="--cc:${COLORS[c.color]}" data-act="f-cat" data-v="${esc(c.id)}">${esc(c.name)}</button>`).join('');
+  const st = catById(draft.cat).steps, steps = [...st, ...(st.includes(draft.step) ? [] : [draft.step])];
   $('#fSteps').innerHTML = steps.map(s => `<button type="button" class="chip${draft.step === s ? ' on' : ''}" data-act="f-step" data-v="${esc(s)}">${esc(s)}</button>`).join('');
-  $('#fTimes').innerHTML = ['am', 'pm'].map(s => `<button type="button" class="time-btn slot-${s}${draft.times.includes(s) ? ' on' : ''}" data-act="f-time" data-v="${s}" aria-pressed="${draft.times.includes(s)}">${icon(SLOT[s].icon)}${SLOT[s].name}</button>`).join('');
+  $('#fTimes').innerHTML = activeSlots().map(({ id: s }) => `<button type="button" class="time-btn ${tone(s)}${draft.times.includes(s) ? ' on' : ''}" data-act="f-time" data-v="${s}" aria-pressed="${draft.times.includes(s)}">${icon(slotIcon(s))}${esc(slotName(s))}</button>`).join('');
+  const splitName = timesLabel(draft.times);
   $('#fFreqWrap').innerHTML = `<div class="lbl-row">
       <span class="lbl">頻率</span>
-      ${both ? `<button type="button" class="mini-toggle${split ? ' on' : ''}" data-act="f-split" aria-pressed="${split}">早晚分開</button>` : ''}
+      ${many ? `<button type="button" class="mini-toggle${split ? ' on' : ''}" data-act="f-split" aria-pressed="${split}">${splitName.includes('・') ? '分開設定' : splitName + '分開'}</button>` : ''}
     </div>
-    ${split ? ['am', 'pm'].map(s => `<div class="freq-sub slot-${s}">${icon(SLOT[s].icon)}${SLOT[s].name}</div>${freqBlock(s === 'am' ? 'freq' : 'freqPm')}`).join('') : freqBlock('freq')}`;
+    ${split ? draft.times.map(s => `<div class="freq-sub ${tone(s)}">${icon(slotIcon(s))}${esc(slotName(s))}</div>${freqBlock(s)}`).join('') : freqBlock('freq')}`;
   const dateRow = (k, label) => `<div class="date-row"><span>${label}</span>
     <input type="date" class="input" data-date-k="${k}" value="${draft[k] || ''}">
     ${draft[k] ? `<button type="button" class="tag-btn" data-act="f-clear" data-k="${k}" aria-label="清除">${icon('x')}</button>` : ''}</div>`;
@@ -1625,17 +1896,29 @@ function renderForm() {
   $('#fSum').textContent = `${draft.step}・${scheduleLabel(draft)}`;
 }
 
+const copy = o => JSON.parse(JSON.stringify(o));
+// Keep a product's routines and per-routine frequencies consistent; a split left with one routine collapses into it.
+function fitTimes(p, times) {
+  const order = activeSlots().map(x => x.id);
+  p.times = order.filter(t => times.includes(t));
+  if (!isSplit(p)) return;
+  Object.keys(p.freqBy).forEach(t => { if (!p.times.includes(t)) delete p.freqBy[t]; });
+  if (p.times.length < 2) {
+    if (p.freqBy[p.times[0]]) p.freq = p.freqBy[p.times[0]];
+    p.freqBy = {};
+  } else p.times.forEach(t => { if (!p.freqBy[t]) p.freqBy[t] = copy(p.freq); });
+}
 function setTimes(v) {
-  const times = draft.times.includes(v) ? draft.times.filter(x => x !== v) : [...draft.times, v].sort();
-  // Leaving only the evening keeps its own frequency; otherwise a split collapses into one.
-  if (times.length < 2 && draft.freqPm) {
-    if (times[0] === 'pm') draft.freq = draft.freqPm;
-    draft.freqPm = null;
-  }
-  draft.times = times;
+  fitTimes(draft, draft.times.includes(v) ? draft.times.filter(x => x !== v) : [...draft.times, v]);
+}
+function setCat(id) {
+  draft.cat = id;
+  form.catTouched = true;
+  if (!catById(id).steps.includes(draft.step)) draft.step = form.stepTouched ? defaultStep(id) : guessStep($('#fName').value, id).step;
+  if (!form.colorTouched) draft.color = catById(id).color;
 }
 
-/* ---------- list editor (skin tags, steps) ---------- */
+/* ---------- list editor (statuses, reasons, steps) ---------- */
 let listCfg = null;
 const tagRow = (name, orig = name) => `<div class="tag-row">
   <input class="input" maxlength="${listCfg.max}" autocomplete="off" value="${esc(name)}"${orig ? ` data-orig="${esc(orig)}"` : ''}>
@@ -1676,7 +1959,7 @@ function saveList() {
   render();
 }
 const skinEditor = () => openListEditor({
-  title: '肌膚狀態', items: state.skinTags, placeholder: '新增狀態', max: 10,
+  title: '今天的狀態', items: state.skinTags, placeholder: '新增狀態', max: 10,
   onSave(items, renamed) {
     // Renaming a tag also renames it in past records; removing one leaves past records alone.
     Object.values(state.days).forEach(r => { if (r && r.skin) r.skin = [...new Set(r.skin.map(s => renamed[s] || s))]; });
@@ -1686,23 +1969,184 @@ const skinEditor = () => openListEditor({
 const reasonEditor = () => openListEditor({
   title: '略過原因', items: state.skipReasons, placeholder: '新增原因', max: 8,
   onSave(items, renamed) {
-    Object.values(state.days).forEach(r => ['am', 'pm'].forEach(s => {
-      const w = r && r[s] && r[s].why;
+    Object.values(state.days).forEach(r => recSlots(r).forEach(s => {
+      const w = r[s].why;
       if (w) Object.keys(w).forEach(k => { if (renamed[w[k]]) w[k] = renamed[w[k]]; });
     }));
     state.skipReasons = items;
     renderWhy();
   },
 });
-const stepEditor = () => openListEditor({
-  title: '步驟', items: state.steps, placeholder: '新增步驟', max: 8,
+const stepEditor = catId => openListEditor({
+  title: `${catById(catId).name}的步驟`, items: catById(catId).steps, placeholder: '新增步驟', max: 8,
   onSave(items, renamed) {
-    state.products.forEach(p => { if (renamed[p.step]) p.step = renamed[p.step]; });
-    if (renamed[draft.step]) draft.step = renamed[draft.step];
-    state.steps = items;
-    renderForm();
+    const cat = catById(catId);
+    state.products.forEach(p => { if (p.cat === cat.id && renamed[p.step]) p.step = renamed[p.step]; });
+    if (draft && draft.cat === cat.id && renamed[draft.step]) draft.step = renamed[draft.step];
+    cat.steps = items;
+    if ($('#formDlg').open) renderForm();
+    if ($('#catDlg').open) renderCatSheet();
   },
 });
+
+/* ---------- settings: routines and categories ---------- */
+let slotDraft = null;
+function openSlot(id) {
+  const x = id && state.slots.find(y => y.id === id);
+  const used = activeSlots().map(y => y.look);
+  slotDraft = x ? { ...x, orig: x.look, swapWith: null } : { id: null, name: '', min: 12 * 60, look: Object.keys(LOOKS).find(k => !used.includes(k)) || 'usagi' };
+  $('#sTitle').textContent = x ? '編輯時段' : '新增時段';
+  $('#sName').value = slotDraft.name;
+  $('#sTime').value = `${pad(Math.floor(slotDraft.min / 60))}:${pad(slotDraft.min % 60)}`;
+  $('#sDelete').hidden = !x || activeSlots().length < 2;
+  renderSlotSheet();
+  if (!$('#slotDlg').open) $('#slotDlg').showModal();
+  if (!x && matchMedia('(hover:hover)').matches) $('#sName').focus();
+}
+// Picking a character another routine already wears switches the sheet to that routine.
+function pickLook(look) {
+  if (slotDraft.swapWith) { slotDraft.swapWith = null; slotDraft.look = slotDraft.orig; }
+  const other = slotDraft.id && activeSlots().find(y => y.look === look && y.id !== slotDraft.id);
+  if (!other) { slotDraft.look = look; renderSlotSheet(); return; }
+  openSlot(other.id);
+  const f = $('#slotForm');
+  f.classList.remove('swap');
+  void f.offsetWidth;
+  f.classList.add('swap');
+}
+function renderSlotSheet() {
+  $('#sLooks').innerHTML = Object.entries(LOOKS).map(([k, l]) => `<button type="button" class="look tone-${l.tone}${slotDraft.look === k ? ' on' : ''}" data-act="s-look" data-v="${k}" aria-pressed="${slotDraft.look === k}">
+    <span class="avatar"><img src="${IMG[k]}"${fitCls(IMG[k])} alt=""></span><span>${l.name}</span></button>`).join('');
+  // Swapping: each chip shows the other routine with the character it would end up with.
+  const others = slotDraft.id ? activeSlots().filter(y => y.id !== slotDraft.id && y.look !== slotDraft.orig) : [];
+  $('#sSwapWrap').hidden = !others.length;
+  $('#sSwap').innerHTML = others.map(y => {
+    const on = slotDraft.swapWith === y.id, look = on ? slotDraft.orig : y.look;
+    return `<button type="button" class="chip swap-chip tone-${LOOKS[look].tone}${on ? ' on' : ''}" data-act="s-swap" data-id="${y.id}" aria-pressed="${on}">
+      <img src="${IMG[look]}"${fitCls(IMG[look])} alt="">和${esc(y.name)}交換</button>`;
+  }).join('');
+}
+function swapWith(id) {
+  if (slotDraft.swapWith === id) { slotDraft.swapWith = null; slotDraft.look = slotDraft.orig; }
+  else { slotDraft.swapWith = id; slotDraft.look = state.slots.find(y => y.id === id).look; }
+  renderSlotSheet();
+}
+function saveSlot() {
+  const name = $('#sName').value.trim();
+  if (!name) { shake($('#sName')); $('#sName').focus(); return; }
+  if (activeSlots().some(y => y.name === name && y.id !== slotDraft.id)) { shake($('#sName')); return; }
+  const [h, m] = ($('#sTime').value || '12:00').split(':').map(Number);
+  const fields = { name, min: (h || 0) * 60 + (m || 0), look: slotDraft.look };
+  const partner = slotDraft.swapWith && state.slots.find(y => y.id === slotDraft.swapWith);
+  if (partner) partner.look = slotDraft.orig;
+  const x = slotDraft.id && state.slots.find(y => y.id === slotDraft.id);
+  // A new routine starts today, so days already lived don't grow an unticked card.
+  if (x) Object.assign(x, fields); else state.slots.push({ id: 's' + uid(), ...fields, from: today() });
+  state.slots.sort(byHour);
+  state.products.forEach(p => fitTimes(p, p.times));
+  save();
+  $('#slotDlg').close();
+  render();
+}
+function deleteSlot() {
+  const x = state.slots.find(y => y.id === slotDraft.id);
+  if (!x) return;
+  const only = state.products.filter(p => !p.deleted && p.times.length === 1 && p.times[0] === x.id).length;
+  if (!confirm(`要刪除「${x.name}」嗎？過去的紀錄會保留。${only ? `\n有 ${only} 項只排在這個時段，刪除後要到清單裡重新選時段。` : ''}`)) return;
+  // Only hidden, so past days that used it keep their record.
+  x.deleted = true;
+  state.products.forEach(p => fitTimes(p, p.times));
+  save();
+  $('#slotDlg').close();
+  render();
+}
+
+let catDraft = null;
+function openCat(id) {
+  const c = id && state.cats.find(y => y.id === id);
+  const used = state.cats.map(y => y.color);
+  catDraft = c ? { id: c.id, name: c.name, color: c.color } : { id: null, name: '', color: Object.keys(COLORS).find(k => !used.includes(k)) || 'pink' };
+  $('#cTitle').textContent = c ? '編輯分類' : '新增分類';
+  $('#cName').value = catDraft.name;
+  $('#cDelete').hidden = !c || state.cats.length < 2;
+  renderCatSheet();
+  $('#catDlg').showModal();
+  if (!c && matchMedia('(hover:hover)').matches) $('#cName').focus();
+}
+function renderCatSheet() {
+  $('#cColors').innerHTML = Object.entries(COLORS).map(([k, c]) => `<button type="button" class="${catDraft.color === k ? 'on' : ''}" style="background:${c}" data-act="c-color" data-v="${k}" aria-label="${k}"></button>`).join('');
+  const c = catDraft.id && state.cats.find(y => y.id === catDraft.id);
+  $('#cStepsWrap').hidden = !c;
+  if (c) $('#cSteps').innerHTML = c.steps.map(x => `<span class="chip">${esc(x)}</span>`).join('');
+}
+function saveCat() {
+  const name = $('#cName').value.trim();
+  if (!name) { shake($('#cName')); $('#cName').focus(); return; }
+  if (state.cats.some(y => y.name === name && y.id !== catDraft.id)) { shake($('#cName')); return; }
+  const c = catDraft.id && state.cats.find(y => y.id === catDraft.id);
+  if (c) Object.assign(c, { name, color: catDraft.color });
+  else state.cats.push({ id: 'c' + uid(), name, color: catDraft.color, steps: ['其他'] });
+  save();
+  $('#catDlg').close();
+  render();
+}
+function deleteCat() {
+  const c = state.cats.find(y => y.id === catDraft.id);
+  const n = state.products.filter(p => p.cat === c.id && !p.deleted).length;
+  if (!c || !confirm(`要刪除「${c.name}」嗎？${n ? `裡面的 ${n} 項會移到「${state.cats.find(y => y !== c).name}」。` : ''}`)) return;
+  state.cats = state.cats.filter(y => y !== c);
+  state.products.forEach(p => { if (p.cat === c.id) p.cat = state.cats[0].id; });
+  save();
+  $('#catDlg').close();
+  render();
+}
+function moveCat(id, dir) {
+  const i = state.cats.findIndex(c => c.id === id), j = i + dir;
+  if (j < 0 || j >= state.cats.length) return;
+  [state.cats[i], state.cats[j]] = [state.cats[j], state.cats[i]];
+  save();
+  render();
+}
+
+function renderSettings() {
+  const cnt = id => state.products.filter(p => !p.deleted && !p.paused && p.times.includes(id)).length;
+  const ccnt = id => state.products.filter(p => !p.deleted && p.cat === id).length;
+  $('#view-settings').innerHTML = `
+    <div class="view-head"><h1>設定</h1></div>
+    <section class="card set-card">
+      <h2>${icon('clock')}時段</h2>
+      <div class="set-list">${activeSlots().map(x => `<button class="set-row ${tone(x.id)}" data-act="edit-slot" data-id="${x.id}">
+        <span class="avatar"><img src="${slotImg(x.id)}"${fitCls(slotImg(x.id))} alt=""></span>
+        <span class="set-main"><b>${esc(x.name)}</b><span>${cnt(x.id)} 項</span></span>
+        <span class="set-time">${fmtTime(x.min)}</span>${icon('right', 'set-chev')}
+      </button>`).join('')}</div>
+      <button class="btn ghost full" data-act="new-slot">${icon('plus')}新增時段</button>
+    </section>
+    <section class="card set-card">
+      <h2>${icon('bottle')}分類</h2>
+      <div class="set-list">${state.cats.map((c, i) => `<div class="set-row-wrap">
+        <button class="set-row" data-act="edit-cat" data-id="${c.id}">
+          <i class="dot lg" style="background:${COLORS[c.color]}"></i>
+          <span class="set-main"><b>${esc(c.name)}</b><span>${ccnt(c.id)} 項</span></span>${icon('right', 'set-chev')}
+        </button>
+        ${state.cats.length > 1 ? `<button class="tag-btn" data-act="cat-up" data-id="${c.id}" aria-label="往上移"${i ? '' : ' disabled'}>${icon('aup')}</button>` : ''}
+      </div>`).join('')}</div>
+      <button class="btn ghost full" data-act="new-cat">${icon('plus')}新增分類</button>
+    </section>
+    <section class="card set-card">
+      <h2>${icon('star')}其他</h2>
+      <div class="set-list">
+        <button class="set-row" data-act="edit-title"><span class="set-main"><b>名稱</b></span><span class="set-time">${esc(appTitle())}</span>${icon('right', 'set-chev')}</button>
+        <label class="set-row"><span class="set-main"><b>每天換日時間</b></span>
+          <select class="set-select" id="dayStartSel">${DAY_STARTS.map(h => `<option value="${h}"${h === state.dayStart ? ' selected' : ''}>${h ? `凌晨 ${h} 點` : '半夜 12 點'}</option>`).join('')}</select>
+        </label>
+      </div>
+    </section>
+    <div class="backup">
+      <button class="btn ghost sm" data-act="export">${icon('down')}匯出備份</button>
+      <button class="btn ghost sm" data-act="import">${icon('up')}匯入備份</button>
+    </div>`;
+}
 
 function shake(el) {
   el.classList.remove('shake');
@@ -1715,16 +2159,14 @@ function saveForm() {
   draft.note = $('#fNote').value.trim();
   if (!draft.name) { shake($('#fName')); $('#fName').focus(); return; }
   if (!draft.times.length) { shake($('#fTimes')); return; }
-  const noDays = ['freq', 'freqPm'].some(k => draft[k] && draft[k].type === 'weekly' && !draft[k].days.length);
+  const noDays = [draft.freq, ...Object.values(draft.freqBy)].some(f => f.type === 'weekly' && !f.days.length);
   if (noDays) { form.more = true; renderForm(); shake($('#fFreqWrap')); return; }
   let p = draft;
   const old = draft.id && byId(draft.id);
   if (old) {
     state.products[state.products.indexOf(old)] = draft;
     if (old.paused !== draft.paused) logEvent(p.id, draft.paused ? 'pause' : 'resume');
-    if (scheduleLabel(old) !== scheduleLabel(draft) || old.times.join() !== draft.times.join()) {
-      logEvent(p.id, 'freq', draft.freqPm ? scheduleLabel(draft) : `${draft.times.length === 2 ? '早晚' : SLOT[draft.times[0]].name} ${scheduleLabel(draft)}`);
-    }
+    if (whenLabel(old) !== whenLabel(draft)) logEvent(p.id, 'freq', whenLabel(draft));
   } else {
     const order = Math.max(-1, ...state.products.map(x => x.order)) + 1;
     p = { ...draft, id: uid(), created: Date.now(), order };
@@ -1746,12 +2188,17 @@ function saveForm() {
 
 $('#pForm').addEventListener('submit', e => { e.preventDefault(); saveForm(); });
 $('#listForm').addEventListener('submit', e => { e.preventDefault(); saveList(); });
+$('#slotForm').addEventListener('submit', e => { e.preventDefault(); saveSlot(); });
+$('#catForm').addEventListener('submit', e => { e.preventDefault(); saveCat(); });
 $('#tagNew').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addTag(); } });
 $('#formDlg').addEventListener('close', () => { ui.addTo = null; });
 $('#fName').addEventListener('input', e => {
   if (form.stepTouched) return;
-  const step = guessStep(e.target.value);
-  if (step !== draft.step) { draft.step = step; renderForm(); }
+  const g = guessStep(e.target.value, form.catTouched && draft.cat);
+  if (g.step === draft.step && g.cat === draft.cat) return;
+  draft.step = g.step;
+  if (g.cat !== draft.cat) { draft.cat = g.cat; if (!form.colorTouched) draft.color = catById(g.cat).color; }
+  renderForm();
 });
 
 /* ---------- events ---------- */
@@ -1796,7 +2243,20 @@ document.addEventListener('click', e => {
     case 'unextra': removeExtra(slot, id); break;
     case 'skin': toggleSkin(t, v); break;
     case 'edit-skin': skinEditor(); break;
-    case 'edit-steps': stepEditor(); break;
+    case 'edit-steps': stepEditor(draft.cat); break;
+    case 'edit-slot': openSlot(id); break;
+    case 'new-slot': openSlot(); break;
+    case 's-look': pickLook(v); break;
+    case 's-swap': swapWith(id); break;
+    case 's-delete': deleteSlot(); break;
+    case 'edit-cat': openCat(id); break;
+    case 'new-cat': openCat(); break;
+    case 'cat-up': moveCat(id, -1); break;
+    case 'c-color': catDraft.color = v; renderCatSheet(); break;
+    case 'cat-steps': stepEditor(catDraft.id); break;
+    case 'c-delete': deleteCat(); break;
+    case 'edit-title': openTitle(); break;
+    case 'f-cat': setCat(v); renderForm(); break;
     case 'tag-add': addTag(); break;
     case 'tag-del': t.closest('.tag-row').remove(); break;
     case 'tag-up': { const row = t.closest('.tag-row'); if (row.previousElementSibling) row.parentNode.insertBefore(row, row.previousElementSibling); break; }
@@ -1812,13 +2272,16 @@ document.addEventListener('click', e => {
     case 'f-more': form.more = !form.more; renderForm(); break;
     case 'f-step': draft.step = v; form.stepTouched = true; renderForm(); break;
     case 'f-time': setTimes(v); renderForm(); break;
-    case 'f-split': draft.freqPm = draft.freqPm ? null : JSON.parse(JSON.stringify(draft.freq)); renderForm(); break;
-    case 'f-freq': draft[t.dataset.k].type = v; renderForm(); break;
-    case 'f-day': { const f = draft[t.dataset.k], n = Number(v); f.days = f.days.includes(n) ? f.days.filter(x => x !== n) : [...f.days, n]; renderForm(); break; }
-    case 'f-preset': draft[t.dataset.k].days = [...PRESETS[v][1]]; renderForm(); break;
-    case 'f-every': { const f = draft[t.dataset.k]; f.every = Math.min(30, Math.max(2, f.every + Number(v))); renderForm(); break; }
-    case 'f-from': draft[t.dataset.k].from = v; renderForm(); break;
-    case 'f-color': draft.color = v; renderForm(); break;
+    case 'f-split':
+      if (isSplit(draft)) { draft.freq = draft.freqBy[draft.times[0]]; draft.freqBy = {}; }
+      else draft.times.forEach(s => { draft.freqBy[s] = copy(draft.freq); });
+      renderForm(); break;
+    case 'f-freq': fq(t.dataset.k).type = v; renderForm(); break;
+    case 'f-day': { const f = fq(t.dataset.k), n = Number(v); f.days = f.days.includes(n) ? f.days.filter(x => x !== n) : [...f.days, n]; renderForm(); break; }
+    case 'f-preset': fq(t.dataset.k).days = [...PRESETS[v][1]]; renderForm(); break;
+    case 'f-every': { const f = fq(t.dataset.k); f.every = Math.min(30, Math.max(2, f.every + Number(v))); renderForm(); break; }
+    case 'f-from': fq(t.dataset.k).from = v; renderForm(); break;
+    case 'f-color': draft.color = v; form.colorTouched = true; renderForm(); break;
     case 'f-pause': draft.paused = !draft.paused; renderForm(); break;
     case 'f-delete':
       if (confirm(`要刪除「${draft.name || $('#fName').value}」嗎？過去的紀錄會保留。`)) {
@@ -1835,10 +2298,20 @@ document.addEventListener('click', e => {
 
 document.addEventListener('input', e => {
   if (e.target.id === 'dayNote') { dayRec(ui.date, true).note = e.target.value; saveSoon(); }
-  if (e.target.dataset.start && draft) draft[e.target.dataset.start].start = e.target.value || today();
+  if (e.target.dataset.start && draft) fq(e.target.dataset.start).start = e.target.value || today();
   if (e.target.dataset.dateK && draft) draft[e.target.dataset.dateK] = e.target.value;
 });
-document.addEventListener('change', e => { if (e.target.dataset.dateK && draft) renderForm(); });
+document.addEventListener('change', e => {
+  if (e.target.dataset.dateK && draft) renderForm();
+  if (e.target.id === 'dayStartSel') {
+    state.dayStart = dayStartH = Number(e.target.value);
+    lastToday = today();
+    ui.date = today();
+    state.slots.sort(byHour);
+    save();
+    render();
+  }
+});
 
 // Long-press (or right-click): skip an item / tick off a whole routine.
 let pressTimer = null, pressFired = false, pressAt = null;
@@ -1847,6 +2320,7 @@ function hold(el) {
   if (navigator.vibrate && (!navigator.userActivation || navigator.userActivation.hasBeenActive)) navigator.vibrate(12);
   if (el.dataset.hold === 'skip') mark(el.dataset.slot, el.dataset.id, 'skip');
   if (el.dataset.hold === 'all') completeAll(el.dataset.slot);
+  if (el.dataset.hold === 'title') openTitle();
   if (el.dataset.hold === 'wk-skip') mark(el.dataset.slot, el.dataset.id, 'skip', el.dataset.date);
 }
 document.addEventListener('pointerdown', e => {
@@ -1897,9 +2371,9 @@ setInterval(() => { if (!document.hidden && today() !== lastToday) refresh(); },
 window.addEventListener('pagehide', flush);
 
 /* ---------- init ---------- */
-$('#nav').innerHTML = TABS.map(([v, n, ic]) => `<button data-act="tab" data-v="${v}">${icon(ic)}<span>${n}</span></button>`).join('');
+$('#nav').innerHTML = TABS.map(([v, n, ic]) => `<button data-act="tab" data-v="${v}"><span class="bub">${icon(ic)}</span><span>${n}</span></button>`).join('');
 $$('[data-act="close"]').forEach(b => { b.innerHTML = icon('x'); });
-$('[data-act="edit-steps"]').innerHTML = icon('pen');
+$$('[data-act="edit-steps"], [data-act="cat-steps"]').forEach(b => { b.innerHTML = icon('pen'); });
 $('[data-act="edit-reasons"]').innerHTML = icon('pen');
 // ?demo=reset brings the sample data back to its original state.
 if (DEMO && new URLSearchParams(location.search).get('demo') === 'reset') {

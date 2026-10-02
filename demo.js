@@ -1,5 +1,5 @@
 // 示範資料：只有網址加上 ?demo 時才會載入。
-// 資料存在 localStorage 的 skincare-diary-demo，和正式紀錄 skincare-diary-v1 分開，不會互相影響。
+// 資料存在 localStorage 的 skincare-diary-demo，和正式紀錄 skincare-diary-v2 分開，不會互相影響。
 // Three weeks of sample records, dated relative to today.
 window.skincareDemo = ({ today, addDays, isScheduled, normalize }) => {
   const start = addDays(today(), -24);
@@ -15,9 +15,15 @@ window.skincareDemo = ({ today, addDays, isScheduled, normalize }) => {
     ['清爽防曬乳', '防曬', ['am'], { type: 'daily' }, 'peach', '出門前 15 分鐘'],
     ['保濕面膜', '面膜', ['pm'], { type: 'interval', every: 3 }, 'blue'],
     ['痘痘貼', '其他', ['pm'], { type: 'daily' }, 'butter', '', true],
+    ['綜合維他命', '維他命', ['am'], { type: 'daily' }, 'butter', '飯後', false, 'supp'],
+    ['益生菌', '益生菌', ['bed'], { type: 'daily' }, 'butter', '', false, 'supp'],
+    ['人工淚液', '眼藥水', ['am', 'pm'], { type: 'daily' }, 'blue', '', false, 'eye'],
+    ['熱敷眼罩', '熱敷', ['bed'], { type: 'weekly', days: [1, 3, 5] }, 'blue', '', false, 'eye'],
   ];
-  const products = normalize({ products: list.map(([name, step, times, freq, color, note = '', paused = false], i) => (
-    { id: 'd' + i, name, step, times, freq: { start, ...freq }, color, note, paused, created: i + 1 }
+  const slots = [{ id: 'am', name: '早上', min: 7 * 60, look: 'usagi' }, { id: 'pm', name: '晚上', min: 21 * 60, look: 'chii' },
+    { id: 'bed', name: '睡前', min: 23 * 60 + 30, look: 'hachi' }];
+  const products = normalize({ slots, products: list.map(([name, step, times, freq, color, note = '', paused = false, cat = 'care'], i) => (
+    { id: 'd' + i, name, cat, step, times, freq: { start, ...freq }, color, note, paused, created: i + 1 }
   )) }).products;
   const plan = (d, slot) => products.filter(p => isScheduled(p, d, slot)).map(p => p.id);
   const skin = { 1: ['穩定'], 3: ['穩定'], 5: ['乾燥'], 7: ['敏感'], 8: ['敏感', '出油'], 12: ['出油'], 14: ['穩定'], 18: ['乾燥'], 20: ['穩定'] };
@@ -25,7 +31,7 @@ window.skincareDemo = ({ today, addDays, isScheduled, normalize }) => {
   const days = {};
   for (let n = 24; n >= 0; n--) {
     if (n === 16) continue;
-    const d = addDays(today(), -n), am = plan(d, 'am'), pm = plan(d, 'pm');
+    const d = addDays(today(), -n), am = plan(d, 'am'), pm = plan(d, 'pm'), bed = plan(d, 'bed');
     let amDone = [...am], pmDone = [...pm];
     const pmExtra = [], amSkip = [], pmSkip = [], amWhy = {}, pmWhy = {};
     if (n === 0 || n === 10) pmDone = pm.slice(0, 2);
@@ -37,6 +43,7 @@ window.skincareDemo = ({ today, addDays, isScheduled, normalize }) => {
     days[d] = {
       am: { plan: am, done: amDone, extra: [], skip: amSkip, why: amWhy },
       pm: { plan: pm, done: pmDone, extra: pmExtra, skip: pmSkip, why: pmWhy },
+      bed: { plan: bed, done: n === 0 || n === 6 ? [] : n === 11 ? bed.filter(id => id !== 'd12') : [...bed], extra: [], skip: [], why: {} },
       skin: skin[n] || [], note: notes[n] || '',
     };
   }
@@ -46,10 +53,11 @@ window.skincareDemo = ({ today, addDays, isScheduled, normalize }) => {
   Object.assign(P('維他命C精華'), { opened: addDays(today(), -40), life: '3m' });
   Object.assign(P('清爽防曬乳'), { low: true });
   Object.assign(P('保濕面膜'), { expiry: addDays(today(), 120) });
+  Object.assign(P('人工淚液'), { opened: addDays(today(), -24), life: '28d' });
   const events = products.map(p => ({ d: start, id: p.id, k: 'add' }));
   events.push({ d: addDays(today(), -40), id: P('維他命C精華').id, k: 'open' });
   events.push({ d: addDays(today(), -15), id: P('痘痘貼').id, k: 'pause' });
   events.push({ d: addDays(today(), -10), id: P('A醇精華').id, k: 'freq', x: '晚上 週二四六' });
   events.push({ d: addDays(today(), -3), id: P('清爽防曬乳').id, k: 'low' });
-  return { v: 1, products, days, events };
+  return { v: 2, slots, products, days, events };
 };
