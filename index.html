@@ -214,7 +214,7 @@ main{container:main / inline-size;min-width:0}
 .cal-wd{text-align:center;font-size:13px;color:var(--ink-3);padding:4px 0 8px}
 .cal-cell{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;aspect-ratio:1/1.08;border-radius:16px;transition:background .2s}
 .cal-cell:hover{background:var(--soft)}
-.cal-num{width:32px;height:32px;display:grid;place-items:center;border-radius:50%;font-size:15px}
+.cal-num{position:relative;width:32px;height:32px;display:grid;place-items:center;border-radius:50%;font-size:15px}
 .cal-cell.future .cal-num{color:var(--ink-3)}
 .cal-cell.today .cal-num{background:linear-gradient(135deg,var(--pink-200),var(--blue-200))}
 .cal-cell.sel{background:var(--soft)}
@@ -222,7 +222,7 @@ main{container:main / inline-size;min-width:0}
 .cal-dots i{width:7px;height:7px;border-radius:50%}
 .cal-dots i.full{background:var(--c4)}
 .cal-dots i.part{box-shadow:inset 0 0 0 1.5px var(--c4)}
-.cal-cell .heart{position:absolute;top:6px;right:7px;width:10px;height:10px;color:var(--pink-300)}
+.cal-num .heart{position:absolute;top:-2px;right:-6px;width:11px;height:11px;color:var(--pink-300)}
 @container main (min-width:640px){
   .hist-head img{width:130px;height:110px}
   .cal{padding:22px 24px}
@@ -307,6 +307,7 @@ main{container:main / inline-size;min-width:0}
 .art-card{position:relative;height:100%;display:flex;flex-direction:column;background:#fff;border-radius:34px;box-shadow:var(--shadow);padding:28px 28px 0;overflow:hidden}
 .art-brand{display:flex;align-items:center;gap:6px;font-size:14px;letter-spacing:.18em;color:var(--pink-400)}
 .art-brand .ic{width:14px;height:14px}
+.demo-pill{font-size:12px;letter-spacing:.06em;line-height:1;padding:4px 9px;border-radius:999px;background:var(--blue-100);color:var(--blue-600)}
 .art-greet{margin-top:18px;font-size:15px;color:var(--ink-2)}
 .art-date{font-size:36px;line-height:1.25;letter-spacing:.02em}
 .art-wd{font-size:16px;color:var(--ink-2)}
@@ -465,7 +466,8 @@ main{container:main / inline-size;min-width:0}
 'use strict';
 
 /* ---------- constants ---------- */
-const KEY = 'skincare-diary-v1';
+const DEMO = new URLSearchParams(location.search).has('demo');
+const KEY = DEMO ? 'skincare-diary-demo' : 'skincare-diary-v1';
 const STEPS = ['卸妝', '洗臉', '化妝水', '精華', '眼霜', '乳液', '面霜', '防曬', '面膜', '其他'];
 const COLORS = { pink: '#F7B9CA', blue: '#9FC9EE', butter: '#F4D88F', mint: '#A9DCC5', lilac: '#C9BAF0', peach: '#F9C6A6' };
 const WD = ['日', '一', '二', '三', '四', '五', '六'];
@@ -540,14 +542,17 @@ function normalize(s) {
 }
 function load() {
   try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.products)) return normalize(s); } catch (e) {}
-  return blank();
+  if (!DEMO || !window.skincareDemo) return blank();
+  const s = normalize(window.skincareDemo({ today, addDays, isScheduled, normalize }));
+  try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
+  return s;
 }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
 let saveTimer = null;
 const saveSoon = () => { clearTimeout(saveTimer); saveTimer = setTimeout(() => { saveTimer = null; save(); }, 300); };
 const flush = () => { if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; save(); } };
 
-let state = load();
+let state = blank();
 const ui = { tab: 'today', date: today(), week: weekStart(today()), month: today().slice(0, 7), pop: '' };
 
 /* ---------- schedule logic ---------- */
@@ -776,8 +781,7 @@ function renderHistory() {
     const r = state.days[d];
     const noted = r && ((r.skin && r.skin.length) || r.note);
     return `<button class="cal-cell${d === t ? ' today' : ''}${future ? ' future' : ''}" data-act="goto-day" data-date="${d}">
-      ${noted ? icon('heart', 'fill heart') : ''}
-      <span class="cal-num">${parse(d).getDate()}</span>
+      <span class="cal-num">${parse(d).getDate()}${noted ? icon('heart', 'fill heart') : ''}</span>
       <span class="cal-dots"><i class="slot-am ${sa}"></i><i class="slot-pm ${sp}"></i></span>
     </button>`;
   }).join('');
@@ -1077,7 +1081,14 @@ window.addEventListener('pagehide', flush);
 /* ---------- init ---------- */
 $('#nav').innerHTML = TABS.map(([v, n, ic]) => `<button data-act="tab" data-v="${v}">${icon(ic)}<span>${n}</span></button>`).join('');
 $$('[data-act="close"]').forEach(b => { b.innerHTML = icon('x'); });
-render();
+const start = () => { state = load(); render(); };
+if (DEMO) {
+  $$('.m-brand, .art-brand').forEach(el => el.insertAdjacentHTML('beforeend', '<span class="demo-pill">示範</span>'));
+  const s = document.createElement('script');
+  s.src = 'demo.js';
+  s.onload = s.onerror = start;
+  document.head.appendChild(s);
+} else start();
 })();
 </script>
 </body>
