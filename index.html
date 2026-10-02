@@ -55,7 +55,8 @@ main{container:main / inline-size;min-width:0}
 .m-av span + span{margin-left:-12px}
 .m-av img{position:absolute;left:-25%;top:-22%;width:150%;height:150%;object-fit:cover}
 .streak{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;background:#fff;color:var(--pink-600);font-size:14px;box-shadow:var(--shadow)}
-.streak .ic{width:15px;height:15px}
+.streak .face{width:24px;height:22px;object-fit:contain;margin:-3px 0 -3px -4px}
+.face.pop{animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
 
 /* ---------- nav ---------- */
 .nav{position:fixed;z-index:30;left:14px;right:14px;bottom:calc(12px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:6px;border-radius:26px;background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 10px 34px rgba(110,130,170,.18), inset 0 0 0 1px rgba(255,255,255,.7)}
@@ -207,6 +208,7 @@ main{container:main / inline-size;min-width:0}
 .stats{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .stat{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border-radius:18px;background:var(--tint, var(--pink-50))}
 .stat .ic{width:18px;height:18px;color:var(--c4, var(--pink-400))}
+.stat .face{width:24px;height:22px;object-fit:contain;margin-bottom:-2px}
 .stat b{font-weight:400;font-size:22px;line-height:1.2}
 .stat span{font-size:12.5px;color:var(--ink-2)}
 .cal{padding:16px 14px}
@@ -467,14 +469,17 @@ main{container:main / inline-size;min-width:0}
 
 /* ---------- constants ---------- */
 const DEMO = new URLSearchParams(location.search).has('demo');
-const KEY = DEMO ? 'skincare-diary-demo' : 'skincare-diary-v1';
+const KEY = DEMO ? 'skincare-diary-demo' : 'skincare-diary-v2';
 const STEPS = ['卸妝', '洗臉', '化妝水', '精華', '眼霜', '乳液', '面霜', '防曬', '面膜', '其他'];
 const COLORS = { pink: '#F7B9CA', blue: '#9FC9EE', butter: '#F4D88F', mint: '#A9DCC5', lilac: '#C9BAF0', peach: '#F9C6A6' };
 const WD = ['日', '一', '二', '三', '四', '五', '六'];
 const WEEK = [1, 2, 3, 4, 5, 6, 0];
 const SKIN = ['穩定', '水潤', '乾燥', '出油', '冒痘', '泛紅', '敏感'];
 const PRESETS = [['一三五', [1, 3, 5]], ['二四六', [2, 4, 6]], ['平日', [1, 2, 3, 4, 5]], ['週末', [6, 0]]];
-const IMG = { am: 'images/hachiware.webp', pm: 'images/chiikawa.webp', duo: 'images/chiikawa-usagi.jpg' };
+const IMG = {
+  am: 'images/hachiware.webp', pm: 'images/chiikawa.webp', duo: 'images/chiikawa-usagi.jpg',
+  faceDone: 'images/face-hachiware.png', faceRest: 'images/face-chiikawa.png',
+};
 const SLOT = { am: { name: '早上', icon: 'sun' }, pm: { name: '晚上', icon: 'moon' } };
 const TABS = [['today', '今天', 'star'], ['week', '一週', 'week'], ['products', '保養品', 'bottle'], ['history', '紀錄', 'book']];
 
@@ -628,11 +633,13 @@ function scheduleLabel(p) {
 
 /* ---------- render ---------- */
 function render() {
+  const y = window.scrollY;
   $$('#nav button').forEach(b => b.classList.toggle('on', b.dataset.v === ui.tab));
   $$('.view').forEach(v => { v.hidden = v.id !== 'view-' + ui.tab; });
   ({ today: renderToday, week: renderWeek, products: renderProducts, history: renderHistory })[ui.tab]();
   renderSide();
   ui.pop = '';
+  window.scrollTo(0, y);
 }
 
 function dateBar(kind, main, sub, back) {
@@ -651,7 +658,6 @@ const welcome = () => `<section class="card welcome">
   <h2>還沒有保養品</h2>
   <div class="welcome-actions">
     <button class="btn primary" data-act="new">${icon('plus')}新增保養品</button>
-    <button class="btn ghost" data-act="sample">放入範例</button>
   </div>
 </section>`;
 
@@ -663,17 +669,17 @@ function renderToday() {
   $('#view-today').innerHTML = html;
 }
 
+const slotCount = (n, total) => !total ? '' : n === total ? `<span class="done-badge">${icon('check')}完成</span>` : `${n} / ${total}`;
+
 function slotCard(d, slot) {
   const items = slotItems(d, slot);
   const n = items.filter(x => x.done).length, total = items.length;
-  const complete = total > 0 && n === total;
-  const count = complete ? `<span class="done-badge">${icon('check')}完成</span>` : (total ? `${n} / ${total}` : '');
   return `<section class="card slot slot-${slot}">
     <header class="slot-head">
       <span class="avatar"><img src="${IMG[slot]}" alt=""></span>
       <div class="slot-title">
         <h2>${icon(SLOT[slot].icon)}${SLOT[slot].name}</h2>
-        <div class="slot-count">${count}</div>
+        <div class="slot-count">${slotCount(n, total)}</div>
       </div>
       <button class="icon-btn soft" data-act="extra" data-slot="${slot}" aria-label="加一項">${icon('plus')}</button>
     </header>
@@ -792,7 +798,7 @@ function renderHistory() {
       <div class="stats">
         <div class="stat slot-am">${icon('sun')}<b>${am}</b><span>早上完成</span></div>
         <div class="stat slot-pm">${icon('moon')}<b>${pm}</b><span>晚上完成</span></div>
-        <div class="stat">${icon('heart', 'fill')}<b>${streak()}</b><span>連續天數</span></div>
+        <div class="stat">${streakFace()}<b>${streak()}</b><span>連續天數</span></div>
       </div>
     </section>
     <section class="card cal">
@@ -816,11 +822,15 @@ function renderSide() {
       <span class="ap-num">${it.length ? `${n}/${it.length}` : '—'}</span>
     </div>`;
   }).join('');
-  const st = streak();
+  const st = streak(), done = dayState(t) === 'complete';
+  const changed = ui.faceDone !== undefined && ui.faceDone !== done;
+  ui.faceDone = done;
   $('#artStreak').hidden = $('#mStreak').hidden = !st;
-  $('#artStreak').innerHTML = `${icon('heart', 'fill')}連續 ${st} 天`;
-  $('#mStreak').innerHTML = `${icon('heart', 'fill')}${st} 天`;
+  $('#artStreak').innerHTML = `${streakFace(changed)}連續 ${st} 天`;
+  $('#mStreak').innerHTML = `${streakFace(changed)}${st} 天`;
 }
+// Sparkly Hachiware once today's routine is all done, smiling Chiikawa otherwise.
+const streakFace = (pop = false) => `<img class="face${pop ? ' pop' : ''}" src="${dayState(today()) === 'complete' ? IMG.faceDone : IMG.faceRest}" alt="">`;
 
 /* ---------- actions ---------- */
 function setTab(v) {
@@ -837,13 +847,31 @@ function toggle(slot, id) {
   const i = r.done.indexOf(id);
   i >= 0 ? r.done.splice(i, 1) : r.done.push(id);
   save();
-  ui.pop = slot + id;
-  render();
+  patchSlot(slot, id);
+  renderSide();
   if (!before && slotComplete(d, slot)) {
     const other = slotItems(d, slot === 'am' ? 'pm' : 'am');
     if (!other.length || other.every(x => x.done)) toast('duo', '全部完成！');
     else toast(slot, `${SLOT[slot].name}完成！`);
   }
+}
+
+// Update the tapped row in place: rebuilding the whole view made iPhone Safari jump back to the top.
+function patchSlot(slot, id) {
+  const card = $(`#view-today .slot-${slot}`);
+  const btn = card && card.querySelector(`[data-act="toggle"][data-id="${id}"]`);
+  if (!btn) { render(); return; }
+  const items = slotItems(ui.date, slot);
+  const n = items.filter(x => x.done).length;
+  const done = items.some(x => x.id === id && x.done);
+  const li = btn.closest('.item');
+  li.classList.toggle('is-done', done);
+  li.classList.remove('pop');
+  void li.offsetWidth;
+  li.classList.add('pop');
+  btn.setAttribute('aria-pressed', done);
+  $('.slot-count', card).innerHTML = slotCount(n, items.length);
+  $('.bar i', card).style.width = `${n / items.length * 100}%`;
 }
 
 function openExtra(slot) {
@@ -874,11 +902,12 @@ function removeExtra(slot, id) {
   render();
 }
 
-function toggleSkin(v) {
+function toggleSkin(btn, v) {
   const r = dayRec(ui.date, true);
   r.skin = r.skin.includes(v) ? r.skin.filter(s => s !== v) : [...r.skin, v];
   save();
-  render();
+  btn.classList.toggle('on', r.skin.includes(v));
+  btn.setAttribute('aria-pressed', r.skin.includes(v));
 }
 
 let toastTimer;
@@ -892,21 +921,6 @@ function toast(img, text) {
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-const SAMPLE = [
-  { name: '溫和洗面乳', step: '洗臉', times: ['am', 'pm'], freq: { type: 'daily' }, color: 'blue' },
-  { name: '保濕化妝水', step: '化妝水', times: ['am', 'pm'], freq: { type: 'daily' }, color: 'pink' },
-  { name: '維他命C精華', step: '精華', times: ['am'], freq: { type: 'weekly', days: [1, 3, 5] }, color: 'butter' },
-  { name: 'A醇精華', step: '精華', times: ['pm'], freq: { type: 'weekly', days: [2, 4, 6] }, color: 'lilac', note: '薄薄一層' },
-  { name: '修護乳液', step: '乳液', times: ['am', 'pm'], freq: { type: 'daily' }, color: 'mint' },
-  { name: '防曬乳', step: '防曬', times: ['am'], freq: { type: 'daily' }, color: 'peach' },
-  { name: '保濕面膜', step: '面膜', times: ['pm'], freq: { type: 'interval', every: 3, start: today() }, color: 'pink' },
-];
-function loadSample() {
-  state.products = normalize({ products: SAMPLE.map((p, i) => ({ ...p, id: uid(), created: Date.now() + i })) }).products;
-  save();
-  render();
 }
 
 function exportData() {
@@ -1028,11 +1042,10 @@ document.addEventListener('click', e => {
     case 'extra': openExtra(slot); break;
     case 'add-extra': addExtra(slot, id); break;
     case 'unextra': removeExtra(slot, id); break;
-    case 'skin': toggleSkin(v); break;
+    case 'skin': toggleSkin(t, v); break;
     case 'new': openForm(); break;
     case 'new-from-extra': $('#extraDlg').close(); openForm(); break;
     case 'edit': openForm(id); break;
-    case 'sample': loadSample(); break;
     case 'export': exportData(); break;
     case 'import': $('#importFile').click(); break;
     case 'close': dlg && dlg.close(); break;
@@ -1081,6 +1094,9 @@ window.addEventListener('pagehide', flush);
 /* ---------- init ---------- */
 $('#nav').innerHTML = TABS.map(([v, n, ic]) => `<button data-act="tab" data-v="${v}">${icon(ic)}<span>${n}</span></button>`).join('');
 $$('[data-act="close"]').forEach(b => { b.innerHTML = icon('x'); });
+// Records saved before launch under the old key were test data; start the real tool clean.
+if (!DEMO) { try { localStorage.removeItem('skincare-diary-v1'); } catch (e) {} }
+[IMG.faceDone, IMG.faceRest].forEach(src => { new Image().src = src; });
 const start = () => { state = load(); render(); };
 if (DEMO) {
   $$('.m-brand, .art-brand').forEach(el => el.insertAdjacentHTML('beforeend', '<span class="demo-pill">示範</span>'));
