@@ -1098,4 +1098,432 @@ function setFolded(card, folded) {
 }
 
 function openExtra(slot) {
-  const cur = slotItems(ui.date, slot).map(x => x.i
+  const cur = slotItems(ui.date, slot).map(x => x.id);
+  const list = state.products.filter(p => !p.deleted && !cur.includes(p.id)).sort(byStep);
+  $('#extraDlg').dataset.slot = slot;
+  $('#xTitle').textContent = `${SLOT[slot].name}加一項`;
+  $('#xList').innerHTML = list.length
+    ? list.map(p => `<button class="pick" data-act="add-extra" data-slot="${slot}" data-id="${p.id}"><i class="dot" style="background:${COLORS[p.color]}"></i><span>${esc(p.name)}</span><span class="tag">${esc(p.step)}</span></button>`).join('')
+    : '<div class="pick-empty">都在清單裡了</div>';
+  $('[data-act="new-from-extra"]').innerHTML = `${icon('plus')}新的保養品`;
+  $('#extraDlg').showModal();
+}
+
+function addExtra(slot, id) {
+  const r = touch(ui.date, slot);
+  if (!r.extra.includes(id)) r.extra.push(id);
+  save();
+  $('#extraDlg').close();
+  ui.pop = slot + id;
+  render();
+}
+
+function removeExtra(slot, id) {
+  const r = touch(ui.date, slot);
+  r.extra = r.extra.filter(x => x !== id);
+  r.done = r.done.filter(x => x !== id);
+  r.skip = r.skip.filter(x => x !== id);
+  save();
+  render();
+}
+
+function toggleSkin(btn, v) {
+  const r = dayRec(ui.date, true);
+  r.skin = r.skin.includes(v) ? r.skin.filter(s => s !== v) : [...r.skin, v];
+  save();
+  btn.classList.toggle('on', r.skin.includes(v));
+  btn.setAttribute('aria-pressed', r.skin.includes(v));
+}
+
+let toastTimer;
+function toast(img, text) {
+  const t = $('#toast');
+  $('.toast-av', t).classList.toggle('duo', img === 'duo');
+  $('img', t).src = IMG[img];
+  $('.toast-text', t).textContent = text;
+  t.classList.remove('show');
+  void t.offsetWidth;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// Remind once there is a week of records and no backup for two weeks: the data only lives on this phone.
+function needsBackup() {
+  const now = Date.now();
+  if (Object.keys(state.days).length < 7 || state.backupSnooze > now) return false;
+  return now - state.lastBackup > 14 * 864e5;
+}
+
+function exportData() {
+  state.lastBackup = Date.now();
+  save();
+  if (ui.tab === 'today') render();
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `保養日記備份-${today()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+$('#importFile').addEventListener('change', async e => {
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  try {
+    const data = JSON.parse(await f.text());
+    if (!Array.isArray(data.products)) throw new Error('bad file');
+    if (!confirm('用這份備份取代目前的資料？')) return;
+    state = normalize(data);
+    save();
+    render();
+    toast('duo', '匯入完成');
+  } catch (err) {
+    alert('這個檔案無法讀取');
+  }
+});
+
+/* ---------- product form ---------- */
+let draft = null;
+const form = { stepTouched: false, more: false };
+const defaultStep = () => state.steps.includes('其他') ? '其他' : (state.steps[state.steps.length - 1] || '其他');
+// A step named in the product name wins (longest first); then keyword hints, matched to steps that contain the hinted name.
+function guessStep(name) {
+  const named = state.steps.filter(s => s !== '其他' && name.includes(s)).sort((a, b) => b.length - a.length)[0];
+  if (named) return named;
+  for (const [hint, re] of STEP_HINTS) {
+    const step = re.test(name) && state.steps.find(s => s.includes(hint));
+    if (step) return step;
+  }
+  return defaultStep();
+}
+function openForm(id, addTo) {
+  const p = id && byId(id);
+  ui.addTo = addTo || null;
+  draft = p ? JSON.parse(JSON.stringify(p)) : {
+    id: null, name: '', step: defaultStep(),
+    times: addTo ? [addTo.slot] : ['am', 'pm'],
+    freq: normFreq(), freqPm: null, color: 'pink', note: '', paused: false,
+  };
+  form.stepTouched = !!p;
+  form.more = !!p;
+  $('#fTitle').textContent = p ? '編輯保養品' : '新增保養品';
+  $('#fName').value = draft.name;
+  $('#fNote').value = draft.note;
+  renderForm();
+  $('#formDlg').showModal();
+  $('#formDlg .sheet').scrollTop = 0;
+  if (!p && matchMedia('(hover:hover)').matches) $('#fName').focus();
+}
+
+const sameDays = (a, b) => a.length === b.length && a.every(x => b.includes(x));
+function freqBlock(key) {
+  const f = draft[key];
+  return `<div class="seg">${[['daily', '每天'], ['weekly', '指定星期'], ['interval', '每隔幾天']].map(([v, n]) =>
+      `<button type="button" class="${f.type === v ? 'on' : ''}" data-act="f-freq" data-k="${key}" data-v="${v}">${n}</button>`).join('')}</div>
+    ${f.type === 'weekly' ? `<div class="freq-panel">
+      <div class="days">${WEEK.map(d => `<button type="button" class="${f.days.includes(d) ? 'on' : ''}" data-act="f-day" data-k="${key}" data-v="${d}" aria-pressed="${f.days.includes(d)}">${WD[d]}</button>`).join('')}</div>
+      <div class="chips sm">${PRESETS.map(([n, ds], i) => `<button type="button" class="chip${sameDays(ds, f.days) ? ' on' : ''}" data-act="f-preset" data-k="${key}" data-v="${i}">${n}</button>`).join('')}</div>
+    </div>` : ''}
+    ${f.type === 'interval' ? `<div class="freq-panel">
+      <div class="interval-row">
+        <span>每</span>
+        <span class="stepper">
+          <button type="button" data-act="f-every" data-k="${key}" data-v="-1" aria-label="減少">−</button>
+          <b>${f.every}</b>
+          <button type="button" data-act="f-every" data-k="${key}" data-v="1" aria-label="增加">+</button>
+        </span>
+        <span>天一次</span>
+      </div>
+      <div class="seg sm">
+        <button type="button" class="${f.from === 'fixed' ? 'on' : ''}" data-act="f-from" data-k="${key}" data-v="fixed">固定日期</button>
+        <button type="button" class="${f.from === 'last' ? 'on' : ''}" data-act="f-from" data-k="${key}" data-v="last">從上次完成算</button>
+      </div>
+      <div class="interval-row">
+        <span>從</span>
+        <input type="date" class="input" data-start="${key}" value="${f.start}">
+        <span>開始</span>
+      </div>
+    </div>` : ''}`;
+}
+
+function renderForm() {
+  const both = draft.times.length === 2, split = both && !!draft.freqPm;
+  const steps = [...state.steps, ...(state.steps.includes(draft.step) ? [] : [draft.step])];
+  $('#fSteps').innerHTML = steps.map(s => `<button type="button" class="chip${draft.step === s ? ' on' : ''}" data-act="f-step" data-v="${esc(s)}">${esc(s)}</button>`).join('');
+  $('#fTimes').innerHTML = ['am', 'pm'].map(s => `<button type="button" class="time-btn slot-${s}${draft.times.includes(s) ? ' on' : ''}" data-act="f-time" data-v="${s}" aria-pressed="${draft.times.includes(s)}">${icon(SLOT[s].icon)}${SLOT[s].name}</button>`).join('');
+  $('#fFreqWrap').innerHTML = `<div class="lbl-row">
+      <span class="lbl">頻率</span>
+      ${both ? `<button type="button" class="mini-toggle${split ? ' on' : ''}" data-act="f-split" aria-pressed="${split}">早晚分開</button>` : ''}
+    </div>
+    ${split ? ['am', 'pm'].map(s => `<div class="freq-sub slot-${s}">${icon(SLOT[s].icon)}${SLOT[s].name}</div>${freqBlock(s === 'am' ? 'freq' : 'freqPm')}`).join('') : freqBlock('freq')}`;
+  $('#fColors').innerHTML = Object.entries(COLORS).map(([k, c]) => `<button type="button" class="${draft.color === k ? 'on' : ''}" style="background:${c}" data-act="f-color" data-v="${k}" aria-label="${k}"></button>`).join('');
+  $('#fPause').hidden = !draft.id;
+  $('#fPause').classList.toggle('on', draft.paused);
+  $('#fPause').setAttribute('aria-checked', draft.paused);
+  $('#fDelete').hidden = !draft.id;
+  $('#fMore').classList.toggle('open', form.more);
+  $('#fMoreBtn').classList.toggle('open', form.more);
+  $('#fMoreBtn').setAttribute('aria-expanded', form.more);
+  $('#fSum').textContent = `${draft.step}・${scheduleLabel(draft)}`;
+}
+
+function setTimes(v) {
+  const times = draft.times.includes(v) ? draft.times.filter(x => x !== v) : [...draft.times, v].sort();
+  // Leaving only the evening keeps its own frequency; otherwise a split collapses into one.
+  if (times.length < 2 && draft.freqPm) {
+    if (times[0] === 'pm') draft.freq = draft.freqPm;
+    draft.freqPm = null;
+  }
+  draft.times = times;
+}
+
+/* ---------- list editor (skin tags, steps) ---------- */
+let listCfg = null;
+const tagRow = (name, orig = name) => `<div class="tag-row">
+  <input class="input" maxlength="${listCfg.max}" autocomplete="off" value="${esc(name)}"${orig ? ` data-orig="${esc(orig)}"` : ''}>
+  <button type="button" class="tag-btn" data-act="tag-up" aria-label="往上移">${icon('aup')}</button>
+  <button type="button" class="tag-btn del" data-act="tag-del" aria-label="刪除">${icon('x')}</button>
+</div>`;
+function openListEditor(cfg) {
+  listCfg = cfg;
+  $('#listTitle').textContent = cfg.title;
+  $('#tagList').innerHTML = cfg.items.map(n => tagRow(n)).join('');
+  $('#tagNew').value = '';
+  $('#tagNew').placeholder = cfg.placeholder;
+  $('#tagNew').maxLength = cfg.max;
+  $('[data-act="tag-add"]').innerHTML = icon('plus');
+  $('#listDlg').showModal();
+}
+function addTag() {
+  const input = $('#tagNew'), name = input.value.trim();
+  if (!name) { input.focus(); return; }
+  if ($$('#tagList input').some(i => i.value.trim() === name)) { shake(input); return; }
+  $('#tagList').insertAdjacentHTML('beforeend', tagRow(name, ''));
+  input.value = '';
+  input.focus();
+}
+function saveList() {
+  const items = [], renamed = {};
+  $$('#tagList input').forEach(i => {
+    const name = i.value.trim();
+    if (!name || items.includes(name)) return;
+    items.push(name);
+    if (i.dataset.orig && i.dataset.orig !== name) renamed[i.dataset.orig] = name;
+  });
+  const pending = $('#tagNew').value.trim();
+  if (pending && !items.includes(pending)) items.push(pending);
+  listCfg.onSave(items, renamed);
+  save();
+  $('#listDlg').close();
+  render();
+}
+const skinEditor = () => openListEditor({
+  title: '肌膚狀態', items: state.skinTags, placeholder: '新增狀態', max: 10,
+  onSave(items, renamed) {
+    // Renaming a tag also renames it in past records; removing one leaves past records alone.
+    Object.values(state.days).forEach(r => { if (r && r.skin) r.skin = [...new Set(r.skin.map(s => renamed[s] || s))]; });
+    state.skinTags = items;
+  },
+});
+const stepEditor = () => openListEditor({
+  title: '步驟', items: state.steps, placeholder: '新增步驟', max: 8,
+  onSave(items, renamed) {
+    state.products.forEach(p => { if (renamed[p.step]) p.step = renamed[p.step]; });
+    if (renamed[draft.step]) draft.step = renamed[draft.step];
+    state.steps = items;
+    renderForm();
+  },
+});
+
+function shake(el) {
+  el.classList.remove('shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+}
+
+function saveForm() {
+  draft.name = $('#fName').value.trim();
+  draft.note = $('#fNote').value.trim();
+  if (!draft.name) { shake($('#fName')); $('#fName').focus(); return; }
+  if (!draft.times.length) { shake($('#fTimes')); return; }
+  const noDays = ['freq', 'freqPm'].some(k => draft[k] && draft[k].type === 'weekly' && !draft[k].days.length);
+  if (noDays) { form.more = true; renderForm(); shake($('#fFreqWrap')); return; }
+  let p = draft;
+  if (draft.id) {
+    state.products[state.products.findIndex(x => x.id === draft.id)] = draft;
+  } else {
+    const order = Math.max(-1, ...state.products.map(x => x.order)) + 1;
+    p = { ...draft, id: uid(), created: Date.now(), order };
+    state.products.push(p);
+  }
+  // Made from "加一項": put it on that day straight away.
+  const to = ui.addTo;
+  if (to && !draft.id && p.times.includes(to.slot) && !isScheduled(p, to.date, to.slot)) {
+    const r = touch(to.date, to.slot);
+    if (!r.extra.includes(p.id)) r.extra.push(p.id);
+    ui.pop = to.slot + p.id;
+  }
+  save();
+  $('#formDlg').close();
+  render();
+}
+
+$('#pForm').addEventListener('submit', e => { e.preventDefault(); saveForm(); });
+$('#listForm').addEventListener('submit', e => { e.preventDefault(); saveList(); });
+$('#tagNew').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addTag(); } });
+$('#formDlg').addEventListener('close', () => { ui.addTo = null; });
+$('#fName').addEventListener('input', e => {
+  if (form.stepTouched) return;
+  const step = guessStep(e.target.value);
+  if (step !== draft.step) { draft.step = step; renderForm(); }
+});
+
+/* ---------- events ---------- */
+document.addEventListener('click', e => {
+  const dlg = e.target.closest('dialog');
+  if (e.target.tagName === 'DIALOG') { e.target.close(); return; }
+  const t = e.target.closest('[data-act]');
+  if (!t) return;
+  const { act, v, id, slot, date } = t.dataset;
+  switch (act) {
+    case 'tab': setTab(v); break;
+    case 'day-prev': ui.date = addDays(ui.date, -1); render(); break;
+    case 'day-next': ui.date = addDays(ui.date, 1); render(); break;
+    case 'day-now': ui.date = today(); render(); break;
+    case 'week-prev': ui.week = addDays(ui.week, -7); render(); break;
+    case 'week-next': ui.week = addDays(ui.week, 7); render(); break;
+    case 'week-now': ui.week = weekStart(today()); render(); break;
+    case 'month-prev':
+    case 'month-next': {
+      const [y, m] = ui.month.split('-').map(Number);
+      const d = new Date(y, m - 1 + (act === 'month-next' ? 1 : -1), 1);
+      ui.month = `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
+      render(); break;
+    }
+    case 'month-now': ui.month = today().slice(0, 7); render(); break;
+    case 'goto-day': ui.date = date; setTab('today'); break;
+    case 'toggle': mark(slot, id, 'tap'); break;
+    case 'extra': openExtra(slot); break;
+    case 'fold': fold(slot); break;
+    case 'add-extra': addExtra(slot, id); break;
+    case 'unextra': removeExtra(slot, id); break;
+    case 'skin': toggleSkin(t, v); break;
+    case 'edit-skin': skinEditor(); break;
+    case 'edit-steps': stepEditor(); break;
+    case 'tag-add': addTag(); break;
+    case 'tag-del': t.closest('.tag-row').remove(); break;
+    case 'tag-up': { const row = t.closest('.tag-row'); if (row.previousElementSibling) row.parentNode.insertBefore(row, row.previousElementSibling); break; }
+    case 'new': openForm(); break;
+    case 'new-from-extra': $('#extraDlg').close(); openForm(null, { date: ui.date, slot: $('#extraDlg').dataset.slot }); break;
+    case 'edit': openForm(id); break;
+    case 'sort': ui.sorting = !ui.sorting; render(); break;
+    case 'move': moveProduct(id, Number(v)); break;
+    case 'snooze-backup': state.backupSnooze = Date.now() + 3 * 864e5; save(); render(); break;
+    case 'export': exportData(); break;
+    case 'import': $('#importFile').click(); break;
+    case 'close': dlg && dlg.close(); break;
+    case 'f-more': form.more = !form.more; renderForm(); break;
+    case 'f-step': draft.step = v; form.stepTouched = true; renderForm(); break;
+    case 'f-time': setTimes(v); renderForm(); break;
+    case 'f-split': draft.freqPm = draft.freqPm ? null : JSON.parse(JSON.stringify(draft.freq)); renderForm(); break;
+    case 'f-freq': draft[t.dataset.k].type = v; renderForm(); break;
+    case 'f-day': { const f = draft[t.dataset.k], n = Number(v); f.days = f.days.includes(n) ? f.days.filter(x => x !== n) : [...f.days, n]; renderForm(); break; }
+    case 'f-preset': draft[t.dataset.k].days = [...PRESETS[v][1]]; renderForm(); break;
+    case 'f-every': { const f = draft[t.dataset.k]; f.every = Math.min(30, Math.max(2, f.every + Number(v))); renderForm(); break; }
+    case 'f-from': draft[t.dataset.k].from = v; renderForm(); break;
+    case 'f-color': draft.color = v; renderForm(); break;
+    case 'f-pause': draft.paused = !draft.paused; renderForm(); break;
+    case 'f-delete':
+      if (confirm(`要刪除「${draft.name || $('#fName').value}」嗎？過去的紀錄會保留。`)) {
+        // Soft delete: hidden everywhere, but past records still show what was used.
+        byId(draft.id).deleted = true;
+        save();
+        $('#formDlg').close();
+        render();
+      }
+      break;
+  }
+});
+
+document.addEventListener('input', e => {
+  if (e.target.id === 'dayNote') { dayRec(ui.date, true).note = e.target.value; saveSoon(); }
+  if (e.target.dataset.start && draft) draft[e.target.dataset.start].start = e.target.value || today();
+});
+
+// Long-press (or right-click): skip an item / tick off a whole routine.
+let pressTimer = null, pressFired = false, pressAt = null;
+const cancelPress = () => { clearTimeout(pressTimer); pressTimer = null; $$('.holding').forEach(x => x.classList.remove('holding')); };
+function hold(el) {
+  if (navigator.vibrate) navigator.vibrate(12);
+  if (el.dataset.hold === 'skip') mark(el.dataset.slot, el.dataset.id, 'skip');
+  if (el.dataset.hold === 'all') completeAll(el.dataset.slot);
+}
+document.addEventListener('pointerdown', e => {
+  pressFired = false;
+  const el = e.target.closest('[data-hold]');
+  if (!el || e.button > 0) return;
+  pressAt = [e.clientX, e.clientY];
+  el.classList.add('holding');
+  pressTimer = setTimeout(() => { pressTimer = null; pressFired = true; el.classList.remove('holding'); hold(el); }, 500);
+});
+document.addEventListener('pointermove', e => { if (pressTimer && Math.hypot(e.clientX - pressAt[0], e.clientY - pressAt[1]) > 10) cancelPress(); });
+document.addEventListener('pointerup', cancelPress);
+document.addEventListener('pointercancel', cancelPress);
+document.addEventListener('contextmenu', e => {
+  const el = e.target.closest('[data-hold]');
+  if (!el) return;
+  e.preventDefault();
+  if (pressFired) return;
+  const touchHold = !!pressTimer;
+  cancelPress();
+  if (touchHold) pressFired = true;
+  hold(el);
+});
+// The click that ends a long-press must not also count as a tap.
+document.addEventListener('click', e => { if (pressFired) { pressFired = false; e.stopPropagation(); e.preventDefault(); } }, true);
+document.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[role=button]')) { e.preventDefault(); e.target.click(); }
+  // Enter that picks a Chinese IME candidate must not submit the form.
+  if (e.key === 'Enter' && (e.isComposing || e.keyCode === 229) && e.target.closest('form')) e.preventDefault();
+});
+
+let lastToday = today();
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { flush(); return; }
+  if ($('dialog[open]')) return;
+  let changed = false;
+  try { changed = (localStorage.getItem(KEY) || '') !== JSON.stringify(state); } catch (e) {}
+  if (changed) state = load();
+  if (today() !== lastToday) {
+    if (ui.date === lastToday) ui.date = today();
+    lastToday = today();
+    changed = true;
+  }
+  if (changed) render();
+});
+window.addEventListener('pagehide', flush);
+
+/* ---------- init ---------- */
+$('#nav').innerHTML = TABS.map(([v, n, ic]) => `<button data-act="tab" data-v="${v}">${icon(ic)}<span>${n}</span></button>`).join('');
+$$('[data-act="close"]').forEach(b => { b.innerHTML = icon('x'); });
+$('[data-act="edit-steps"]').innerHTML = icon('pen');
+$('#fMoreBtn').insertAdjacentHTML('beforeend', icon('chev'));
+// Records saved before launch under the old key were test data; start the real tool clean.
+if (!DEMO) { try { localStorage.removeItem('skincare-diary-v1'); } catch (e) {} }
+[IMG.faceDone, IMG.faceRest].forEach(src => { new Image().src = src; });
+const start = () => { state = load(); render(); };
+if (DEMO) {
+  $$('.m-brand, .art-brand').forEach(el => el.insertAdjacentHTML('beforeend', '<span class="demo-pill">示範</span>'));
+  const s = document.createElement('script');
+  s.src = 'demo.js';
+  s.onload = s.onerror = start;
+  document.head.appendChild(s);
+} else start();
+})();
+</script>
+</body>
+</html>
