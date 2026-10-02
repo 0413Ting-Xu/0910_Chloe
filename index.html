@@ -104,6 +104,11 @@ main{container:main / inline-size;min-width:0}
   .today-grid .skin{grid-column:1/-1}
 }
 .slot-head{display:flex;align-items:center;gap:14px}
+.slot-actions{display:flex;align-items:center;gap:8px;flex:none}
+.all-btn{display:inline-flex;align-items:center;gap:4px;height:36px;padding:0 13px 0 10px;border-radius:999px;background:var(--c1);color:var(--c6);font-size:14px;white-space:nowrap;transition:transform .15s, opacity .2s}
+.all-btn:active{transform:scale(.94)}
+.all-btn .ic{width:16px;height:16px;stroke-width:2.4}
+.slot.is-complete .all-btn,.today-grid.is-future .all-btn{display:none}
 .avatar{position:relative;width:54px;height:54px;border-radius:50%;overflow:hidden;flex:none;background:#fff;box-shadow:0 0 0 3px var(--c1);transition:width .35s, height .35s}
 .slot.is-folded .avatar{width:44px;height:44px}
 .avatar img{position:absolute;left:-26%;top:-22%;width:152%;height:152%;object-fit:cover}
@@ -372,6 +377,10 @@ main{container:main / inline-size;min-width:0}
 /* ---------- toast ---------- */
 .toast{position:fixed;z-index:50;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px;padding:6px 18px 6px 6px;border-radius:999px;background:#fff;box-shadow:0 14px 40px rgba(110,130,170,.25);font-size:16px;opacity:0;transform:translate(-50%,16px) scale(.9);pointer-events:none;transition:opacity .25s, transform .4s cubic-bezier(.34,1.56,.64,1)}
 .toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.toast{width:max-content;max-width:calc(100vw - 32px)}
+.toast-text{white-space:nowrap}
+.toast.show.has-act{pointer-events:auto}
+.toast-act{margin:0 -8px 0 4px;padding:7px 14px;border-radius:999px;background:var(--pink-100);color:var(--pink-600);font-size:14.5px;white-space:nowrap}
 .toast-av{position:relative;width:44px;height:44px;border-radius:50%;overflow:hidden;background:#fff}
 .toast-av img{position:absolute;left:-26%;top:-22%;width:152%;height:152%;object-fit:cover}
 .toast-av.duo img{left:-10%;top:-6%;width:120%;height:120%}
@@ -539,7 +548,7 @@ main{container:main / inline-size;min-width:0}
   </div>
 </dialog>
 
-<div class="toast" id="toast" role="status"><span class="toast-av"><img alt=""></span><span class="toast-text"></span></div>
+<div class="toast" id="toast" role="status"><span class="toast-av"><img alt=""></span><span class="toast-text"></span><button type="button" class="toast-act" id="toastAct" hidden></button></div>
 <input type="file" id="importFile" accept="application/json,.json" hidden>
 
 <script>
@@ -809,7 +818,10 @@ function slotCard(d, slot) {
         <span class="slot-name">${icon(SLOT[slot].icon)}${SLOT[slot].name}</span>
         <span class="slot-count">${slotCount(n, total)}</span>
       </button>
-      <button class="icon-btn soft" data-act="extra" data-slot="${slot}" aria-label="加一項">${icon('plus')}</button>
+      <div class="slot-actions">
+        ${total ? `<button class="all-btn" data-act="all" data-slot="${slot}">${icon('check')}全部勾選</button>` : ''}
+        <button class="icon-btn soft" data-act="extra" data-slot="${slot}" aria-label="加一項">${icon('plus')}</button>
+      </div>
     </header>
     ${total ? `<div class="slot-body"><div class="slot-inner">
       <div class="bar"><i style="width:${n / total * 100}%"></i></div>
@@ -1037,7 +1049,7 @@ function mark(slot, id, mode) {
   afterMark(d, slot, before);
 }
 
-// Long-press on a routine's title ticks off everything left in it.
+// "全部勾選" (or a long-press on the title) ticks off everything left; the toast offers 復原.
 function completeAll(slot) {
   const d = ui.date;
   if (d > today()) return;
@@ -1048,10 +1060,19 @@ function completeAll(slot) {
   r.done.push(...todo);
   save();
   todo.forEach(id => patchSlot(slot, id));
-  afterMark(d, slot, before);
+  afterMark(d, slot, before, () => undoAll(d, slot, todo));
 }
 
-function afterMark(d, slot, before) {
+function undoAll(d, slot, ids) {
+  const r = touch(d, slot);
+  r.done = r.done.filter(x => !ids.includes(x));
+  save();
+  const card = ui.tab === 'today' && ui.date === d && $(`#view-today .slot-${slot}`);
+  if (card) { setFolded(card, false); ids.forEach(id => patchSlot(slot, id)); } else render();
+  renderSide();
+}
+
+function afterMark(d, slot, before, undo) {
   renderSide();
   if (before || !slotComplete(d, slot)) return;
   ui.open.delete(d + slot);
@@ -1060,8 +1081,9 @@ function afterMark(d, slot, before) {
     if (card && ui.date === d && slotComplete(d, slot) && !ui.open.has(d + slot)) setFolded(card, true);
   }, 700);
   const other = slotItems(d, slot === 'am' ? 'pm' : 'am');
-  if (!other.length || other.every(x => x.ok)) toast('duo', '全部完成！');
-  else toast(slot, `${SLOT[slot].name}完成！`);
+  const action = undo && { label: '復原', fn: undo };
+  if (!other.length || other.every(x => x.ok)) toast('duo', '全部完成！', action);
+  else toast(slot, `${SLOT[slot].name}完成！`, action);
 }
 
 // Update the tapped row in place: rebuilding the whole view made iPhone Safari jump back to the top.
@@ -1135,18 +1157,31 @@ function toggleSkin(btn, v) {
   btn.setAttribute('aria-pressed', r.skin.includes(v));
 }
 
-let toastTimer;
-function toast(img, text) {
+let toastTimer, toastAction = null;
+function toast(img, text, action) {
   const t = $('#toast');
   $('.toast-av', t).classList.toggle('duo', img === 'duo');
   $('img', t).src = IMG[img];
   $('.toast-text', t).textContent = text;
+  toastAction = action ? action.fn : null;
+  $('#toastAct').hidden = !action;
+  $('#toastAct').textContent = action ? action.label : '';
+  t.classList.toggle('has-act', !!action);
   t.classList.remove('show');
   void t.offsetWidth;
   t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  toastTimer = setTimeout(hideToast, action ? 4000 : 2200);
 }
+function hideToast() {
+  $('#toast').classList.remove('show');
+  toastAction = null;
+}
+$('#toastAct').addEventListener('click', () => {
+  const fn = toastAction;
+  hideToast();
+  if (fn) fn();
+});
 
 // Remind once there is a week of records and no backup for two weeks: the data only lives on this phone.
 function needsBackup() {
@@ -1409,6 +1444,7 @@ document.addEventListener('click', e => {
     case 'toggle': mark(slot, id, 'tap'); break;
     case 'extra': openExtra(slot); break;
     case 'fold': fold(slot); break;
+    case 'all': completeAll(slot); break;
     case 'add-extra': addExtra(slot, id); break;
     case 'unextra': removeExtra(slot, id); break;
     case 'skin': toggleSkin(t, v); break;
