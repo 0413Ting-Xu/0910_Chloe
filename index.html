@@ -161,10 +161,11 @@ main{container:main / inline-size;min-width:0}
 .is-skip .tag-step{display:none}
 .is-skip .tag-skip{display:inline-flex}
 .today-grid.is-future .item-main,.today-grid.is-future .skin .chip,.today-grid.is-future .note{pointer-events:none;opacity:.55}
-.backup-tip{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 12px;margin:-4px 0 16px;border-radius:20px;background:#fff;box-shadow:var(--shadow);font-size:15px}
-.backup-tip img{width:30px;height:28px;object-fit:contain;flex:none}
-.backup-tip span{flex:1;min-width:0}
-.backup-tip .icon-btn{box-shadow:none;background:var(--soft)}
+.tip{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 12px;margin:-4px 0 16px;border-radius:20px;background:#fff;box-shadow:var(--shadow);font-size:15px}
+.tip + .tip{margin-top:-6px}
+.tip img{width:30px;height:28px;object-fit:contain;flex:none}
+.tip span{flex:1;min-width:0}
+.tip .icon-btn{box-shadow:none;background:var(--soft)}
 .slot-empty{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding:22px 0;border-radius:18px;background:var(--tint);color:var(--ink-3);font-size:15px}
 .slot-empty .ic{color:var(--c3)}
 
@@ -205,7 +206,11 @@ main{container:main / inline-size;min-width:0}
 .wk-day .dn{font-size:12px;color:var(--ink-3)}
 .wk-day.today .wd{color:var(--c6)}
 .wk-day.today .dn{color:var(--c4)}
-.mk{width:22px;height:22px;border-radius:50%;display:grid;place-items:center}
+.mk{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;transition:transform .2s}
+.wk-mark{cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.wk-mark:disabled{cursor:default}
+.wk-mark:not(:disabled):active .mk{transform:scale(.85)}
+.wk-mark.holding .mk{transform:scale(.8);transition:transform .5s}
 .mk.plan{background:var(--c1);box-shadow:inset 0 0 0 1.5px var(--c2)}
 .mk.done{background:var(--c4);color:#fff}
 .mk.done .ic{width:13px;height:13px;stroke-width:3}
@@ -244,6 +249,10 @@ main{container:main / inline-size;min-width:0}
 .prod-times .ic{width:16px;height:16px}
 .prod-note{font-size:14px;color:var(--ink-2);margin-top:-4px;padding-left:22px}
 .prod-meta{display:flex;flex-wrap:wrap;gap:6px;padding-left:22px}
+.tag.warn{background:var(--pink-50);color:var(--pink-600)}
+.restock{padding:16px 18px;margin-bottom:6px}
+.restock h2{display:flex;align-items:center;gap:8px;font-size:16px;margin-bottom:12px}
+.restock h2 .ic{color:var(--pink-400)}
 .backup{display:flex;justify-content:center;gap:10px;margin-top:28px}
 
 /* ---------- history ---------- */
@@ -285,6 +294,49 @@ main{container:main / inline-size;min-width:0}
 .note-tags{display:flex;flex-wrap:wrap;gap:6px}
 .note-tags .tag{background:var(--pink-50);color:var(--pink-600)}
 .note-text{font-size:15px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.note-skip{font-size:14px;color:var(--ink-2)}
+.note-ev{display:flex;flex-wrap:wrap;gap:6px}
+.note-ev .tag{background:var(--blue-50);color:var(--blue-600)}
+.trend{margin-top:16px;padding:18px 18px 14px}
+.trend h2{display:flex;align-items:center;gap:8px;font-size:18px;margin-bottom:10px}
+.trend h2 .ic{color:var(--pink-300)}
+.trend-row{display:grid;grid-template-columns:minmax(0,72px) 1fr 44px;align-items:center;gap:10px;padding:6px 0;font-size:15px}
+.trend-row > span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trend-bar{height:10px;border-radius:9px;background:var(--pink-50);overflow:hidden}
+.trend-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--pink-200),var(--pink-400))}
+.trend-row b{font-weight:400;font-size:14px;color:var(--ink-2);text-align:right}
+/* product detail */
+.detail-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.detail-head h2{flex:1;min-width:0;font-size:21px;line-height:1.3;word-break:break-word}
+.detail-head .dot{width:14px;height:14px}
+.detail-head .icon-btn{box-shadow:none;background:var(--soft)}
+.detail-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.dstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.dstat{display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 4px;border-radius:18px;background:var(--pink-50)}
+.dstat b{font-weight:400;font-size:22px;line-height:1.2}
+.dstat span{font-size:12.5px;color:var(--ink-2)}
+.strip{display:grid;grid-template-columns:repeat(30,1fr);gap:3px}
+.strip i{aspect-ratio:1;border-radius:3px;background:var(--soft)}
+.strip i.done{background:var(--pink-300)}
+.strip i.skip{background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink-3)}
+.strip i.miss{background:#fff;box-shadow:inset 0 0 0 1.5px var(--pink-200)}
+.strip-ends{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-3);margin:6px 0 18px}
+.dsec{margin-bottom:18px}
+.dsec h3{font-size:14px;font-weight:400;color:var(--ink-2);margin:0 0 8px}
+.dlist{display:flex;flex-direction:column;gap:4px}
+.drow{display:flex;justify-content:space-between;gap:12px;padding:10px 14px;border-radius:14px;background:#FAFBFD;font-size:15px}
+.drow > span:first-child{color:var(--ink-2);flex:none}
+.drow > span:last-child{text-align:right}
+.drow .warn{color:var(--pink-600)}
+.head-actions{display:flex;align-items:center;gap:8px}
+.why-list{padding-bottom:6px}
+.why-list .chip{padding:10px 18px;font-size:15.5px}
+.date-row,.life-row{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--ink-2);margin-bottom:10px}
+.date-row > span,.life-row > span{flex:none;width:76px}
+.date-row .input{flex:1;width:auto;min-width:0;padding:9px 12px}
+.life-row{align-items:flex-start}
+.life-row > span{padding-top:6px}
+.life-row .chips{flex:1}
 @container main (min-width:640px){
   .hist-head img{width:130px;height:110px}
   .cal{padding:22px 24px}
@@ -520,6 +572,7 @@ main{container:main / inline-size;min-width:0}
         <label class="lbl" for="fNote">備註</label>
         <input id="fNote" class="input" autocomplete="off" maxlength="60" placeholder="用量、手法…">
       </div>
+      <div class="field" id="fLifeWrap"></div>
       <button type="button" class="switch-row" id="fPause" data-act="f-pause" role="switch" aria-checked="false">
         <span>停用</span><span class="switch"><i></i></span>
       </button>
@@ -544,6 +597,23 @@ main{container:main / inline-size;min-width:0}
     </div>
     <div class="sheet-foot"><button type="submit" class="btn primary">儲存</button></div>
   </form>
+</dialog>
+
+<dialog class="dlg" id="detailDlg">
+  <div class="sheet" id="detailBody"></div>
+</dialog>
+
+<dialog class="dlg" id="whyDlg">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2 id="whyTitle">為什麼略過？</h2>
+      <div class="head-actions">
+        <button type="button" class="icon-btn soft sm" data-act="edit-reasons" aria-label="編輯原因"></button>
+        <button type="button" class="icon-btn" data-act="close" aria-label="關閉"></button>
+      </div>
+    </div>
+    <div class="chips why-list" id="whyList"></div>
+  </div>
 </dialog>
 
 <dialog class="dlg" id="extraDlg">
@@ -575,6 +645,9 @@ const COLORS = { pink: '#F7B9CA', blue: '#9FC9EE', butter: '#F4D88F', mint: '#A9
 const WD = ['日', '一', '二', '三', '四', '五', '六'];
 const WEEK = [1, 2, 3, 4, 5, 6, 0];
 const DEFAULT_SKIN = ['穩定', '乾燥', '出油', '敏感'];
+const DEFAULT_REASONS = ['敏感', '生理期', '沒出門', '太累', '用完了'];
+const LIFE_OPTS = [['', '不設定'], ['28d', '28 天'], ['3m', '3 個月'], ['6m', '6 個月'], ['12m', '12 個月'], ['24m', '24 個月']];
+const EVENT_TEXT = { add: '開始使用', pause: '停用', resume: '恢復使用', delete: '刪除', open: '開封', low: '快用完', restock: '換新的' };
 const PRESETS = [['一三五', [1, 3, 5]], ['二四六', [2, 4, 6]], ['平日', [1, 2, 3, 4, 5]], ['週末', [6, 0]]];
 const IMG = {
   am: 'images/hachiware.webp', pm: 'images/chiikawa.webp', duo: 'images/chiikawa-usagi.jpg',
@@ -623,10 +696,20 @@ const diffDays = (a, b) => Math.round((utc(b) - utc(a)) / 864e5);
 const dow = s => parse(s).getDay();
 const weekStart = s => addDays(s, -((dow(s) + 6) % 7));
 const md = s => { const d = parse(s); return `${d.getMonth() + 1}/${d.getDate()}`; };
+const isDate = s => /^\d{4}-\d{2}-\d{2}$/.test(s || '');
+const shortDate = s => s.slice(0, 4) === today().slice(0, 4) ? md(s) : `${s.slice(0, 4)}/${md(s)}`;
+function addMonths(s, n) {
+  const d = parse(s), day = d.getDate();
+  d.setDate(1);
+  d.setMonth(d.getMonth() + n);
+  d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
+  return fmt(d);
+}
 const longDate = s => { const d = parse(s); return `${d.getMonth() + 1}月${d.getDate()}日`; };
 
 /* ---------- state ---------- */
-const blank = () => ({ v: 1, products: [], days: {}, skinTags: [...DEFAULT_SKIN], steps: [...DEFAULT_STEPS], lastBackup: 0, backupSnooze: 0 });
+const blank = () => ({ v: 1, products: [], days: {}, skinTags: [...DEFAULT_SKIN], steps: [...DEFAULT_STEPS], lastBackup: 0, backupSnooze: 0,
+  events: [], skipReasons: [...DEFAULT_REASONS], missDismissed: '' });
 const cleanList = a => [...new Set(a.map(t => String(t).trim()).filter(Boolean))];
 function normFreq(f = {}) {
   return {
@@ -652,6 +735,10 @@ function normalize(s) {
       note: String(p.note || ''),
       paused: !!p.paused,
       deleted: !!p.deleted,
+      opened: isDate(p.opened) ? p.opened : '',
+      life: /^\d+[dm]$/.test(p.life || '') ? p.life : '',
+      expiry: isDate(p.expiry) ? p.expiry : '',
+      low: !!p.low,
       order: Number.isFinite(p.order) ? p.order : i,
       created: Number(p.created) || Date.now() + i,
     };
@@ -661,6 +748,9 @@ function normalize(s) {
   if (Array.isArray(s.steps)) out.steps = cleanList(s.steps);
   out.lastBackup = Number(s.lastBackup) || 0;
   out.backupSnooze = Number(s.backupSnooze) || 0;
+  out.events = (Array.isArray(s.events) ? s.events : []).filter(e => e && isDate(e.d) && e.id && (EVENT_TEXT[e.k] || e.k === 'freq'));
+  if (Array.isArray(s.skipReasons)) out.skipReasons = cleanList(s.skipReasons);
+  out.missDismissed = isDate(s.missDismissed) ? s.missDismissed : '';
   return out;
 }
 function load() {
@@ -731,7 +821,7 @@ function dayRec(date, create) {
   if (!d && create) d = state.days[date] = {};
   if (d) {
     for (const s of ['am', 'pm']) {
-      d[s] = d[s] || {}; d[s].done = d[s].done || []; d[s].extra = d[s].extra || []; d[s].skip = d[s].skip || [];
+      d[s] = d[s] || {}; d[s].done = d[s].done || []; d[s].extra = d[s].extra || []; d[s].skip = d[s].skip || []; d[s].why = d[s].why || {};
       // Freeze both routines the moment a day gets a record, even one that was never ticked,
       // so later product edits can't rewrite that day's history.
       if (create && !d[s].plan) d[s].plan = livePlan(date, s);
@@ -748,14 +838,14 @@ function touch(date, slot) {
 }
 function slotItems(date, slot) {
   const r = state.days[date]?.[slot];
-  const done = r?.done || [], skip = r?.skip || [];
+  const done = r?.done || [], skip = r?.skip || [], why = r?.why || {};
   const planned = (r?.plan && date < today() ? r.plan : livePlan(date, slot)).filter(byId);
   const extra = [...(r?.extra || []), ...done, ...skip].filter((id, i, a) => byId(id) && !planned.includes(id) && a.indexOf(id) === i);
   return [...planned.map(id => ({ id, extra: false })), ...extra.map(id => ({ id, extra: true }))]
     .map(x => {
       const isSkip = skip.includes(x.id), isDone = !isSkip && done.includes(x.id);
       // A skipped item counts as handled, so choosing to skip never breaks the streak.
-      return { ...x, p: byId(x.id), done: isDone, skip: isSkip, ok: isDone || isSkip };
+      return { ...x, p: byId(x.id), done: isDone, skip: isSkip, ok: isDone || isSkip, why: isSkip ? why[x.id] || '' : '' };
     })
     .sort((a, b) => byStep(a.p, b.p));
 }
@@ -814,7 +904,13 @@ function renderToday() {
   const d = ui.date, isToday = d === today();
   let html = dateBar('day', longDate(d), `星期${WD[dow(d)]}${isToday ? ' · 今天' : ''}`, isToday ? '' : '回今天');
   if (!state.products.some(p => !p.deleted)) { $('#view-today').innerHTML = html + welcome(); return; }
-  if (needsBackup()) html += `<div class="backup-tip">
+  const miss = isToday && missedDay();
+  if (miss) html += `<div class="tip miss-tip">
+    <img src="${IMG.faceRest}" alt=""><span>${miss === addDays(d, -1) ? '昨天' : md(miss) + ' '}還沒記錄</span>
+    <button class="btn primary sm" data-act="goto-day" data-date="${miss}">補記</button>
+    <button class="icon-btn sm" data-act="miss-dismiss" data-date="${miss}" aria-label="不用了">${icon('x')}</button>
+  </div>`;
+  if (needsBackup()) html += `<div class="tip backup-tip">
     <img src="${IMG.faceRest}" alt=""><span>好久沒備份了</span>
     <button class="btn primary sm" data-act="export">備份</button>
     <button class="icon-btn sm" data-act="snooze-backup" aria-label="晚點再說">${icon('x')}</button>
@@ -851,6 +947,20 @@ function slotCard(d, slot) {
   </section>`;
 }
 
+const skipLabel = why => why ? `略過・${esc(why)}` : '略過';
+
+// The most recent day in the last week that had something planned but was never opened.
+function missedDay() {
+  const keys = Object.keys(state.days).sort();
+  if (!keys.length) return null;
+  for (let i = 1; i <= 7; i++) {
+    const d = addDays(today(), -i);
+    if (d < keys[0] || d <= state.missDismissed) break;
+    if (!state.days[d] && livePlan(d, 'am').length + livePlan(d, 'pm').length > 0) return d;
+  }
+  return null;
+}
+
 function itemRow(x, slot) {
   const p = x.p;
   return `<li class="item${x.done ? ' is-done' : ''}${x.skip ? ' is-skip' : ''}${x.extra ? ' is-extra' : ''}${ui.pop === slot + x.id ? ' pop' : ''}">
@@ -860,7 +970,7 @@ function itemRow(x, slot) {
         <span class="item-name"><i class="dot" style="background:${COLORS[p.color]}"></i><span>${esc(p.name)}</span></span>
         ${p.note ? `<span class="item-note">${esc(p.note)}</span>` : ''}
       </span>
-      ${x.extra ? '' : `<span class="tag tag-step">${esc(p.step)}</span>`}<span class="tag tag-skip">略過</span>
+      ${x.extra ? '' : `<span class="tag tag-step">${esc(p.step)}</span>`}<span class="tag tag-skip">${skipLabel(x.why)}</span>
     </button>
     ${x.extra ? `<button class="item-x" data-act="unextra" data-slot="${slot}" data-id="${p.id}" aria-label="移除">${icon('x')}</button>` : ''}
   </li>`;
@@ -889,6 +999,15 @@ function renderWeek() {
   $('#view-week').innerHTML = html;
 }
 
+const mkHtml = x => x.done ? `<span class="mk done">${icon('check')}</span>` : x.skip ? `<span class="mk skip">${icon('dash')}</span>` : '<span class="mk plan"></span>';
+function patchWeekCell(date, slot, id) {
+  const cell = $(`#view-week [data-act="wk-mark"][data-date="${date}"][data-slot="${slot}"][data-id="${id}"]`);
+  const x = cell && slotItems(date, slot).find(y => y.id === id);
+  if (!x) return false;
+  cell.innerHTML = mkHtml(x);
+  return true;
+}
+
 function weekTable(slot, days, t) {
   const grid = days.map(d => slotItems(d, slot));
   const ids = [...new Set(grid.flat().map(x => x.id))].sort((a, b) => byStep(byId(a), byId(b)));
@@ -902,9 +1021,9 @@ function weekTable(slot, days, t) {
       <div class="wk-name"><i class="dot" style="background:${COLORS[p.color]}"></i><span>${esc(p.name)}</span></div>
       ${days.map((d, i) => {
         const x = grid[i].find(y => y.id === id);
-        const mk = !x ? '<span class="mk off"></span>' : x.done ? `<span class="mk done">${icon('check')}</span>`
-          : x.skip ? `<span class="mk skip">${icon('dash')}</span>` : '<span class="mk plan"></span>';
-        return `<div class="wk-cell${d === t ? ' today' : ''}">${mk}</div>`;
+        if (!x) return `<div class="wk-cell${d === t ? ' today' : ''}"><span class="mk off"></span></div>`;
+        // Past and today's cells can be ticked (long-press to skip) straight from the week.
+        return `<button class="wk-cell wk-mark${d === t ? ' today' : ''}" data-act="wk-mark" data-hold="wk-skip" data-date="${d}" data-slot="${slot}" data-id="${id}"${d > t ? ' disabled' : ''} aria-label="${esc(p.name)} ${md(d)}">${mkHtml(x)}</button>`;
       }).join('')}
     </div>`;
   }).join('');
@@ -923,6 +1042,11 @@ function renderProducts() {
     </div>
   </div>`;
   if (!live.length) html += welcome();
+  const need = live.filter(p => p.low || lifeInfo(p).expired);
+  if (need.length && !ui.sorting) html += `<section class="card restock">
+    <h2>${icon('bottle')}補貨清單</h2>
+    <div class="chips">${need.map(p => `<button class="chip" data-act="detail" data-id="${p.id}">${esc(p.name)}${lifeInfo(p).expired ? '・已過期' : ''}</button>`).join('')}</div>
+  </section>`;
   // Group by step, in the order of the step list.
   const groups = [];
   active.forEach(p => { const g = groups[groups.length - 1]; g && g.step === p.step ? g.items.push(p) : groups.push({ step: p.step, items: [p] }); });
@@ -939,7 +1063,8 @@ function renderProducts() {
 
 function prodCard(p, sort) {
   const times = `${p.times.includes('am') ? `<span class="slot-am">${icon('sun')}</span>` : ''}${p.times.includes('pm') ? `<span class="slot-pm">${icon('moon')}</span>` : ''}`;
-  return `<article class="card prod${p.paused ? ' is-paused' : ''}${sort ? ' sorting' : ''}"${sort ? '' : ` data-act="edit" data-id="${p.id}" role="button" tabindex="0"`}>
+  const life = lifeInfo(p);
+  return `<article class="card prod${p.paused ? ' is-paused' : ''}${sort ? ' sorting' : ''}"${sort ? '' : ` data-act="detail" data-id="${p.id}" role="button" tabindex="0"`}>
     <div class="prod-top">
       <i class="dot" style="background:${COLORS[p.color]}"></i>
       <div class="prod-name">${esc(p.name)}</div>
@@ -949,8 +1074,125 @@ function prodCard(p, sort) {
       </div>` : `<div class="prod-times">${times}</div>`}
     </div>
     ${p.note && !sort ? `<div class="prod-note">${esc(p.note)}</div>` : ''}
-    ${sort ? '' : `<div class="prod-meta"><span class="tag">${scheduleLabel(p)}</span></div>`}
+    ${sort ? '' : `<div class="prod-meta"><span class="tag">${scheduleLabel(p)}</span>${life.expired ? '<span class="tag warn">已過期</span>' : life.soon ? `<span class="tag warn">${life.left} 天後到期</span>` : ''}${p.low ? '<span class="tag warn">快用完</span>' : ''}</div>`}
   </article>`;
+}
+
+// When a product should be used up by: opening date + shelf life after opening, or the printed expiry, whichever is first.
+function lifeInfo(p) {
+  let due = '';
+  if (p.opened && p.life) { const n = parseInt(p.life, 10); due = p.life.endsWith('d') ? addDays(p.opened, n) : addMonths(p.opened, n); }
+  if (p.expiry && (!due || p.expiry < due)) due = p.expiry;
+  if (!due) return {};
+  const left = diffDays(today(), due);
+  return { due, left, expired: left < 0, soon: left >= 0 && left <= 30 };
+}
+
+function productStats(id) {
+  const t = today(), why = {}, strip = [];
+  let planned = 0, done = 0, skipped = 0, first = '', last = '';
+  for (let i = 29; i >= 0; i--) {
+    const d = addDays(t, -i);
+    let st = 'none';
+    // Only days she actually recorded count; today's unfinished items don't count against her.
+    if (state.days[d] || d === t) for (const s of ['am', 'pm']) {
+      const x = slotItems(d, s).find(y => y.id === id);
+      if (!x || (d === t && !x.ok)) continue;
+      if (!x.extra) planned++;
+      if (x.done) { done++; st = 'done'; }
+      else if (x.skip) { skipped++; if (st !== 'done') st = 'skip'; if (x.why) why[x.why] = (why[x.why] || 0) + 1; }
+      else if (st === 'none') st = 'miss';
+    }
+    strip.push({ d, st });
+  }
+  for (const k of Object.keys(state.days).sort()) {
+    if (['am', 'pm'].some(s => (state.days[k][s]?.done || []).includes(id))) { if (!first) first = k; last = k; }
+  }
+  return { done, skipped, why, strip, first, last, rate: planned ? Math.min(100, Math.round((done + skipped) / planned * 100)) : null };
+}
+
+// Setting up many products on one day reads as one line instead of a wall of chips.
+function journalEvents(evs) {
+  const adds = evs.filter(e => e.k === 'add');
+  const rest = (adds.length > 2 ? evs.filter(e => e.k !== 'add') : evs).map(e => eventText(e));
+  return adds.length > 2 ? [`開始使用 ${adds.length} 項`, ...rest] : rest;
+}
+function eventText(e, withName = true) {
+  const name = withName ? ` ${(byId(e.id) || {}).name || ''}` : '';
+  return e.k === 'freq' ? `${withName ? name.trim() + ' ' : ''}改為${e.x || ''}` : `${EVENT_TEXT[e.k]}${name}`;
+}
+function logEvent(id, k, x, d = today()) {
+  // Several edits of the same kind on one day collapse into the latest.
+  state.events = state.events.filter(e => !(e.id === id && e.k === k && e.d === d));
+  state.events.push(x ? { d, id, k, x } : { d, id, k });
+}
+
+function openDetail(id) {
+  ui.detail = id;
+  renderDetail();
+  if (!$('#detailDlg').open) $('#detailDlg').showModal();
+  $('#detailDlg .sheet').scrollTop = 0;
+}
+function renderDetail() {
+  const p = byId(ui.detail);
+  if (!p) return;
+  const st = productStats(p.id), life = lifeInfo(p);
+  const evs = state.events.filter(e => e.id === p.id).sort((a, b) => a.d.localeCompare(b.d));
+  const start = (evs.find(e => e.k === 'add') || {}).d || st.first;
+  const row = (a, b, warn) => `<div class="drow"><span>${a}</span><span${warn ? ' class="warn"' : ''}>${b}</span></div>`;
+  const whys = Object.entries(st.why).sort((a, b) => b[1] - a[1]);
+  $('#detailBody').innerHTML = `
+    <div class="detail-head">
+      <i class="dot" style="background:${COLORS[p.color]}"></i>
+      <h2>${esc(p.name)}</h2>
+      <button type="button" class="icon-btn" data-act="close" aria-label="關閉">${icon('x')}</button>
+    </div>
+    <div class="detail-meta">
+      <span class="tag">${esc(p.step)}</span>
+      <span class="tag">${p.freqPm ? scheduleLabel(p) : `${p.times.length === 2 ? '早晚' : SLOT[p.times[0]].name}・${scheduleLabel(p)}`}</span>
+      ${p.paused ? '<span class="tag">已停用</span>' : ''}${p.low ? '<span class="tag warn">快用完</span>' : ''}
+    </div>
+    <div class="dstats">
+      <div class="dstat"><b>${st.done}</b><span>近 30 天使用</span></div>
+      <div class="dstat"><b>${st.rate === null ? '—' : st.rate + '%'}</b><span>照計畫完成</span></div>
+      <div class="dstat"><b>${st.skipped}</b><span>略過</span></div>
+    </div>
+    <div class="strip">${st.strip.map(x => `<i class="${x.st}" title="${md(x.d)}"></i>`).join('')}</div>
+    <div class="strip-ends"><span>30 天前</span><span>今天</span></div>
+    ${whys.length ? `<div class="dsec"><h3>略過原因</h3><div class="chips sm">${whys.map(([w, n]) => `<span class="chip on">${esc(w)} ×${n}</span>`).join('')}</div></div>` : ''}
+    <div class="dsec"><h3>使用紀錄</h3><div class="dlist">
+      ${start ? row('開始使用', shortDate(start)) : ''}
+      ${st.last ? row('最近一次', shortDate(st.last)) : ''}
+      ${p.opened ? row('開封', shortDate(p.opened)) : ''}
+      ${life.due ? row(life.expired ? '已過期' : '用到', life.expired ? shortDate(life.due) : `${shortDate(life.due)}（還有 ${life.left} 天）`, life.expired || life.soon) : ''}
+      ${evs.filter(e => e.k !== 'add' && e.k !== 'open').map(e => row(shortDate(e.d), eventText(e, false))).join('')}
+    </div></div>
+    <button type="button" class="switch-row${p.low ? ' on' : ''}" data-act="toggle-low" data-id="${p.id}" role="switch" aria-checked="${p.low}">
+      <span>快用完</span><span class="switch"><i></i></span>
+    </button>
+    <div class="sheet-foot">
+      <button type="button" class="btn ghost" data-act="restock" data-id="${p.id}">換新的了</button>
+      <button type="button" class="btn primary" data-act="detail-edit" data-id="${p.id}">${icon('pen')}編輯</button>
+    </div>`;
+}
+function toggleLow(id) {
+  const p = byId(id);
+  p.low = !p.low;
+  if (p.low) logEvent(id, 'low');
+  save();
+  renderDetail();
+  render();
+}
+// A fresh bottle: opening date resets to today and it leaves the restock list.
+function restock(id) {
+  const p = byId(id);
+  p.opened = today();
+  p.low = false;
+  logEvent(id, 'restock');
+  save();
+  renderDetail();
+  render();
+  toast('pm', '已換新的');
 }
 
 function moveProduct(id, dir) {
@@ -988,16 +1230,33 @@ function renderHistory() {
       <span class="cal-num">${ring}${parse(d).getDate()}</span>
     </button>`;
   }).join('');
-  const notes = dates.filter(noted).reverse().map(d => {
-    const r = state.days[d];
+  // Journal: notes, skin tags, skips with their reasons, and product changes, day by day.
+  const evByDay = {};
+  state.events.filter(e => e.d.startsWith(ui.month)).forEach(e => { (evByDay[e.d] = evByDay[e.d] || []).push(e); });
+  const skipsOn = d => {
+    const r = state.days[d], out = [];
+    if (r) for (const s of ['am', 'pm']) for (const id of (r[s] && r[s].skip) || []) {
+      const p = byId(id), w = r[s].why && r[s].why[id];
+      if (p) out.push(`略過 ${esc(p.name)}${w ? `・${esc(w)}` : ''}`);
+    }
+    return out;
+  };
+  const notes = dates.filter(d => noted(d) || evByDay[d] || skipsOn(d).length).reverse().map(d => {
+    const r = state.days[d] || {}, skips = skipsOn(d), evs = evByDay[d] || [];
     return `<button class="note-row" data-act="goto-day" data-date="${d}">
       <span class="note-date"><b>${parse(d).getDate()}</b><span>週${WD[dow(d)]}</span></span>
       <span class="note-body">
         ${r.skin && r.skin.length ? `<span class="note-tags">${r.skin.map(s => `<span class="tag">${esc(s)}</span>`).join('')}</span>` : ''}
         ${r.note && r.note.trim() ? `<span class="note-text">${esc(r.note.trim())}</span>` : ''}
+        ${skips.map(x => `<span class="note-skip">${x}</span>`).join('')}
+        ${evs.length ? `<span class="note-ev">${journalEvents(evs).map(x => `<span class="tag">${esc(x)}</span>`).join('')}</span>` : ''}
       </span>
     </button>`;
   });
+  const tagCount = {};
+  dates.forEach(d => ((state.days[d] && state.days[d].skin) || []).forEach(x => { tagCount[x] = (tagCount[x] || 0) + 1; }));
+  const tags = Object.entries(tagCount).sort((a, b) => b[1] - a[1]);
+  const maxTag = Math.max(1, ...tags.map(x => x[1]));
   $('#view-history').innerHTML = `
     ${dateBar('month', `${y}年${m}月`, isCur ? '本月' : '', isCur ? '' : '回本月')}
     <section class="card hist-head">
@@ -1015,8 +1274,12 @@ function renderHistory() {
         ${'<span></span>'.repeat(lead)}${cells}
       </div>
     </section>
+    ${tags.length ? `<section class="card trend">
+      <h2>${icon('drop')}肌膚狀態</h2>
+      ${tags.map(([x, n]) => `<div class="trend-row"><span>${esc(x)}</span><span class="trend-bar"><i style="width:${n / maxTag * 100}%"></i></span><b>${n} 天</b></div>`).join('')}
+    </section>` : ''}
     ${notes.length ? `<section class="card notes">
-      <h2>${icon('drop')}肌膚筆記<small>${notes.length}</small></h2>
+      <h2>${icon('book')}日誌<small>${notes.length}</small></h2>
       ${notes.join('')}
     </section>` : ''}`;
 }
@@ -1054,19 +1317,44 @@ function setTab(v) {
 }
 
 // Tap: done <-> not done (a skipped item goes back to not done). Long-press: skip <-> not done.
-function mark(slot, id, mode) {
-  const d = ui.date;
+function mark(slot, id, mode, d = ui.date) {
   if (d > today()) return;
   const before = slotComplete(d, slot);
   const r = touch(d, slot);
   const wasSkip = r.skip.includes(id), wasDone = r.done.includes(id);
   r.done = r.done.filter(x => x !== id);
   r.skip = r.skip.filter(x => x !== id);
-  if (mode === 'skip') { if (!wasSkip) r.skip.push(id); }
-  else if (!wasSkip && !wasDone) r.done.push(id);
+  delete r.why[id];
+  const skipped = mode === 'skip' && !wasSkip;
+  if (skipped) r.skip.push(id);
+  else if (mode !== 'skip' && !wasSkip && !wasDone) r.done.push(id);
   save();
-  patchSlot(slot, id);
+  refreshMark(d, slot, id);
   afterMark(d, slot, before);
+  if (skipped) askWhy(d, slot, id);
+}
+function refreshMark(d, slot, id) {
+  if (ui.tab === 'today' && ui.date === d) patchSlot(slot, id);
+  else if (!(ui.tab === 'week' && patchWeekCell(d, slot, id))) render();
+}
+
+// After a skip, offer a reason; closing the sheet simply leaves it blank.
+function askWhy(date, slot, id) {
+  ui.whyFor = { date, slot, id };
+  $('#whyTitle').textContent = `為什麼略過「${byId(id).name}」？`;
+  renderWhy();
+  $('#whyDlg').showModal();
+}
+function renderWhy() {
+  $('#whyList').innerHTML = state.skipReasons.map(w => `<button type="button" class="chip" data-act="why" data-v="${esc(w)}">${esc(w)}</button>`).join('');
+}
+function setWhy(w) {
+  const { date, slot, id } = ui.whyFor;
+  const r = dayRec(date, true)[slot];
+  if (r.skip.includes(id)) r.why[id] = w;
+  save();
+  $('#whyDlg').close();
+  refreshMark(date, slot, id);
 }
 
 // "全部勾選" (or a long-press on the title) ticks off everything left; the toast offers 復原.
@@ -1117,6 +1405,7 @@ function patchSlot(slot, id) {
   const li = btn.closest('.item');
   li.classList.toggle('is-done', !!x.done);
   li.classList.toggle('is-skip', !!x.skip);
+  $('.tag-skip', li).innerHTML = skipLabel(x.why);
   li.classList.remove('pop');
   void li.offsetWidth;
   li.classList.add('pop');
@@ -1165,6 +1454,7 @@ function removeExtra(slot, id) {
   r.extra = r.extra.filter(x => x !== id);
   r.done = r.done.filter(x => x !== id);
   r.skip = r.skip.filter(x => x !== id);
+  delete r.why[id];
   save();
   render();
 }
@@ -1262,6 +1552,7 @@ function openForm(id, addTo) {
     id: null, name: '', step: defaultStep(),
     times: addTo ? [addTo.slot] : ['am', 'pm'],
     freq: normFreq(), freqPm: null, color: 'pink', note: '', paused: false,
+    opened: '', life: '', expiry: '', low: false,
   };
   form.stepTouched = !!p;
   form.more = !!p;
@@ -1315,6 +1606,14 @@ function renderForm() {
       ${both ? `<button type="button" class="mini-toggle${split ? ' on' : ''}" data-act="f-split" aria-pressed="${split}">早晚分開</button>` : ''}
     </div>
     ${split ? ['am', 'pm'].map(s => `<div class="freq-sub slot-${s}">${icon(SLOT[s].icon)}${SLOT[s].name}</div>${freqBlock(s === 'am' ? 'freq' : 'freqPm')}`).join('') : freqBlock('freq')}`;
+  const dateRow = (k, label) => `<div class="date-row"><span>${label}</span>
+    <input type="date" class="input" data-date-k="${k}" value="${draft[k] || ''}">
+    ${draft[k] ? `<button type="button" class="tag-btn" data-act="f-clear" data-k="${k}" aria-label="清除">${icon('x')}</button>` : ''}</div>`;
+  $('#fLifeWrap').innerHTML = `<div class="lbl">開封與期限</div>
+    ${dateRow('opened', '開封日')}
+    <div class="life-row"><span>開封後可用</span><div class="chips sm">${LIFE_OPTS.map(([v, n]) =>
+      `<button type="button" class="chip${(draft.life || '') === v ? ' on' : ''}" data-act="f-life" data-v="${v}">${n}</button>`).join('')}</div></div>
+    ${dateRow('expiry', '有效期限')}`;
   $('#fColors').innerHTML = Object.entries(COLORS).map(([k, c]) => `<button type="button" class="${draft.color === k ? 'on' : ''}" style="background:${c}" data-act="f-color" data-v="${k}" aria-label="${k}"></button>`).join('');
   $('#fPause').hidden = !draft.id;
   $('#fPause').classList.toggle('on', draft.paused);
@@ -1384,6 +1683,17 @@ const skinEditor = () => openListEditor({
     state.skinTags = items;
   },
 });
+const reasonEditor = () => openListEditor({
+  title: '略過原因', items: state.skipReasons, placeholder: '新增原因', max: 8,
+  onSave(items, renamed) {
+    Object.values(state.days).forEach(r => ['am', 'pm'].forEach(s => {
+      const w = r && r[s] && r[s].why;
+      if (w) Object.keys(w).forEach(k => { if (renamed[w[k]]) w[k] = renamed[w[k]]; });
+    }));
+    state.skipReasons = items;
+    renderWhy();
+  },
+});
 const stepEditor = () => openListEditor({
   title: '步驟', items: state.steps, placeholder: '新增步驟', max: 8,
   onSave(items, renamed) {
@@ -1408,13 +1718,20 @@ function saveForm() {
   const noDays = ['freq', 'freqPm'].some(k => draft[k] && draft[k].type === 'weekly' && !draft[k].days.length);
   if (noDays) { form.more = true; renderForm(); shake($('#fFreqWrap')); return; }
   let p = draft;
-  if (draft.id) {
-    state.products[state.products.findIndex(x => x.id === draft.id)] = draft;
+  const old = draft.id && byId(draft.id);
+  if (old) {
+    state.products[state.products.indexOf(old)] = draft;
+    if (old.paused !== draft.paused) logEvent(p.id, draft.paused ? 'pause' : 'resume');
+    if (scheduleLabel(old) !== scheduleLabel(draft) || old.times.join() !== draft.times.join()) {
+      logEvent(p.id, 'freq', draft.freqPm ? scheduleLabel(draft) : `${draft.times.length === 2 ? '早晚' : SLOT[draft.times[0]].name} ${scheduleLabel(draft)}`);
+    }
   } else {
     const order = Math.max(-1, ...state.products.map(x => x.order)) + 1;
     p = { ...draft, id: uid(), created: Date.now(), order };
     state.products.push(p);
+    logEvent(p.id, 'add');
   }
+  if (p.opened && (!old || old.opened !== p.opened)) logEvent(p.id, 'open', null, p.opened);
   // Made from "加一項": put it on that day straight away.
   const to = ui.addTo;
   if (to && !draft.id && p.times.includes(to.slot) && !slotItems(to.date, to.slot).some(x => x.id === p.id)) {
@@ -1462,6 +1779,16 @@ document.addEventListener('click', e => {
     case 'month-now': ui.month = today().slice(0, 7); render(); break;
     case 'goto-day': ui.date = date; setTab('today'); break;
     case 'toggle': mark(slot, id, 'tap'); break;
+    case 'wk-mark': mark(slot, id, 'tap', date); break;
+    case 'why': setWhy(v); break;
+    case 'edit-reasons': reasonEditor(); break;
+    case 'miss-dismiss': state.missDismissed = date; save(); render(); break;
+    case 'detail': openDetail(id); break;
+    case 'detail-edit': $('#detailDlg').close(); openForm(id); break;
+    case 'toggle-low': toggleLow(id); break;
+    case 'restock': restock(id); break;
+    case 'f-life': draft.life = v; renderForm(); break;
+    case 'f-clear': draft[t.dataset.k] = ''; renderForm(); break;
     case 'extra': openExtra(slot); break;
     case 'fold': fold(slot); break;
     case 'all': completeAll(slot); break;
@@ -1497,6 +1824,7 @@ document.addEventListener('click', e => {
       if (confirm(`要刪除「${draft.name || $('#fName').value}」嗎？過去的紀錄會保留。`)) {
         // Soft delete: hidden everywhere, but past records still show what was used.
         byId(draft.id).deleted = true;
+        logEvent(draft.id, 'delete');
         save();
         $('#formDlg').close();
         render();
@@ -1508,15 +1836,18 @@ document.addEventListener('click', e => {
 document.addEventListener('input', e => {
   if (e.target.id === 'dayNote') { dayRec(ui.date, true).note = e.target.value; saveSoon(); }
   if (e.target.dataset.start && draft) draft[e.target.dataset.start].start = e.target.value || today();
+  if (e.target.dataset.dateK && draft) draft[e.target.dataset.dateK] = e.target.value;
 });
+document.addEventListener('change', e => { if (e.target.dataset.dateK && draft) renderForm(); });
 
 // Long-press (or right-click): skip an item / tick off a whole routine.
 let pressTimer = null, pressFired = false, pressAt = null;
 const cancelPress = () => { clearTimeout(pressTimer); pressTimer = null; $$('.holding').forEach(x => x.classList.remove('holding')); };
 function hold(el) {
-  if (navigator.vibrate) navigator.vibrate(12);
+  if (navigator.vibrate && (!navigator.userActivation || navigator.userActivation.hasBeenActive)) navigator.vibrate(12);
   if (el.dataset.hold === 'skip') mark(el.dataset.slot, el.dataset.id, 'skip');
   if (el.dataset.hold === 'all') completeAll(el.dataset.slot);
+  if (el.dataset.hold === 'wk-skip') mark(el.dataset.slot, el.dataset.id, 'skip', el.dataset.date);
 }
 document.addEventListener('pointerdown', e => {
   pressFired = false;
@@ -1569,6 +1900,12 @@ window.addEventListener('pagehide', flush);
 $('#nav').innerHTML = TABS.map(([v, n, ic]) => `<button data-act="tab" data-v="${v}">${icon(ic)}<span>${n}</span></button>`).join('');
 $$('[data-act="close"]').forEach(b => { b.innerHTML = icon('x'); });
 $('[data-act="edit-steps"]').innerHTML = icon('pen');
+$('[data-act="edit-reasons"]').innerHTML = icon('pen');
+// ?demo=reset brings the sample data back to its original state.
+if (DEMO && new URLSearchParams(location.search).get('demo') === 'reset') {
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  history.replaceState(null, '', location.pathname + '?demo');
+}
 $('#fMoreBtn').insertAdjacentHTML('beforeend', icon('chev'));
 // Records saved before launch under the old key were test data; start the real tool clean.
 if (!DEMO) { try { localStorage.removeItem('skincare-diary-v1'); } catch (e) {} }

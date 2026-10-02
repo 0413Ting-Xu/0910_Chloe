@@ -27,13 +27,29 @@ window.skincareDemo = ({ today, addDays, isScheduled, normalize }) => {
     if (n === 16) continue;
     const d = addDays(today(), -n), am = plan(d, 'am'), pm = plan(d, 'pm');
     let amDone = [...am], pmDone = [...pm];
-    const pmExtra = [];
+    const pmExtra = [], amSkip = [], pmSkip = [], amWhy = {}, pmWhy = {};
     if (n === 0 || n === 10) pmDone = pm.slice(0, 2);
     if (n === 7) pmDone = pm.slice(0, -2);
-    if (n === 13) amDone = am.filter(id => id !== 'd8');
+    if (n === 13) { amDone = am.filter(id => id !== 'd8'); amSkip.push('d8'); amWhy.d8 = '沒出門'; }
     if (n === 19) pmDone = pm.slice(0, 3);
-    if (n === 8) { pmDone = pmDone.filter(id => id !== 'd4').concat('d10'); pmExtra.push('d10'); }
-    days[d] = { am: { plan: am, done: amDone, extra: [] }, pm: { plan: pm, done: pmDone, extra: pmExtra }, skin: skin[n] || [], note: notes[n] || '' };
+    if (n === 8) { pmDone = pmDone.filter(id => id !== 'd4').concat('d10'); pmExtra.push('d10'); pmSkip.push('d4'); pmWhy.d4 = '敏感'; }
+    if (n === 4 && pm.includes('d4')) { pmDone = pmDone.filter(id => id !== 'd4'); pmSkip.push('d4'); pmWhy.d4 = '生理期'; }
+    days[d] = {
+      am: { plan: am, done: amDone, extra: [], skip: amSkip, why: amWhy },
+      pm: { plan: pm, done: pmDone, extra: pmExtra, skip: pmSkip, why: pmWhy },
+      skin: skin[n] || [], note: notes[n] || '',
+    };
   }
-  return { v: 1, products, days };
+  // Opening dates, shelf life and a few product changes, so the detail page and journal have something to show.
+  const P = name => products.find(p => p.name === name);
+  Object.assign(P('玻尿酸化妝水'), { opened: addDays(today(), -176), life: '6m' });
+  Object.assign(P('維他命C精華'), { opened: addDays(today(), -40), life: '3m' });
+  Object.assign(P('清爽防曬乳'), { low: true });
+  Object.assign(P('保濕面膜'), { expiry: addDays(today(), 120) });
+  const events = products.map(p => ({ d: start, id: p.id, k: 'add' }));
+  events.push({ d: addDays(today(), -40), id: P('維他命C精華').id, k: 'open' });
+  events.push({ d: addDays(today(), -15), id: P('痘痘貼').id, k: 'pause' });
+  events.push({ d: addDays(today(), -10), id: P('A醇精華').id, k: 'freq', x: '晚上 週二四六' });
+  events.push({ d: addDays(today(), -3), id: P('清爽防曬乳').id, k: 'low' });
+  return { v: 1, products, days, events };
 };
