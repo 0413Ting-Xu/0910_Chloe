@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Chloe每日小清單</title>
+<title>每日小清單</title>
 <meta name="theme-color" content="#F7FAFE">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Chloe每日小清單">
+<meta name="apple-mobile-web-app-title" content="每日小清單">
 <link rel="icon" type="image/png" href="images/icon-180.png">
 <link rel="apple-touch-icon" href="images/icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -590,7 +590,7 @@ main{container:main / inline-size;min-width:0}
 <div class="app">
   <aside class="art" aria-hidden="true">
     <div class="art-card">
-      <div class="art-brand" data-hold="title"><span class="brand-name">Chloe每日小清單</span></div>
+      <div class="art-brand" data-hold="title"><span class="brand-name">每日小清單</span></div>
       <div class="art-greet" id="artGreet"></div>
       <div class="art-date" id="artDate"></div>
       <div class="art-wd" id="artWd"></div>
@@ -614,7 +614,7 @@ main{container:main / inline-size;min-width:0}
     <header class="m-head">
       <div class="m-brand" data-hold="title">
         <span class="m-av"><span><img src="images/chiikawa.webp" alt=""></span><span><img src="images/hachiware.webp" alt=""></span></span>
-        <span class="brand-name">Chloe每日小清單</span>
+        <span class="brand-name">每日小清單</span>
       </div>
       <span class="streak" id="mStreak" hidden></span>
     </header>
@@ -785,7 +785,7 @@ main{container:main / inline-size;min-width:0}
     </div>
     <div class="field" id="syncNameWrap">
       <label class="lbl" for="syncName">名稱</label>
-      <input id="syncName" class="input" autocomplete="off" maxlength="12" placeholder="例如：Chloe">
+      <input id="syncName" class="input" autocomplete="off" maxlength="12" placeholder="例如：小美">
     </div>
     <div class="field">
       <label class="lbl" for="syncPin">密碼</label>
@@ -931,7 +931,7 @@ function addMonths(s, n) {
 const longDate = s => { const d = parse(s); return `${d.getMonth() + 1}月${d.getDate()}日`; };
 
 /* ---------- state ---------- */
-const DEFAULT_TITLE = 'Chloe每日小清單';
+const DEFAULT_TITLE = '每日小清單';
 // Bump APP_SCHEMA whenever the saved data gains something an older copy of the app would drop when it re-saves.
 // A copy that meets data from a newer schema only reads it: it never writes it back, locally or to the cloud.
 const APP_SCHEMA = 3;
@@ -1882,7 +1882,7 @@ $('#titleForm').addEventListener('submit', e => {
   state.title = v === DEFAULT_TITLE ? '' : v;
   save();
   $('#titleDlg').close();
-  applyTitle();
+  render();
 });
 
 function renderSide() {
