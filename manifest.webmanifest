@@ -1,0 +1,15 @@
+{
+  "name": "Chloe每日小清單",
+  "short_name": "每日小清單",
+  "description": "每天的保養、保健、眼睛照護小清單",
+  "lang": "zh-Hant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F7FAFE",
+  "theme_color": "#F7FAFE",
+  "icons": [
+    { "src": "images/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "images/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

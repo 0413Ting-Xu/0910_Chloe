@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Chloe每日小清單">
 <link rel="icon" type="image/png" href="images/icon-180.png">
 <link rel="apple-touch-icon" href="images/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Huninn&display=swap" rel="stylesheet">
@@ -441,6 +442,40 @@ main{container:main / inline-size;min-width:0}
 .look.on{background:var(--c1);color:var(--c6)}
 .look.on .avatar{box-shadow:0 0 0 3px var(--c4)}
 .time-input{font-size:20px;text-align:center}
+.set-row.static{cursor:default}
+.news-badge{flex:none;font-size:12px;line-height:1;padding:4px 8px;border-radius:999px;background:var(--blue-300);color:#fff}
+.news-item{padding:14px 16px;margin-bottom:10px;border-radius:18px;background:#FAFBFD}
+.news-item.is-new{background:var(--blue-50);box-shadow:inset 0 0 0 1.5px var(--blue-100)}
+.news-head{display:flex;align-items:center;gap:8px;font-size:15px}
+.news-head b{font-weight:400;color:var(--blue-600)}
+.news-date{margin-left:auto;font-size:13px;color:var(--ink-3)}
+.news-item h3{font-size:17px;margin:6px 0 0}
+.news-item ul{margin-top:8px}
+.news-item ul{margin:0;padding-left:1.2em;font-size:15px;line-height:1.75;color:var(--ink-2)}
+/* first-use tour */
+.tour{position:relative;text-align:center;padding-top:34px}
+.tour-x{position:absolute;right:14px;top:14px}
+.tour-art{min-height:150px;display:flex;align-items:center;justify-content:center;margin:6px 0 14px}
+.tour-img{width:min(210px,64%);mix-blend-mode:multiply}
+.tour h2{font-size:21px;margin-bottom:8px}
+.tour p{margin:0 auto 4px;max-width:21em;font-size:15.5px;line-height:1.7;color:var(--ink-2)}
+.tour-dots{display:flex;justify-content:center;gap:7px;margin:18px 0 20px}
+.tour-dots i{width:7px;height:7px;border-radius:50%;background:var(--blue-100);transition:width .25s, background .25s}
+.tour-dots i.on{width:20px;border-radius:7px;background:var(--blue-300)}
+.mock-item{position:relative;display:flex;align-items:center;gap:12px;padding:15px 18px;border-radius:20px;background:var(--blue-50);box-shadow:0 0 0 1.5px var(--blue-100);font-size:17px;min-width:240px}
+.mock-check{width:26px;height:26px;border-radius:50%;border:2px dashed var(--ink-3)}
+.mock-finger{position:absolute;right:-6px;bottom:-26px;width:42px;height:42px;color:var(--blue-400);animation:press 1.8s ease-in-out infinite}
+.mock-finger .ic{width:100%;height:100%;fill:#fff}
+@keyframes press{0%,100%{transform:translateY(0) scale(1)}45%,60%{transform:translateY(-8px) scale(.9)}}
+.mock-rows{display:flex;flex-direction:column;gap:12px;align-items:stretch;min-width:250px}
+.mock-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:18px;background:var(--blue-50);font-size:16px;text-align:left}
+.mock-plus{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--blue-100);color:var(--blue-600);flex:none}
+.mock-brand{padding:6px 12px;border-radius:12px;background:#fff;box-shadow:var(--shadow);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:9.5em}
+.mock-cloud{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;background:var(--blue-100);color:var(--blue-400)}
+.mock-cloud .ic{width:50px;height:50px}
+.pin-input{text-align:center;letter-spacing:.5em;font-size:22px;padding-left:calc(14px + .5em)}
+.pin-input::placeholder{letter-spacing:.05em;font-size:16px}
+.form-err{min-height:20px;margin-top:8px;font-size:14px;color:var(--pink-600)}
 .swap-chip{display:inline-flex;align-items:center;gap:8px;padding:5px 15px 5px 5px}
 .swap-chip img{width:28px;height:28px;border-radius:50%;object-fit:cover;background:#fff}
 .swap-chip.on{background:var(--c1);color:var(--c6);box-shadow:inset 0 0 0 1.5px var(--c3)}
@@ -718,6 +753,49 @@ main{container:main / inline-size;min-width:0}
   </form>
 </dialog>
 
+<dialog class="dlg" id="newsDlg">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2>更新快報</h2>
+      <button type="button" class="icon-btn" data-act="close" aria-label="關閉"></button>
+    </div>
+    <div id="newsList"></div>
+  </div>
+</dialog>
+
+<dialog class="dlg" id="tourDlg">
+  <div class="sheet tour">
+    <button type="button" class="icon-btn tour-x" data-act="tour-end" aria-label="略過導覽" id="tourX"></button>
+    <div class="tour-art" id="tourArt"></div>
+    <h2 id="tourTitle"></h2>
+    <p id="tourSub"></p>
+    <div class="tour-dots" id="tourDots"></div>
+    <div class="sheet-foot">
+      <button type="button" class="btn ghost" data-act="tour-prev" id="tourPrev">上一步</button>
+      <button type="button" class="btn primary" data-act="tour-next" id="tourNext">下一步</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="dlg" id="syncDlg">
+  <form class="sheet" id="syncForm" novalidate>
+    <div class="sheet-head">
+      <h2 id="syncTitle">存到雲端</h2>
+      <button type="button" class="icon-btn" data-act="close" aria-label="關閉"></button>
+    </div>
+    <div class="field" id="syncNameWrap">
+      <label class="lbl" for="syncName">名稱</label>
+      <input id="syncName" class="input" autocomplete="off" maxlength="12" placeholder="例如：Chloe">
+    </div>
+    <div class="field">
+      <label class="lbl" for="syncPin">密碼</label>
+      <input id="syncPin" class="input pin-input" type="tel" inputmode="numeric" autocomplete="off" placeholder="4 位數">
+      <div class="form-err" id="syncErr" role="alert"></div>
+    </div>
+    <div class="sheet-foot"><button type="submit" class="btn primary" id="syncGo">建立</button></div>
+  </form>
+</dialog>
+
 <dialog class="dlg" id="titleDlg">
   <form class="sheet" id="titleForm" novalidate>
     <div class="sheet-head">
@@ -756,6 +834,7 @@ main{container:main / inline-size;min-width:0}
 <div class="toast" id="toast" role="status"><span class="toast-av"><img alt=""></span><span class="toast-text"></span><button type="button" class="toast-act" id="toastAct" hidden></button></div>
 <input type="file" id="importFile" accept="application/json,.json" hidden>
 
+<script src="updates.js"></script>
 <script>
 (() => {
 'use strict';
@@ -815,6 +894,9 @@ const I = {
   adown: '<path d="M12 5v14M6 13l6 6 6-6"/>',
   dash: '<path d="M7 12h10"/>',
   gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/>',
+  share: '<path d="M12 15V4M8 8l4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>',
+  hand: '<path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10m0-1.5a1.5 1.5 0 0 1 3 0V11m0-.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-2.7L4.6 15a1.5 1.5 0 0 1 2.4-1.7L9 15.5"/>',
+  cloud: '<path d="M7.5 18.5h10a4 4 0 0 0 .6-7.95A5.5 5.5 0 0 0 7.4 9.6 4.5 4.5 0 0 0 7.5 18.5z"/>',
   clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
   sort: '<path d="M8 5v14M4.5 8.5 8 5l3.5 3.5M16 19V5M12.5 15.5 16 19l3.5-3.5"/>',
 };
@@ -850,7 +932,11 @@ const longDate = s => { const d = parse(s); return `${d.getMonth() + 1}月${d.ge
 
 /* ---------- state ---------- */
 const DEFAULT_TITLE = 'Chloe每日小清單';
-const blank = () => ({ v: 2, title: '', dayStart: 4, products: [], days: {}, skinTags: [...DEFAULT_SKIN], lastBackup: 0, backupSnooze: 0,
+// Bump APP_SCHEMA whenever the saved data gains something an older copy of the app would drop when it re-saves.
+// A copy that meets data from a newer schema only reads it: it never writes it back, locally or to the cloud.
+const APP_SCHEMA = 3;
+let tooNew = false;
+const blank = () => ({ v: 2, schema: APP_SCHEMA, title: '', dayStart: 4, products: [], days: {}, skinTags: [...DEFAULT_SKIN], lastBackup: 0, backupSnooze: 0,
   cats: DEFAULT_CATS.map(c => ({ ...c, steps: [...c.steps] })), slots: DEFAULT_SLOTS.map(x => ({ ...x })),
   events: [], skipReasons: [...DEFAULT_REASONS], missDismissed: '' });
 const cleanList = a => [...new Set(a.map(t => String(t).trim()).filter(Boolean))];
@@ -864,6 +950,7 @@ function normFreq(f = {}) {
   };
 }
 function normalize(s) {
+  if (Number(s.schema) > APP_SCHEMA) tooNew = true;
   const out = blank();
   if (Array.isArray(s.slots) && s.slots.some(x => x && x.id && !x.deleted)) {
     out.slots = s.slots.filter(x => x && x.id && String(x.name || '').trim()).map(x => {
@@ -931,16 +1018,208 @@ function load() {
 }
 function save() {
   doneIdx = null;
+  if (tooNew) return;
   // Today's record keeps tracking the live schedule, so the snapshot it leaves behind at midnight is what the day really was.
   const t = state.days[today()];
   if (t) for (const x of activeSlots()) if (t[x.id]) t[x.id].plan = livePlan(today(), x.id);
   try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  syncSoon();
 }
 let saveTimer = null;
 const saveSoon = () => { clearTimeout(saveTimer); saveTimer = setTimeout(() => { saveTimer = null; save(); }, 300); };
 const flush = () => { if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; save(); } };
 
 let state = blank();
+
+/* ---------- cloud sync (Supabase) ---------- */
+// The list lives on the phone first; a copy goes to Supabase under a name and a 4-digit password chosen by whoever
+// uses the device. Another device (or a new phone) loads it by entering the same name and password.
+// The table behind the publishable key is locked; only the functions in dev/supabase.sql can touch it.
+const CLOUD = { url: 'https://radvioktbhamtzngsauj.supabase.co', key: 'sb_publishable_crg9wekr0JnHd4zGC1xwXw_ULn70RPl' };
+const SYNC_KEY = KEY + '-sync';
+const sync = { name: '', pin: '', rev: 0, base: null, at: 0, tipOff: false, status: 'idle', busy: false, again: false, timer: null };
+const cloudReady = () => !DEMO && !!CLOUD.url && !!CLOUD.key;
+const linked = () => cloudReady() && !!sync.name && !!sync.pin;
+function loadSync() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SYNC_KEY));
+    if (s) Object.assign(sync, { name: s.name || '', pin: s.pin || '', rev: s.rev || 0, base: s.base || null, at: s.at || 0, tipOff: !!s.tipOff });
+  } catch (e) {}
+}
+function storeSync() {
+  try { localStorage.setItem(SYNC_KEY, JSON.stringify({ name: sync.name, pin: sync.pin, rev: sync.rev, base: sync.base, at: sync.at, tipOff: sync.tipOff })); } catch (e) {}
+}
+async function rpc(fn, body, keepalive) {
+  const text = JSON.stringify(body);
+  const r = await fetch(`${CLOUD.url}/rest/v1/rpc/${fn}`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json', apikey: CLOUD.key }, body: text, keepalive: !!keepalive && text.length < 60000,
+  });
+  if (!r.ok) throw new Error(`${fn} ${r.status}`);
+  return r.json();
+}
+const copyOf = o => JSON.parse(JSON.stringify(o));
+const sameJ = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+// Three-way merge against the last synced copy: whichever side changed a day, product or setting wins;
+// if both changed the same one, this device wins. Events are kept from both.
+function merge3(base, local, remote) {
+  const b = base || {}, pick = (bv, lv, rv) => sameJ(lv, bv) ? rv : lv;
+  const out = { ...remote, schema: APP_SCHEMA };
+  for (const k of ['title', 'dayStart', 'skinTags', 'skipReasons', 'cats', 'slots']) out[k] = pick(b[k], local[k], remote[k]);
+  out.lastBackup = Math.max(local.lastBackup || 0, remote.lastBackup || 0);
+  out.backupSnooze = Math.max(local.backupSnooze || 0, remote.backupSnooze || 0);
+  out.missDismissed = [local.missDismissed || '', remote.missDismissed || ''].sort().pop();
+  const bd = b.days || {}, ld = local.days || {}, rd = remote.days || {};
+  out.days = {};
+  for (const d of new Set([...Object.keys(rd), ...Object.keys(ld)])) {
+    const v = pick(bd[d], ld[d], rd[d]);
+    if (v) out.days[d] = v;
+  }
+  const find = (list, id) => (list || []).find(p => p.id === id);
+  const ids = [...new Set([...(remote.products || []), ...(local.products || [])].map(p => p.id))];
+  out.products = ids.map(id => pick(find(b.products, id), find(local.products, id), find(remote.products, id))).filter(Boolean);
+  const seen = new Set();
+  out.events = [...(remote.events || []), ...(local.events || [])].filter(e => {
+    const k = `${e.d}|${e.id}|${e.k}|${e.x || ''}`;
+    return seen.has(k) ? false : seen.add(k);
+  });
+  return out;
+}
+function setSync(status) {
+  sync.status = status;
+  const el = $('#syncState');
+  if (el) el.innerHTML = syncLabel();
+}
+const syncSoon = () => {
+  if (!linked()) return;
+  clearTimeout(sync.timer);
+  sync.timer = setTimeout(() => syncNow(), 2500);
+};
+// Take the cloud copy as this device's list.
+function adopt(data, rev) {
+  if (Number(data.schema) > APP_SCHEMA) { tooNew = true; setSync('tooNew'); render(); return; }
+  state = normalize(data);
+  sync.rev = rev;
+  sync.base = copyOf(state);
+  sync.at = Date.now();
+  storeSync();
+  doneIdx = null;
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  render();
+}
+async function syncNow(keepalive) {
+  if (!linked() || tooNew) return;
+  if (sync.busy) { sync.again = true; return; }
+  clearTimeout(sync.timer);
+  if (saveTimer) flush();
+  sync.busy = true;
+  setSync('busy');
+  const who = { p_name: sync.name, p_pin: sync.pin };
+  try {
+    for (let i = 0; i < 3; i++) {
+      const snap = copyOf(state);
+      if (sync.base && sameJ(snap, sync.base)) {
+        const [row] = await rpc('diary_get', who);
+        if (!row) { setSync('denied'); break; }
+        if (row.rev > sync.rev) adopt(row.data, row.rev);
+        if (tooNew) break;
+        sync.at = Date.now();
+        storeSync();
+        setSync('ok');
+        break;
+      }
+      const [res] = await rpc('diary_put', { ...who, p_data: snap, p_base_rev: sync.rev }, keepalive);
+      if (res.status === 'denied') { setSync('denied'); break; }
+      if (res.status === 'ok') { sync.rev = res.rev; sync.base = snap; sync.at = Date.now(); storeSync(); setSync('ok'); break; }
+      // Another device saved first: fold its changes in and send again.
+      if (Number(res.data.schema) > APP_SCHEMA) { tooNew = true; setSync('tooNew'); render(); break; }
+      state = normalize(merge3(sync.base, state, res.data));
+      sync.rev = res.rev;
+      sync.base = copyOf(res.data);
+      doneIdx = null;
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+      render();
+    }
+  } catch (e) {
+    setSync(navigator.onLine === false ? 'offline' : 'error');
+  }
+  sync.busy = false;
+  if (sync.again) { sync.again = false; syncSoon(); }
+}
+const cleanName = n => String(n || '').trim().slice(0, 12);
+const goodPin = p => /^\d{4}$/.test(p);
+// Save this device's list to the cloud under a new name. Returns '' on success, or what went wrong.
+async function createSync(name, pin) {
+  name = cleanName(name);
+  if (!name) return 'name';
+  if (!goodPin(pin)) return 'pin';
+  try {
+    const [row] = await rpc('diary_get', { p_name: name, p_pin: pin });
+    if (row) return 'exists';
+    const snap = copyOf(state);
+    const [res] = await rpc('diary_put', { p_name: name, p_pin: pin, p_data: snap, p_base_rev: 0 });
+    if (res.status === 'denied') return 'taken';
+    if (res.status !== 'ok') return 'taken';
+    Object.assign(sync, { name, pin, rev: res.rev, base: snap, at: Date.now() });
+    storeSync();
+    setSync('ok');
+    return '';
+  } catch (e) { return 'net'; }
+}
+// Load a list from the cloud onto this device.
+async function joinSync(name, pin) {
+  name = cleanName(name);
+  if (!name) return 'name';
+  if (!goodPin(pin)) return 'pin';
+  let row;
+  try { [row] = await rpc('diary_get', { p_name: name, p_pin: pin }); } catch (e) { return 'net'; }
+  if (!row) return 'nomatch';
+  if (Number(row.data.schema) > APP_SCHEMA) return 'old';
+  if (state.products.some(p => !p.deleted) && !confirm('這台裝置上現在的紀錄會換成雲端的紀錄，確定嗎？')) return 'cancel';
+  Object.assign(sync, { name, pin });
+  adopt(row.data, row.rev);
+  setSync('ok');
+  return '';
+}
+// Another device changed the password: enter the new one and carry on; both sides' changes get merged.
+async function relinkSync(pin) {
+  if (!goodPin(pin)) return 'pin';
+  try {
+    const [row] = await rpc('diary_get', { p_name: sync.name, p_pin: pin });
+    if (!row) return 'nomatch';
+    sync.pin = pin;
+    storeSync();
+    setSync('idle');
+    syncNow();
+    return '';
+  } catch (e) { return 'net'; }
+}
+async function changePin(pin) {
+  if (!goodPin(pin)) return 'pin';
+  try {
+    const ok = await rpc('diary_set_pin', { p_name: sync.name, p_old: sync.pin, p_new: pin });
+    if (!ok) return 'nomatch';
+    sync.pin = pin;
+    storeSync();
+    setSync('idle');
+    syncNow();
+    return '';
+  } catch (e) { return 'net'; }
+}
+function stopSync() {
+  clearTimeout(sync.timer);
+  Object.assign(sync, { name: '', pin: '', rev: 0, base: null, at: 0, status: 'idle' });
+  storeSync();
+}
+function syncLabel() {
+  if (sync.status === 'busy') return '同步中…';
+  if (sync.status === 'tooNew') return '請先更新 App';
+  if (sync.status === 'denied') return '需要輸入新密碼';
+  if (sync.status === 'offline') return '沒有網路，連上後會自動同步';
+  if (sync.status === 'error') return '同步失敗，稍後會再試';
+  if (!sync.at) return '已連接';
+  const m = Math.round((Date.now() - sync.at) / 60000);
+  return `已同步・${m < 1 ? '剛剛' : m < 60 ? `${m} 分鐘前` : m < 1440 ? `${Math.round(m / 60)} 小時前` : shortDate(fmt(new Date(sync.at)))}`;
+}
 const ui = { tab: 'today', date: today(), week: weekStart(today()), month: today().slice(0, 7), pop: '', open: new Set(), sorting: false, addTo: null };
 
 /* ---------- schedule logic ---------- */
@@ -1104,7 +1383,8 @@ const welcome = () => `<section class="card welcome">
   <img src="${IMG.duo}" alt="">
   <h2>清單還是空的</h2>
   <div class="welcome-actions">
-    <button class="btn primary" data-act="new">${icon('plus')}新增一項</button>
+    <button class="btn primary" data-act="starter">${icon('star')}加入基本保養</button>
+    <button class="btn ghost" data-act="new">${icon('plus')}自己新增</button>
   </div>
 </section>`;
 
@@ -1117,6 +1397,21 @@ function renderToday() {
     <img src="${IMG.faceRest}" alt=""><span>${miss === addDays(d, -1) ? '昨天' : md(miss) + ' '}還沒記錄</span>
     <button class="btn primary sm" data-act="goto-day" data-date="${miss}">補記</button>
     <button class="icon-btn sm" data-act="miss-dismiss" data-date="${miss}" aria-label="不用了">${icon('x')}</button>
+  </div>`;
+  if (tooNew) html += `<div class="tip update-tip">
+    <img src="${IMG.faceRest}" alt=""><span>有新版本，更新後才能繼續記錄</span>
+    <button class="btn primary sm" data-act="update-app">更新</button>
+  </div>`;
+  const fresh = newsFresh();
+  if (fresh.length && !tooNew) html += `<div class="tip news-tip">
+    <img src="${IMG.faceDone}" alt=""><span>有新功能・v${esc(fresh[0].v)}</span>
+    <button class="btn primary sm" data-act="news">看看</button>
+    <button class="icon-btn sm" data-act="news-off" aria-label="不用了">${icon('x')}</button>
+  </div>`;
+  if (cloudReady() && !sync.name && !sync.tipOff && Object.keys(state.days).length >= 3) html += `<div class="tip cloud-tip">
+    <img src="${IMG.faceDone}" alt=""><span>把紀錄存到雲端</span>
+    <button class="btn primary sm" data-act="sync-create-go">設定</button>
+    <button class="icon-btn sm" data-act="sync-tip-off" aria-label="不用了">${icon('x')}</button>
   </div>`;
   if (needsBackup()) html += `<div class="tip backup-tip">
     <img src="${IMG.faceRest}" alt=""><span>好久沒備份了</span>
@@ -1520,6 +1815,16 @@ function renderHistory() {
     </section>` : ''}`;
 }
 
+// Forget the saved shell and load the newest page.
+async function updateApp() {
+  try {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map(r => r.unregister()));
+    const keys = await caches.keys();
+    await Promise.all(keys.map(k => caches.delete(k)));
+  } catch (e) {}
+  location.reload();
+}
 // The app's name can be changed by long-pressing it.
 const appTitle = () => state.title || DEFAULT_TITLE;
 function applyTitle() {
@@ -1532,6 +1837,45 @@ function openTitle() {
   $('#titleDlg').showModal();
   if (matchMedia('(hover:hover)').matches) $('#titleInput').select();
 }
+let syncMode = '';
+const SYNC_TEXT = {
+  create: ['存到雲端', '建立'], join: ['從雲端載入', '載入'], pin: ['更改密碼', '儲存'], relink: ['輸入新密碼', '連接'],
+};
+function openSync(mode) {
+  syncMode = mode;
+  $('#syncTitle').textContent = SYNC_TEXT[mode][0];
+  $('#syncGo').textContent = SYNC_TEXT[mode][1];
+  $('#syncNameWrap').hidden = mode === 'pin' || mode === 'relink';
+  $('#syncName').value = '';
+  $('#syncPin').value = '';
+  $('#syncPin').placeholder = mode === 'pin' ? '新密碼 4 位數' : '密碼 4 位數';
+  $('#syncErr').textContent = '';
+  $('#syncErr').textContent = '';
+  $('#syncDlg').showModal();
+  if (matchMedia('(hover:hover)').matches) (mode === 'pin' || mode === 'relink' ? $('#syncPin') : $('#syncName')).focus();
+}
+const SYNC_ERR = {
+  name: '請輸入名稱', pin: '密碼要是 4 個數字', net: '連不上網路，請稍後再試',
+  exists: '這個名稱已經有了，如果是你的，請用「從雲端載入」', taken: '這個名稱已經有人用了，換一個吧',
+  nomatch: '名稱或密碼不對', old: '這份紀錄是用比較新的版本存的，請先更新 App（重新整理）再試',
+};
+$('#syncPin').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4); });
+$('#syncForm').addEventListener('input', () => { $('#syncErr').textContent = ''; });
+$('#syncForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const go = $('#syncGo');
+  go.disabled = true;
+  const name = $('#syncName').value, pin = $('#syncPin').value;
+  const r = syncMode === 'create' ? await createSync(name, pin) : syncMode === 'join' ? await joinSync(name, pin)
+    : syncMode === 'relink' ? await relinkSync(pin) : await changePin(pin);
+  go.disabled = false;
+  if (r === 'cancel') return;
+  if (r) { $('#syncErr').textContent = SYNC_ERR[r] || '出了點問題'; shake($(r === 'pin' || r === 'nomatch' ? '#syncPin' : '#syncName')); return; }
+  $('#syncDlg').close();
+  render();
+  if (syncMode === 'join') setTab('today');
+  toast('duo', syncMode === 'pin' ? '密碼已更改' : syncMode === 'join' ? '載入完成' : syncMode === 'relink' ? '已重新連接' : '已存到雲端');
+});
 $('#titleForm').addEventListener('submit', e => {
   e.preventDefault();
   const v = $('#titleInput').value.trim();
@@ -1754,6 +2098,7 @@ $('#toastAct').addEventListener('click', () => {
 
 // Remind once there is a week of records and no backup for two weeks: the data only lives on this phone.
 function needsBackup() {
+  if (linked() && sync.rev) return false;
   const now = Date.now();
   if (Object.keys(state.days).length < 7 || state.backupSnooze > now) return false;
   return now - state.lastBackup > 14 * 864e5;
@@ -1989,6 +2334,100 @@ const stepEditor = catId => openListEditor({
   },
 });
 
+/* ---------- version and what's new (entries live in updates.js) ---------- */
+const UPDATES = Array.isArray(window.APP_UPDATES) ? window.APP_UPDATES : [];
+const APP_VERSION = (UPDATES[0] && UPDATES[0].v) || '1.0';   // v1.0 is the base; the first entry in updates.js is the current version
+const NEWS_KEY = KEY + '-seenver';
+const cmpVer = (a, b) => {
+  const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number);
+  for (let i = 0; i < 3; i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0);
+  return 0;
+};
+const newsSeen = () => { try { return localStorage.getItem(NEWS_KEY); } catch (e) { return APP_VERSION; } };
+const setNewsSeen = v => { try { localStorage.setItem(NEWS_KEY, v); } catch (e) {} };
+// Entries newer than the last version this device has seen, except quiet fixes.
+const newsFresh = () => { const seen = newsSeen() || '0'; return UPDATES.filter(u => !u.quiet && cmpVer(u.v, seen) > 0); };
+function openNews() {
+  const seen = newsSeen() || '0';
+  // A device that has never seen any version only marks the latest one as new.
+  const isNew = u => !u.quiet && cmpVer(u.v, seen) > 0 && (seen !== '0' || u === UPDATES[0]);
+  $('#newsList').innerHTML = UPDATES.map(u => `<section class="news-item${isNew(u) ? ' is-new' : ''}">
+    <div class="news-head"><b>v${esc(u.v)}</b>${isNew(u) ? '<span class="news-badge">新</span>' : ''}<span class="news-date">${esc(u.date || '')}</span></div>
+    ${u.title ? `<h3>${esc(u.title)}</h3>` : ''}
+    <ul>${(u.items || []).map(t => `<li>${esc(t)}</li>`).join('')}</ul></section>`).join('') || '<div class="pick-empty">目前是最新版本</div>';
+  $('#newsDlg').showModal();
+  $('#newsDlg .sheet').scrollTop = 0;
+}
+$('#newsDlg').addEventListener('close', () => { setNewsSeen(APP_VERSION); if (ui.tab === 'today' || ui.tab === 'settings') render(); });
+
+/* ---------- first-use tour and starter list ---------- */
+const TOUR_KEY = KEY + '-tour';
+const tourSeen = () => { try { return localStorage.getItem(TOUR_KEY) === '1'; } catch (e) { return true; } };
+const standalone = () => navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+let tourAt = 0;
+function tourSlides() {
+  const slides = [
+    { art: `<img class="tour-img" src="${IMG.duo}" alt="">`, title: '每天的小清單', sub: '做完一項，點一下就打勾' },
+    { art: `<div class="mock-item"><span class="mock-check"></span><span>溫和卸妝油</span><span class="mock-finger">${icon('hand')}</span></div>`,
+      title: '長按一項，可以略過', sub: '今天沒用到也沒關係，不會中斷連續天數' },
+    { art: `<div class="mock-rows">
+        <div class="mock-row"><span class="mock-plus">${icon('plus')}</span><span>臨時多做一項</span></div>
+        <div class="mock-row"><span class="mock-brand">${esc(appTitle())}</span><span>長按改名字</span></div></div>`,
+      title: '還有兩個小技巧', sub: '' },
+  ];
+  if (!standalone()) slides.push({
+    art: `<div class="mock-rows"><div class="mock-row"><span class="mock-plus">${icon(isIOS() ? 'share' : 'plus')}</span><span>${isIOS() ? '分享' : '瀏覽器選單'}</span></div>
+      <div class="mock-row"><span class="mock-plus">${icon('plus')}</span><span>${isIOS() ? '加入主畫面' : '加到主畫面'}</span></div></div>`,
+    title: '加到主畫面', sub: '像 App 一樣打開，紀錄也比較不會被清掉。先加再開始記，最順',
+  });
+  if (cloudReady()) slides.push({
+    art: `<div class="mock-cloud">${icon('cloud')}</div>`, title: '換手機也不怕', sub: '到「設定」存到雲端，換手機時再載入就好',
+  });
+  return slides;
+}
+function renderTour() {
+  const sl = tourSlides(), s = sl[Math.min(tourAt, sl.length - 1)], last = tourAt >= sl.length - 1;
+  $('#tourArt').innerHTML = s.art;
+  $('#tourTitle').textContent = s.title;
+  $('#tourSub').textContent = s.sub;
+  $('#tourSub').hidden = !s.sub;
+  $('#tourDots').innerHTML = sl.map((_, i) => `<i class="${i === tourAt ? 'on' : ''}"></i>`).join('');
+  $('#tourPrev').style.visibility = tourAt ? 'visible' : 'hidden';
+  $('#tourNext').textContent = last ? '開始使用' : '下一步';
+}
+function openTour() {
+  tourAt = 0;
+  renderTour();
+  if (!$('#tourDlg').open) $('#tourDlg').showModal();
+}
+function tourStep(d) {
+  const n = tourSlides().length;
+  if (d > 0 && tourAt >= n - 1) { closeTour(); return; }
+  tourAt = Math.max(0, Math.min(n - 1, tourAt + d));
+  renderTour();
+}
+function closeTour() { if ($('#tourDlg').open) $('#tourDlg').close(); }
+$('#tourDlg').addEventListener('close', () => { try { localStorage.setItem(TOUR_KEY, '1'); } catch (e) {} });
+
+// One tap to fill an empty list with the usual skincare steps; everything stays editable.
+function addStarter() {
+  const live = activeSlots().map(x => x.id), first = live[0], last = live[live.length - 1], both = [...new Set([first, last])];
+  const cat = state.cats.find(c => c.id === 'care') || state.cats[0];
+  const list = [['卸妝', '卸妝', [last], 'peach'], ['洗面乳', '洗臉', both, 'blue'], ['化妝水', '化妝水', both, 'pink'],
+    ['乳液', '乳液', both, 'mint'], ['防曬', '防曬', [first], 'butter']];
+  let order = Math.max(-1, ...state.products.map(x => x.order)) + 1;
+  list.forEach(([name, step, times, color], i) => {
+    const p = { id: uid(), name, cat: cat.id, step, times, freq: normFreq(), freqBy: {}, color, note: '', paused: false, deleted: false,
+      opened: '', life: '', expiry: '', low: false, order: order++, created: Date.now() + i };
+    state.products.push(p);
+    logEvent(p.id, 'add');
+  });
+  save();
+  render();
+  toast('duo', '已加入，可以隨時修改');
+}
+
 /* ---------- settings: routines and categories ---------- */
 let slotDraft = null;
 function openSlot(id) {
@@ -2133,6 +2572,17 @@ function renderSettings() {
       </div>`).join('')}</div>
       <button class="btn ghost full" data-act="new-cat">${icon('plus')}新增分類</button>
     </section>
+    ${cloudReady() ? `<section class="card set-card">
+      <h2>${icon('cloud')}雲端同步</h2>
+      <div class="set-list">${linked() ? `
+        <button class="set-row" data-act="${sync.status === 'denied' ? 'sync-relink' : 'sync-now'}"><span class="set-main"><b>狀態</b></span><span class="set-time" id="syncState">${syncLabel()}</span></button>
+        <div class="set-row static"><span class="set-main"><b>名稱</b></span><span class="set-time">${esc(sync.name)}</span></div>
+        <button class="set-row" data-act="sync-pin"><span class="set-main"><b>更改密碼</b></span>${icon('right', 'set-chev')}</button>
+        <button class="set-row" data-act="sync-stop"><span class="set-main"><b>停止同步</b></span>${icon('right', 'set-chev')}</button>` : `
+        <button class="set-row" data-act="sync-create"><span class="set-main"><b>存到雲端</b></span>${icon('right', 'set-chev')}</button>
+        <button class="set-row" data-act="sync-join"><span class="set-main"><b>從雲端載入</b></span>${icon('right', 'set-chev')}</button>`}
+      </div>
+    </section>` : ''}
     <section class="card set-card">
       <h2>${icon('star')}其他</h2>
       <div class="set-list">
@@ -2140,6 +2590,8 @@ function renderSettings() {
         <label class="set-row"><span class="set-main"><b>每天換日時間</b></span>
           <select class="set-select" id="dayStartSel">${DAY_STARTS.map(h => `<option value="${h}"${h === state.dayStart ? ' selected' : ''}>${h ? `凌晨 ${h} 點` : '半夜 12 點'}</option>`).join('')}</select>
         </label>
+        <button class="set-row" data-act="tour"><span class="set-main"><b>怎麼使用</b></span>${icon('right', 'set-chev')}</button>
+        <button class="set-row" data-act="news"><span class="set-main"><b>版本</b></span>${newsFresh().length ? '<span class="news-badge">新</span>' : ''}<span class="set-time">v${esc(APP_VERSION)}</span>${icon('right', 'set-chev')}</button>
       </div>
     </section>
     <div class="backup">
@@ -2256,6 +2708,24 @@ document.addEventListener('click', e => {
     case 'cat-steps': stepEditor(catDraft.id); break;
     case 'c-delete': deleteCat(); break;
     case 'edit-title': openTitle(); break;
+    case 'update-app': updateApp(); break;
+    case 'news': openNews(); break;
+    case 'news-off': setNewsSeen(APP_VERSION); render(); break;
+    case 'tour': openTour(); break;
+    case 'tour-next': tourStep(1); break;
+    case 'tour-prev': tourStep(-1); break;
+    case 'tour-end': closeTour(); break;
+    case 'starter': addStarter(); break;
+    case 'sync-now': syncNow(); break;
+    case 'sync-create': openSync('create'); break;
+    case 'sync-join': openSync('join'); break;
+    case 'sync-pin': openSync('pin'); break;
+    case 'sync-relink': openSync('relink'); break;
+    case 'sync-stop':
+      if (confirm('停止同步後，這台裝置的紀錄會留著，但不會再和雲端同步。確定嗎？')) { stopSync(); render(); }
+      break;
+    case 'sync-create-go': setTab('settings'); openSync('create'); break;
+    case 'sync-tip-off': sync.tipOff = true; storeSync(); render(); break;
     case 'f-cat': setCat(v); renderForm(); break;
     case 'tag-add': addTag(); break;
     case 'tag-del': t.closest('.tag-row').remove(); break;
@@ -2365,7 +2835,11 @@ function refresh() {
   }
   if (changed) render();
 }
-document.addEventListener('visibilitychange', () => { if (document.hidden) flush(); else refresh(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { flush(); if (sync.timer) syncNow(true); }
+  else { refresh(); syncNow(); }
+});
+window.addEventListener('online', () => syncNow());
 // The page can stay open across midnight; check the date once a minute.
 setInterval(() => { if (!document.hidden && today() !== lastToday) refresh(); }, 60000);
 window.addEventListener('pagehide', flush);
@@ -2373,18 +2847,33 @@ window.addEventListener('pagehide', flush);
 /* ---------- init ---------- */
 $('#nav').innerHTML = TABS.map(([v, n, ic]) => `<button data-act="tab" data-v="${v}"><span class="bub">${icon(ic)}</span><span>${n}</span></button>`).join('');
 $$('[data-act="close"]').forEach(b => { b.innerHTML = icon('x'); });
+$('#tourX').innerHTML = icon('x');
 $$('[data-act="edit-steps"], [data-act="cat-steps"]').forEach(b => { b.innerHTML = icon('pen'); });
 $('[data-act="edit-reasons"]').innerHTML = icon('pen');
 // ?demo=reset brings the sample data back to its original state.
 if (DEMO && new URLSearchParams(location.search).get('demo') === 'reset') {
-  try { localStorage.removeItem(KEY); } catch (e) {}
+  try { localStorage.removeItem(KEY); localStorage.removeItem(NEWS_KEY); } catch (e) {}
   history.replaceState(null, '', location.pathname + '?demo');
 }
 $('#fMoreBtn').insertAdjacentHTML('beforeend', icon('chev'));
 // Records saved before launch under the old key were test data; start the real tool clean.
 if (!DEMO) { try { localStorage.removeItem('skincare-diary-v1'); } catch (e) {} }
 [IMG.faceDone, IMG.faceRest].forEach(src => { new Image().src = src; });
-const start = () => { state = load(); render(); };
+const start = () => {
+  state = load();
+  if (cloudReady()) loadSync();
+  render();
+  syncNow();
+  // Someone just starting out has nothing "new" to catch up on; the tour covers it.
+  if (!DEMO && newsSeen() === null && !state.products.length) setNewsSeen(APP_VERSION);
+  if (!DEMO && !state.products.length && !tourSeen()) openTour();
+};
+// Works offline and can be added to the home screen. Not on a local dev server, where it would hide edits (add ?sw to try it).
+if ('serviceWorker' in navigator && (!/^(localhost|127\.0\.0\.1)$/.test(location.hostname) || new URLSearchParams(location.search).has('sw'))) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+// Ask the browser not to clear this site's saved list when it's low on space.
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
 if (DEMO) {
   $$('.m-brand, .art-brand').forEach(el => el.insertAdjacentHTML('beforeend', '<span class="demo-pill">示範</span>'));
   const s = document.createElement('script');
