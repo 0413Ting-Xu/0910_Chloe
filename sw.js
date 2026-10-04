@@ -43,6 +43,8 @@ self.addEventListener('notificationclick', e => {
   const url = new URL((e.notification.data && e.notification.data.url) || './', self.registration.scope).href;
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
     const open = list.find(c => c.url.startsWith(self.registration.scope));
-    return open && 'focus' in open ? open.focus() : self.clients.openWindow(url);
+    if (!open) return self.clients.openWindow(url);
+    open.postMessage({ type: 'push-go', url });   // the page jumps to what the reminder was about
+    return 'focus' in open ? open.focus() : null;
   }));
 });
