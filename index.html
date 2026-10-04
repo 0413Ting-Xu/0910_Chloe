@@ -453,6 +453,10 @@ main{container:main / inline-size;min-width:0}
 .reset-chip{margin-top:8px}
 .hint-chip{display:block;margin:-6px 0 18px;background:var(--blue-100);color:var(--blue-600)}
 .pause-chips .chip{padding:12px 20px;font-size:16px}
+.mark-chips{margin-top:12px}
+.mark-chips small{margin-left:6px;font-size:12px;opacity:.75}
+.pick-chips .chip{padding:10px 16px;font-size:15px}
+.remind-time{margin-top:12px}
 .slot.ping{animation:ping 1.2s ease-out 2}
 @keyframes ping{0%,100%{box-shadow:var(--shadow)}50%{box-shadow:0 0 0 4px var(--blue-200),var(--shadow)}}
 .set-row.on .switch{background:var(--blue-300)}
@@ -679,6 +683,7 @@ main{container:main / inline-size;min-width:0}
         <label class="lbl" for="fNote">備註</label>
         <input id="fNote" class="input" autocomplete="off" maxlength="60" placeholder="用量、手法…">
       </div>
+      <div class="field" id="fRemindWrap" hidden></div>
       <div class="field" id="fLifeWrap"></div>
       <button type="button" class="switch-row" id="fPause" data-act="f-pause" role="switch" aria-checked="false">
         <span>停用</span><span class="switch"><i></i></span>
@@ -1268,12 +1273,12 @@ const freqFor = (p, slot) => (p.freqBy && p.freqBy[slot]) || p.freq;
 const VAPID_PUBLIC = 'BFmSPKJIe8c2WKBIJAewxEL5yelufhHbrbEMmP1aDzb1nLuPdmL3kxuaRuR7rqm0tMmyT2Q5oHUBKX2jI5KRn4g';
 const PUSH_KEY = KEY + '-push';
 const ALL_DAYS = [0, 1, 2, 3, 4, 5, 6];
-const PUSH_SLOT = { on: true, min: null, days: ALL_DAYS, more: 1, gap: 30, msg: '' };
+const PUSH_SLOT = { on: true, min: null, days: ALL_DAYS, more: 1, gap: 30, msg: '', scope: 'all' };
 const push = {
   on: false, names: false, pause: '', since: '', note: null,
   last: { on: true, min: 23 * 60 + 30 }, recover: { on: true, min: 9 * 60 },
-  slots: {}, fin: {}, hintOff: {},
-  busy: false, again: false, timer: null, err: '',
+  slots: {}, items: {}, fin: {}, hintOff: {},
+  busy: false, again: false, timer: null, err: '', status: null, statusAt: 0,
 };
 const pushCfg = id => ({ ...PUSH_SLOT, ...(push.slots[id] || {}) });
 const pushMin = x => { const m = pushCfg(x.id).min; return m === null || m === undefined ? x.min : m; };
@@ -1281,17 +1286,18 @@ function loadPush() {
   try {
     const s = JSON.parse(localStorage.getItem(PUSH_KEY));
     if (!s) return;
-    push.on = !!s.on; push.names = !!s.names; push.pause = s.pause || ''; push.since = s.since || ''; push.note = s.note || null;
+    // Item names in the message became the default with v2 (the synced list already lives on the same server).
+    push.on = !!s.on; push.names = s.v ? !!s.names : true; push.pause = s.pause || ''; push.since = s.since || ''; push.note = s.note || null;
     if (s.last) push.last = { ...push.last, ...s.last };
     if (s.recover) push.recover = { ...push.recover, ...s.recover };
-    push.slots = s.slots || {}; push.fin = s.fin || {}; push.hintOff = s.hintOff || {};
+    push.slots = s.slots || {}; push.items = s.items || {}; push.fin = s.fin || {}; push.hintOff = s.hintOff || {};
     // The first version only kept a list of routines turned off.
     if (Array.isArray(s.off)) s.off.forEach(id => { push.slots[id] = { ...pushCfg(id), on: false }; });
   } catch (e) {}
 }
 const storePush = () => {
-  const { on, names, pause, since, note, last, recover, slots, fin, hintOff } = push;
-  try { localStorage.setItem(PUSH_KEY, JSON.stringify({ on, names, pause, since, note, last, recover, slots, fin, hintOff })); } catch (e) {}
+  const { on, names, pause, since, note, last, recover, slots, items, fin, hintOff } = push;
+  try { localStorage.setItem(PUSH_KEY, JSON.stringify({ v: 2, on, names, pause, since, note, last, recover, slots, items, fin, hintOff })); } catch (e) {}
 };
 // Not on a local dev server (no service worker there) unless ?sw is added.
 const pushSupported = () => cloudReady() && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window
@@ -1304,22 +1310,36 @@ async function pushSub(create) {
     || (create ? reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(VAPID_PUBLIC) }) : null);
 }
 // What the server needs to decide, minute by minute, whether to nudge: yesterday through the next 6 days, how much is left per routine.
+// Items picked to be remembered: on their own time, or along with their routine's reminder.
+const pushItem = pid => push.items[pid] && push.items[pid].on ? push.items[pid] : null;
+const ownTime = pid => { const it = pushItem(pid); return it && it.min !== null && it.min !== undefined ? it.min : null; };
+const ownItems = () => Object.keys(push.items).filter(pid => ownTime(pid) !== null).map(byId).filter(p => p && !p.deleted);
+const slotProducts = id => state.products.filter(p => !p.deleted && !p.paused && p.times.includes(id)).sort(byStep);
+const leftEnc = list => push.names && list.length ? { n: list.length, t: list.slice(0, 3).map(y => y.p.name.slice(0, 12)) } : list.length;
 function pushPayload() {
-  const t = today(), plan = {};
+  const t = today(), plan = {}, own = ownItems();
   for (let i = -1; i < 7; i++) {
     const d = addDays(t, i);
     plan[d] = {};
     for (const x of slotsOn(d)) {
       const left = slotItems(d, x.id).filter(y => !y.ok);
-      plan[d][x.id] = push.names && left.length ? { n: left.length, t: left.slice(0, 3).map(y => y.p.name.slice(0, 12)) } : left.length;
+      plan[d][x.id] = leftEnc(left);
+      if (pushCfg(x.id).scope === 'marked') plan[d]['m:' + x.id] = leftEnc(left.filter(y => pushItem(y.id) && ownTime(y.id) === null));
     }
+    for (const p of own) plan[d]['p:' + p.id] = leftEnc(slotsOn(d).flatMap(x => slotItems(d, x.id).filter(y => y.id === p.id && !y.ok)));
   }
   const reminders = activeSlots().filter(x => pushCfg(x.id).on).map(x => {
     const c = pushCfg(x.id), r = { id: x.id, name: x.name, min: pushMin(x), more: c.more, gap: c.gap };
     if (c.days.length < 7) r.days = c.days;
     if (c.msg) r.msg = c.msg.slice(0, 24);
+    if (c.scope === 'marked') { r.key = 'm:' + x.id; r.marked = true; }
     return r;
   });
+  for (const p of own) {
+    const r = { id: 'p:' + p.id, kind: 'item', key: 'p:' + p.id, min: ownTime(p.id), slot: p.times[0] || '' };
+    if (push.names) r.name = p.name.slice(0, 12);
+    reminders.push(r);
+  }
   if (push.last.on) reminders.push({ id: '_last', kind: 'last', min: push.last.min });
   if (push.recover.on) reminders.push({ id: '_recover', kind: 'recover', min: push.recover.min });
   return { plan, reminders, meta: { pause: push.pause >= t ? push.pause : '', streak: streak() } };
@@ -1384,6 +1404,47 @@ const daysLabel = days => days.length === 7 ? '每天' : days.length === 5 && [1
 const pushSlotSub = x => { const c = pushCfg(x.id); return `${daysLabel(c.days)}${c.more ? `・再提醒 ${c.more} 次` : ''}`; };
 const pausedTo = () => push.pause && push.pause >= today() ? push.pause : '';
 
+// The test button: show a local preview right away, then ask the server for a real one (arrives within a minute).
+function pushSample() {
+  const t = today(), x = activeSlots().find(y => pushCfg(y.id).on && slotItems(t, y.id).some(i => !i.ok));
+  if (!x) return '今天的都做完了';
+  const left = slotItems(t, x.id).filter(i => !i.ok);
+  return push.names ? `${x.name}：還差 ${left.slice(0, 3).map(i => i.p.name).join('、')}${left.length > 3 ? ` 等 ${left.length} 項` : ''}`
+    : `${x.name}還有 ${left.length} 項沒打勾`;
+}
+async function pushTest() {
+  if (!pushOn()) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    await reg.showNotification(appTitle(), { body: pushSample(), tag: 'preview', icon: 'images/icon-192.png', badge: 'images/icon-192.png', data: { url: './?from=push&go=today' } });
+  } catch (e) {}
+  let found = false;
+  if (await pushSync()) {
+    try { found = await rpc('push_test', { p_endpoint: (await pushSub(false)).endpoint }); } catch (e) { push.err = `${e && e.message}`.slice(0, 80); }
+  }
+  toast('duo', found ? '1 分鐘內會再收到伺服器送的一則' : `伺服器沒收到（${push.err || '找不到這台'}）`);
+  push.statusAt = 0;
+  pushStatusFill();
+}
+// "連線狀態" in settings: whether the server has this device, and how the last send went. Checked at most every 20 seconds.
+async function pushStatusFill() {
+  if (!pushOn()) return;
+  const show = () => {
+    const el = $('#pushState'), st = push.status;
+    if (!el || !st) return;
+    const at = v => { const d = new Date(v); return `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${pad(d.getMinutes())}`; };
+    const errNewer = st.last_err && (!st.last_ok || st.last_err.slice(0, 19) > String(st.last_ok).slice(0, 19));
+    el.textContent = st.err ? '查不到' : !st.found ? '伺服器沒有這台' : errNewer ? '上次送出失敗' : st.last_ok ? `上次送出 ${at(st.last_ok)}` : '已連上';
+  };
+  if (Date.now() - push.statusAt < 20000) { show(); return; }
+  push.statusAt = Date.now();
+  try {
+    const sub = await pushSub(false);
+    push.status = sub ? await rpc('push_status', { p_endpoint: sub.endpoint }) : { found: false };
+  } catch (e) { push.status = { err: true }; }
+  show();
+}
+
 // When she tends to finish a routine, remembered on this device (the last 14 days) so the reminder can move to just before it.
 function pushFin(d, slot) {
   if (d !== today() || !cloudReady()) return;
@@ -1447,7 +1508,10 @@ let pushDraft = null;
 const timeStr = m => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
 const parseTime = (v, fallback) => { const [h, m] = (v || '').split(':').map(Number); return Number.isFinite(h) && Number.isFinite(m) ? h * 60 + m : fallback; };
 function openPushSheet(kind, id) {
-  const base = kind === 'slot' ? pushCfg(id) : kind === 'last' ? push.last : kind === 'recover' ? push.recover : {};
+  const p = kind === 'item' && byId(id);
+  const base = kind === 'slot' ? { ...pushCfg(id), marks: slotProducts(id).filter(q => pushItem(q.id)).map(q => q.id) }
+    : kind === 'last' ? push.last : kind === 'recover' ? push.recover
+    : p ? { on: true, min: ownTime(id) ?? (push.items[id] && push.items[id].min) ?? (p.times[0] ? pushMin(slotOf(p.times[0])) : 12 * 60) } : {};
   pushDraft = { kind, id, ...base, days: [...(base.days || ALL_DAYS)], timeVal: null };
   renderPushSheet();
   if (!$('#pushDlg').open) $('#pushDlg').showModal();
@@ -1464,6 +1528,20 @@ function renderPushSheet() {
   const time = (label, extra = '') => `<div class="field"><label class="lbl" for="pTime">${label}</label>
     <input id="pTime" class="input time-input" type="time" step="300" value="${d.timeVal || timeStr(curMin)}">${extra}</div>`;
   const hint = x && pushHint();
+  if (d.kind === 'pick') {
+    $('#pTitle').textContent = '單獨提醒哪一項';
+    const list = state.products.filter(q => !q.deleted).sort(byStep);
+    $('#pBody').innerHTML = list.length ? `<div class="chips pick-chips">${list.map(q => `<button type="button" class="chip${ownTime(q.id) !== null ? ' on' : ''}" data-act="p-pick" data-id="${q.id}">${esc(q.name)}</button>`).join('')}</div>`
+      : '<div class="pick-empty">清單裡還沒有東西</div>';
+    $('#pushForm .sheet-foot').hidden = true;
+    return;
+  }
+  if (d.kind === 'item') {
+    $('#pTitle').textContent = `${byId(d.id).name}的提醒`;
+    $('#pBody').innerHTML = sw('p-on', d.on, '單獨提醒這一項') + time('提醒時間');
+    $('#pushForm .sheet-foot').hidden = false;
+    return;
+  }
   if (d.kind === 'pause') {
     $('#pTitle').textContent = '暫停提醒';
     $('#pBody').innerHTML = `<div class="chips pause-chips">${[['今天', 0], ['3 天', 2], ['7 天', 6]].map(([n, k]) => `<button type="button" class="chip" data-act="p-pause" data-v="${k}">${n}</button>`).join('')}
@@ -1478,6 +1556,11 @@ function renderPushSheet() {
       + time('提醒時間', d.min !== null && d.min !== undefined ? `<button type="button" class="chip sm reset-chip" data-act="p-time-reset">跟著時段（${fmtTime(x.min)}）</button>` : '')
       + (hint && hint.id === x.id ? `<button type="button" class="chip hint-chip" data-act="p-hint" data-v="${hint.to}">建議 ${fmtTime(hint.to)}・你通常 ${fmtTime(hint.real)} 做完</button>` : '')
       + `<div class="field"><div class="lbl">星期</div><div class="days">${WEEK.map(k => `<button type="button" class="${d.days.includes(k) ? 'on' : ''}" data-act="p-day" data-v="${k}" aria-pressed="${d.days.includes(k)}">${WD[k]}</button>`).join('')}</div></div>
+      <div class="field"><div class="lbl">提醒哪些</div><div class="seg">
+        <button type="button" class="${d.scope !== 'marked' ? 'on' : ''}" data-act="p-scope" data-v="all">全部項目</button>
+        <button type="button" class="${d.scope === 'marked' ? 'on' : ''}" data-act="p-scope" data-v="marked">只提醒標記的</button></div>
+        ${d.scope === 'marked' ? `<div class="chips mark-chips">${slotProducts(x.id).map(q => `<button type="button" class="chip${d.marks.includes(q.id) ? ' on' : ''}" data-act="p-mark" data-id="${q.id}" aria-pressed="${d.marks.includes(q.id)}">${esc(q.name)}${ownTime(q.id) !== null ? `<small>${fmtTime(ownTime(q.id))}</small>` : ''}</button>`).join('') || '<span class="pick-empty">這個時段還沒有項目</span>'}</div>` : ''}
+      </div>
       <div class="field"><div class="lbl">還沒做時再提醒</div><div class="chips">${[0, 1, 2, 3].map(n => `<button type="button" class="chip${d.more === n ? ' on' : ''}" data-act="p-more" data-v="${n}">${n ? n + ' 次' : '不用'}</button>`).join('')}</div></div>
       ${d.more ? `<div class="field"><div class="lbl">每隔多久</div><div class="chips">${[10, 20, 30, 60].map(n => `<button type="button" class="chip${d.gap === n ? ' on' : ''}" data-act="p-gap" data-v="${n}">${n} 分鐘</button>`).join('')}</div></div>` : ''}
       <div class="field"><label class="lbl" for="pMsg">提醒文字</label><input id="pMsg" class="input" maxlength="24" autocomplete="off" placeholder="沒填就用預設" value="${esc(d.msg || '')}"></div>`;
@@ -1491,9 +1574,13 @@ function savePushSheet() {
   const d = pushDraft;
   if (d.kind === 'slot') {
     if (!d.days.length) { shake($('#pushDlg .days')); return; }
+    if (d.scope === 'marked' && !d.marks.length && slotProducts(d.id).length) { shake($('#pushDlg .mark-chips')); return; }
     const x = slotOf(d.id), min = parseTime(d.timeVal, pushMin(x));
-    push.slots[d.id] = { on: d.on, min: min === x.min ? null : min, days: WEEK.filter(k => d.days.includes(k)).sort((p, q) => p - q), more: d.more, gap: d.gap, msg: (d.msg || '').trim(), at: today() };
+    push.slots[d.id] = { on: d.on, min: min === x.min ? null : min, days: WEEK.filter(k => d.days.includes(k)).sort((p, q) => p - q), more: d.more, gap: d.gap, msg: (d.msg || '').trim(), scope: d.scope, at: today() };
+    if (d.scope === 'marked') for (const q of slotProducts(d.id)) push.items[q.id] = { min: null, ...push.items[q.id], on: d.marks.includes(q.id) };
     if (push.note && push.note.id === d.id) push.note = null;
+  } else if (d.kind === 'item') {
+    push.items[d.id] = { on: d.on, min: parseTime(d.timeVal, d.min) };
   } else {
     push[d.kind] = { on: d.on, min: parseTime(d.timeVal, push[d.kind].min) };
   }
@@ -2427,7 +2514,7 @@ $('#importFile').addEventListener('change', async e => {
 
 /* ---------- product form ---------- */
 let draft = null;
-const form = { stepTouched: false, catTouched: false, colorTouched: false, more: false };
+const form = { stepTouched: false, catTouched: false, colorTouched: false, more: false, remind: { mode: 'off', min: 12 * 60 } };
 const defaultStep = catId => { const st = catById(catId).steps; return st.includes('其他') ? '其他' : (st[st.length - 1] || '其他'); };
 // A step named in the item's name wins: the one ending last, since the noun comes last ("維他命C精華" is a 精華),
 // then the longest; then keyword hints. The step found also picks the category,
@@ -2456,6 +2543,9 @@ function openForm(id, addTo) {
     opened: '', life: '', expiry: '', low: false,
   };
   form.stepTouched = form.catTouched = form.colorTouched = !!p;
+  const it = p && push.items[p.id];
+  form.remind = { mode: !it || !it.on ? 'off' : it.min === null || it.min === undefined ? 'slot' : 'own',
+    min: it && it.min !== null && it.min !== undefined ? it.min : draft.times[0] ? pushMin(slotOf(draft.times[0])) : 12 * 60 };
   form.more = !!p;
   $('#fTitle').textContent = p ? '編輯' : '新增一項';
   $('#fName').value = draft.name;
@@ -2521,6 +2611,13 @@ function renderForm() {
       `<button type="button" class="chip${(draft.life || '') === v ? ' on' : ''}" data-act="f-life" data-v="${v}">${n}</button>`).join('')}</div></div>
     ${dateRow('expiry', '有效期限')}`;
   $('#fColors').innerHTML = Object.entries(COLORS).map(([k, c]) => `<button type="button" class="${draft.color === k ? 'on' : ''}" style="background:${c}" data-act="f-color" data-v="${k}" aria-label="${k}"></button>`).join('');
+  // Reminder for this one item (only when this device has reminders on).
+  const rw = $('#fRemindWrap'), rt = $('#fRemindTime');
+  if (rt && rt.value) form.remind.min = parseTime(rt.value, form.remind.min);
+  rw.hidden = !pushOn();
+  rw.innerHTML = pushOn() ? `<div class="lbl">提醒</div><div class="seg">${[['off', '不用'], ['slot', '跟著時段'], ['own', '自己的時間']].map(([k, n]) =>
+      `<button type="button" class="${form.remind.mode === k ? 'on' : ''}" data-act="f-remind" data-v="${k}">${n}</button>`).join('')}</div>
+    ${form.remind.mode === 'own' ? `<input id="fRemindTime" class="input time-input remind-time" type="time" step="300" value="${timeStr(form.remind.min)}">` : ''}` : '';
   $('#fPause').hidden = !draft.id;
   $('#fPause').classList.toggle('on', draft.paused);
   $('#fPause').setAttribute('aria-checked', draft.paused);
@@ -2838,6 +2935,7 @@ function moveCat(id, dir) {
 }
 
 function renderSettings() {
+  setTimeout(pushStatusFill, 0);
   const cnt = id => state.products.filter(p => !p.deleted && !p.paused && p.times.includes(id)).length;
   const ccnt = id => state.products.filter(p => !p.deleted && p.cat === id).length;
   $('#view-settings').innerHTML = `
@@ -2859,6 +2957,11 @@ function renderSettings() {
           <span class="set-main"><b>${esc(x.name)}</b><span>${pushSlotSub(x)}</span></span>
           <span class="set-time">${fmtTime(pushMin(x))}</span><span class="switch" data-act="push-slot" data-id="${x.id}" role="switch" aria-checked="${c.on}"><i></i></span>
         </button>`; }).join('')}
+        ${ownItems().map(p => `<button class="set-row on" data-act="push-item" data-id="${p.id}">
+          <span class="set-main"><b>${esc(p.name)}</b><span>單獨提醒</span></span>
+          <span class="set-time">${fmtTime(ownTime(p.id))}</span><span class="switch" data-act="push-item-off" data-id="${p.id}" role="switch" aria-checked="true"><i></i></span>
+        </button>`).join('')}
+        <button class="btn ghost full" data-act="push-pick">${icon('plus')}單獨提醒一項</button>
         <button class="set-row${push.last.on ? ' on' : ''}" data-act="push-last">
           <span class="set-main"><b>最後提醒</b><span>連續天數快斷時</span></span>
           <span class="set-time">${fmtTime(push.last.min)}</span><span class="switch" data-act="push-flag" data-v="last" role="switch" aria-checked="${push.last.on}"><i></i></span>
@@ -2868,7 +2971,9 @@ function renderSettings() {
           <span class="set-time">${fmtTime(push.recover.min)}</span><span class="switch" data-act="push-flag" data-v="recover" role="switch" aria-checked="${push.recover.on}"><i></i></span>
         </button>
         <button class="set-row${push.names ? ' on' : ''}" data-act="push-flag" data-v="names" role="switch" aria-checked="${push.names}"><span class="set-main"><b>顯示還剩哪幾項</b></span><span class="switch"><i></i></span></button>
-        <button class="set-row" data-act="push-pause-open"><span class="set-main"><b>暫停提醒</b></span><span class="set-time">${pausedTo() ? '到 ' + md(pausedTo()) : '沒有暫停'}</span>${icon('right', 'set-chev')}</button>` : ''}
+        <button class="set-row" data-act="push-pause-open"><span class="set-main"><b>暫停提醒</b></span><span class="set-time">${pausedTo() ? '到 ' + md(pausedTo()) : '沒有暫停'}</span>${icon('right', 'set-chev')}</button>
+        <button class="set-row" data-act="push-test"><span class="set-main"><b>傳測試通知</b></span>${icon('right', 'set-chev')}</button>
+        <button class="set-row" data-act="push-state"><span class="set-main"><b>連線狀態</b></span><span class="set-time" id="pushState">…</span></button>` : ''}
       </div>
     </section>` : ''}
     <section class="card set-card">
@@ -2942,6 +3047,13 @@ function saveForm() {
     const r = touch(to.date, to.slot);
     if (!r.extra.includes(p.id)) r.extra.push(p.id);
     ui.pop = to.slot + p.id;
+  }
+  if (pushOn()) {
+    const rt = $('#fRemindTime'), r = form.remind;
+    if (rt && rt.value) r.min = parseTime(rt.value, r.min);
+    if (r.mode === 'off') { if (push.items[p.id]) push.items[p.id] = { ...push.items[p.id], on: false }; }
+    else push.items[p.id] = { on: true, min: r.mode === 'own' ? r.min : null };
+    storePush();
   }
   save();
   $('#formDlg').close();
@@ -3026,6 +3138,15 @@ document.addEventListener('click', e => {
     case 'push-last': openPushSheet('last'); break;
     case 'push-recover': openPushSheet('recover'); break;
     case 'push-pause-open': openPushSheet('pause'); break;
+    case 'push-pick': openPushSheet('pick'); break;
+    case 'p-pick': openPushSheet('item', id); break;
+    case 'push-item': openPushSheet('item', id); break;
+    case 'push-item-off': push.items[id] = { ...push.items[id], on: false }; storePush(); render(); pushSync(); break;
+    case 'p-scope': pullPushDraft(); pushDraft.scope = v; renderPushSheet(); break;
+    case 'p-mark': pullPushDraft(); pushDraft.marks = pushDraft.marks.includes(id) ? pushDraft.marks.filter(k => k !== id) : [...pushDraft.marks, id]; renderPushSheet(); break;
+    case 'push-test': pushTest(); break;
+    case 'push-state': { const st = push.status; toast('duo', !st ? '查詢中' : st.last_err ? `最近一次錯誤：${st.last_err.slice(20, 90)}` : st.found ? '伺服器有這台的設定' : '伺服器沒有這台，關掉再打開通知試試'); break; }
+    case 'f-remind': { const t = $('#fRemindTime'); if (t && t.value) form.remind.min = parseTime(t.value, form.remind.min); form.remind.mode = v; renderForm(); break; }
     case 'p-on': pullPushDraft(); pushDraft.on = !pushDraft.on; renderPushSheet(); break;
     case 'p-day': { pullPushDraft(); const n = Number(v); pushDraft.days = pushDraft.days.includes(n) ? pushDraft.days.filter(k => k !== n) : [...pushDraft.days, n]; renderPushSheet(); break; }
     case 'p-more': pullPushDraft(); pushDraft.more = Number(v); renderPushSheet(); break;
