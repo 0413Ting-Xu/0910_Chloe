@@ -1248,7 +1248,7 @@ const freqFor = (p, slot) => (p.freqBy && p.freqBy[slot]) || p.freq;
 // over the next 7 days; no product names or notes.
 const VAPID_PUBLIC = 'BFmSPKJIe8c2WKBIJAewxEL5yelufhHbrbEMmP1aDzb1nLuPdmL3kxuaRuR7rqm0tMmyT2Q5oHUBKX2jI5KRn4g';
 const PUSH_KEY = KEY + '-push';
-const push = { on: false, off: [], busy: false, again: false, timer: null };
+const push = { on: false, off: [], busy: false, again: false, timer: null, err: '' };
 function loadPush() {
   try { const s = JSON.parse(localStorage.getItem(PUSH_KEY)); if (s) { push.on = !!s.on; push.off = Array.isArray(s.off) ? s.off : []; } } catch (e) {}
 }
@@ -1265,7 +1265,8 @@ async function pushSub(create) {
 }
 // Tell the server this device's routines and what is left to do; true when it got through.
 async function pushSync() {
-  if (!push.on || tooNew || !pushSupported() || Notification.permission !== 'granted') return false;
+  push.err = '';
+  if (!push.on || tooNew || !pushSupported() || Notification.permission !== 'granted') { push.err = `不能用 ${push.on}/${tooNew}/${pushSupported()}/${window.Notification && Notification.permission}`; return false; }
   if (push.busy) { push.again = true; return true; }
   push.busy = true;
   let ok = false;
@@ -1282,7 +1283,7 @@ async function pushSync() {
       p_reminders: activeSlots().filter(x => !push.off.includes(x.id)).map(x => ({ id: x.id, name: x.name, min: x.min })), p_plan: plan,
     });
     ok = true;
-  } catch (e) {}
+  } catch (e) { push.err = `${e && e.name}: ${e && e.message}`.slice(0, 80); }
   push.busy = false;
   if (push.again) { push.again = false; pushSoon(); }
   return ok;
@@ -1294,7 +1295,7 @@ async function pushEnable() {
   if (perm !== 'granted') { toast('duo', '通知被關掉了，要到手機設定裡打開'); return; }
   push.on = true;
   storePush();
-  if (!(await pushSync())) { await pushDisable(); toast('duo', '連不上網路，晚點再試'); }
+  if (!(await pushSync())) { await pushDisable(); toast('duo', `沒辦法開通知（${push.err || '連不上網路'}）`); }
   else toast('duo', '提醒開好了');
   render();
 }
