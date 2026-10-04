@@ -1,6 +1,6 @@
 // Offline shell for the app. The list itself lives in localStorage / Supabase; this only keeps the page, images and font
 // available without a network. The page is fetched network-first so a new version shows up the next time it's opened.
-const CACHE = 'chloe-shell-v2';
+const CACHE = 'chloe-shell-v3';
 const CORE = ['./', 'index.html', 'demo.js', 'updates.js', 'manifest.webmanifest', 'images/chiikawa.webp', 'images/hachiware.webp', 'images/usagi.jpg',
   'images/chiikawa-usagi.jpg', 'images/face-chiikawa.png', 'images/face-hachiware.png', 'images/icon-180.png'];
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
@@ -27,5 +27,22 @@ self.addEventListener('fetch', e => {
   e.respondWith(caches.match(req).then(hit => {
     const net = fetch(req).then(r => put(req, r)).catch(() => hit);
     return hit || net;
+  }));
+});
+
+// Reminders: the server sends a push at a routine's time; show it, and open the app when it's tapped.
+self.addEventListener('push', e => {
+  let d = {};
+  try { d = e.data.json(); } catch (err) {}
+  e.waitUntil(self.registration.showNotification(d.title || '每日小清單', {
+    body: d.body || '', tag: d.tag, icon: 'images/icon-192.png', badge: 'images/icon-192.png', data: { url: d.url || './' },
+  }));
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const url = new URL((e.notification.data && e.notification.data.url) || './', self.registration.scope).href;
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+    const open = list.find(c => c.url.startsWith(self.registration.scope));
+    return open && 'focus' in open ? open.focus() : self.clients.openWindow(url);
   }));
 });
